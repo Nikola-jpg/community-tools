@@ -34,8 +34,8 @@ public class GitHubService {
 
       for (GHPullRequest repo : pullRequests) {
         String login = repo.getUser().getLogin();
-        String email = repo.getUser().getEmail();
-        listUsers.put(login, email);
+        String title = repo.getTitle();
+        listUsers.put(login, title);
       }
     } catch (IOException e) {
       e.printStackTrace();
