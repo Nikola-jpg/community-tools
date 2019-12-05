@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+@Service("slack")
 public class SlackService {
 
     private String getToken() throws IOException {
