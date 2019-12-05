@@ -1,4 +1,4 @@
-package com.community.tools;
+package com.community.tools.controller;
 
 import com.community.tools.service.GitHubService;
 import java.util.ArrayList;
