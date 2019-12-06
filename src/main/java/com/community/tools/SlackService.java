@@ -21,25 +21,20 @@ import java.util.Properties;
 
 @Service("slack")
 public class SlackService {
-
-    private String getToken() throws IOException {
-        Properties property = new Properties();
-        FileInputStream fis = new FileInputStream("src/main/resources/slack.properties");
-        property.load(fis);
-
-        return property.getProperty("token");
-    }
+    
+    @Value("${slack.token}")
+    private String token;
 
     public String sendPrivateMessage(String username, String messageText)
             throws IOException, SlackApiException {
         Slack slack = Slack.getInstance();
 
-        User user = slack.methods(getToken()).usersList(req -> req).getMembers().stream()
+        User user = slack.methods(token).usersList(req -> req).getMembers().stream()
                 .filter(u -> u.getProfile().getDisplayName().equals(username))
                 .findFirst().get();
 
         ChatPostMessageResponse postResponse =
-            slack.methods(getToken()).chatPostMessage(
+            slack.methods(token).chatPostMessage(
                     req -> req.channel(user.getId()).asUser(true).text(messageText));
 
         return postResponse.getTs();
@@ -52,15 +47,15 @@ public class SlackService {
 
         Slack slack = Slack.getInstance();
 
-        User user = slack.methods(getToken()).usersList(req -> req).getMembers().stream()
+        User user = slack.methods(token).usersList(req -> req).getMembers().stream()
                 .filter(u -> u.getProfile().getDisplayName().equals(username))
                 .findFirst().get();
 
-        Im im = slack.methods(getToken()).imList(req -> req).getIms().stream()
+        Im im = slack.methods(token).imList(req -> req).getIms().stream()
                 .filter(i -> i.getUser().equals(user.getId()))
                 .findFirst().get();
 
-        try (RTMClient rtm = new Slack().rtm(getToken())) {
+        try (RTMClient rtm = new Slack().rtm(token)) {
 
             rtm.addMessageHandler((message) -> {
                 JsonObject json = jsonParser.parse(message).getAsJsonObject();
