@@ -8,6 +8,9 @@ import javax.websocket.DeploymentException;
 import java.io.IOException;
 
 class SlackServiceTest {
+  
+   @Value("${slack.token}")
+   private String slackToken;
 
   private static SlackService slackService;
 
@@ -17,12 +20,31 @@ class SlackServiceTest {
   }
 
   @Test
-  void sendPrivateMessage() {
-
+  void sendPrivateMessage() throws IOException, SlackApiException {
+    //setup
+    String actualInputData_username = "Slackbot";
+    String actualInputData_messageText = "test message";
+    //execute
+    ChatPostMessageResponse response =
+            slackService.sendPrivateMessage(actualInputData_username, actualInputData_messageText);
+    Slack slack = Slack.getInstance();
+    ChatDeleteResponse deleteResponse =
+            slack.methods(token).chatDelete(req ->
+                    req.channel(response.getChannel()).ts(response.getTs()));
+    boolean actualData = deleteResponse.isOk();
+    //verify
+    assertTrue(actualData);
   }
 
   @Test
-  void sendMessage() {
-
+  void sendMessageTest() {
+    //setup
+    String actualInputData_username = "Slackbot";
+    String actualInputData_messageText = "test message";
+    //execute
+    //verify
+    assertDoesNotThrow(() -> {
+      slackService.sendMessage(actualInputData_username, actualInputData_messageText);
+    });
   }
 }
