@@ -9,8 +9,8 @@ import java.io.IOException;
 
 class SlackServiceTest {
   
-   @Value("${slack.token}")
-   private String slackToken;
+  @Value("${slack.token}")
+  private String token;
 
   private static SlackService slackService;
 
