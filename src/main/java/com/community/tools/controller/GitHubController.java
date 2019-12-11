@@ -1,5 +1,7 @@
 package com.community.tools.controller;
 
+import static org.springframework.http.ResponseEntity.*;
+
 import com.community.tools.service.GitHubService;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +24,7 @@ public class GitHubController {
     List<String> list = new ArrayList<>();
     list.add("Hello");
     list.add("World");
-    return ResponseEntity.ok().body(list);
+    return ok().body(list);
   }
 
   @GetMapping(value = "/pull_request/{state}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -30,6 +32,6 @@ public class GitHubController {
     Map<String, String> userPullRequest = service.getPullRequests(state);
     List<Map<String, String>> list = new ArrayList<>();
     list.add(userPullRequest);
-    return ResponseEntity.ok().body(list);
+    return ok().body(list);
   }
 }
