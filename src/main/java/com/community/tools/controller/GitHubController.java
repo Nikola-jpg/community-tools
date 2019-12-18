@@ -19,7 +19,7 @@ public class GitHubController {
   @Autowired
   private GitHubService service;
 
-  @GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/hi", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getHelloInJson() {
     List<String> list = new ArrayList<>();
     list.add("Hello");
