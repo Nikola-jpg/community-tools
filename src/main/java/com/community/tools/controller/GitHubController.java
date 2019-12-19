@@ -2,7 +2,9 @@ package com.community.tools.controller;
 
 import static org.springframework.http.ResponseEntity.*;
 
-import com.community.tools.service.GitHubService;
+import com.community.tools.model.Event;
+import com.community.tools.service.GitHubEventService;
+import com.community.tools.service.GitHubPullRequestService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class GitHubController {
 
   @Autowired
-  private GitHubService service;
+  private GitHubEventService eventService;
+
+  @Autowired
+  private GitHubPullRequestService pullRequestService;
 
   @GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getHelloInJson() {
@@ -29,9 +34,16 @@ public class GitHubController {
 
   @GetMapping(value = "/pull_request/{state}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<Map<String, String>>> getPullRequests(@PathVariable boolean state) {
-    Map<String, String> userPullRequest = service.getPullRequests(state);
+    Map<String, String> userPullRequest = pullRequestService.getPullRequests(state);
     List<Map<String, String>> list = new ArrayList<>();
     list.add(userPullRequest);
     return ok().body(list);
+  }
+
+  @GetMapping(value = "/event/{startDate}:{endDate}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity< List<Event>> getAllEvents(
+      @PathVariable String startDate,@PathVariable String endDate) {
+    List<Event> events = eventService.getEvents(startDate, endDate);
+    return ok().body(events);
   }
 }
