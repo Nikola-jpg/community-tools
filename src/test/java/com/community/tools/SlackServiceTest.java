@@ -15,22 +15,4 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SlackServiceTest {
 
-  private static SlackService slackService;
-
-  @BeforeAll
-  public static void initSlackService() {
-    slackService = new SlackService();
-  }
-
-  @Test
-  void sendMessageTest() {
-    //setup
-    String actualInputData_username = "Slackbot";
-    String actualInputData_messageText = "test message";
-    //execute
-    //verify
-    assertDoesNotThrow(() -> {
-      slackService.sendMessage(actualInputData_username, actualInputData_messageText);
-    });
-  }
 }
