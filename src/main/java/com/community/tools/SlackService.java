@@ -21,7 +21,7 @@ import java.io.IOException;
 public class SlackService {
     
     @Value("${slack.token}")
-    private String token;
+    public String token;
 
     public String sendPrivateMessage(String username, String messageText)
             throws IOException, SlackApiException {

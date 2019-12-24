@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service;
 public class GitHubService {
 
   @Value("${token}")
-  private String token;
+  public String token;
 
   @Value("${repository}")
-  private String nameRepository;
+  public String nameRepository;
 
   public Map<String, String> getPullRequests(boolean statePullRequest) {
     Map<String, String> listUsers = new HashMap<>();
@@ -44,7 +44,7 @@ public class GitHubService {
     return listUsers;
   }
 
-  private GitHub getGitHubConnection() {
+  public GitHub getGitHubConnection() {
     GitHub gitHub;
     try {
       gitHub = GitHub.connectUsingOAuth(token);
