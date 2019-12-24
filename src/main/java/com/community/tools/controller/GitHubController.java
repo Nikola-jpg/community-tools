@@ -5,7 +5,11 @@ import static org.springframework.http.ResponseEntity.*;
 import com.community.tools.model.Event;
 import com.community.tools.service.GitHubEventService;
 import com.community.tools.service.GitHubPullRequestService;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +44,13 @@ public class GitHubController {
     return ok().body(list);
   }
 
-  @GetMapping(value = "/event/{startDate}:{endDate}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity< List<Event>> getAllEvents(
-      @PathVariable String startDate,@PathVariable String endDate) {
-    List<Event> events = eventService.getEvents(startDate, endDate);
+  @GetMapping(value = "/event/{startDate}/{endDate}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<Event>> getAllEvents(
+      @PathVariable String startDate, @PathVariable String endDate) throws ParseException {
+    DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    Date start = format.parse(startDate);
+    Date end = format.parse(endDate);
+    List<Event> events = eventService.getEvents(start, end);
     return ok().body(events);
   }
 }

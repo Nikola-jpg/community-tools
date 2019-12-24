@@ -13,6 +13,5 @@ public class Event {
   private Date createdAt;
   private String actorLogin;
   private String type;
-  private String state;
 
 }

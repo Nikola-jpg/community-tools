@@ -2,16 +2,13 @@ package com.community.tools.service;
 
 import com.community.tools.model.Event;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.kohsuke.github.GHEvent;
-import org.kohsuke.github.GHEventInfo;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHPullRequest;
+import org.kohsuke.github.GHPullRequestCommitDetail;
+import org.kohsuke.github.GHPullRequestReviewComment;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.PagedIterable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,33 +20,54 @@ public class GitHubEventService {
   @Autowired
   GitHubConnectService service;
 
-  public List<Event> getEvents(String startDate, String endDate) {
-    DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+  public List<Event> getEvents(Date startDate, Date endDate) {
     try {
-      Date start = format.parse(startDate);
-      Date end = format.parse(endDate);
-
       List<Event> list = new ArrayList<>();
       GHRepository repository = service.getGitHubRepository();
-      List<GHPullRequest> pullRequests = repository.getPullRequests(GHIssueState.ALL);
-      PagedIterable<GHEventInfo> ghEventInfos = repository.listEvents();
 
-      for (GHEventInfo info : ghEventInfos) {
-        for (GHPullRequest pullRequest : pullRequests) {
-          Date createdAt = info.getCreatedAt();
-          String actorLogin = info.getActorLogin();
-          String state = pullRequest.getState().toString();
-          GHEvent type = info.getType();
-          if (createdAt.before(end) && createdAt.after(start)) {
-            if (type == GHEvent.PULL_REQUEST || type == GHEvent.PULL_REQUEST_REVIEW_COMMENT) {
-              list.add(new Event(createdAt, actorLogin, type.toString(), state));
-            }
-          }
-        }
-      }
+      getPullRequests(startDate, endDate, list, repository);
+
       return list;
-    } catch (IOException | ParseException e) {
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
+
+  private void getPullRequests(Date startDate, Date endDate, List<Event> list,
+      GHRepository repository) throws IOException {
+    List<GHPullRequest> pullRequests = repository.getPullRequests(GHIssueState.ALL);
+    for (GHPullRequest pullRequest : pullRequests) {
+      Date createdAt = pullRequest.getCreatedAt();
+      String actorLogin = pullRequest.getUser().getLogin();
+      String state = "PullRequest: " + pullRequest.getState().name();
+
+      if (createdAt.before(endDate) && createdAt.after(startDate)) {
+        list.add(new Event(createdAt, actorLogin, state));
+        getCommits(list, pullRequest, actorLogin);
+        getComments(list, pullRequest);
+      }
+    }
+  }
+
+  private void getCommits(List<Event> list, GHPullRequest pullRequest, String actorLogin) {
+    PagedIterable<GHPullRequestCommitDetail> pullRequestCommit = pullRequest.listCommits();
+    for (GHPullRequestCommitDetail commit : pullRequestCommit) {
+      Date date = commit.getCommit().getAuthor().getDate();
+      String message = "Commit: " + commit.getCommit().getMessage();
+
+      list.add(new Event(date, actorLogin, message));
+    }
+  }
+
+  private void getComments(List<Event> list, GHPullRequest pullRequest) throws IOException {
+    PagedIterable<GHPullRequestReviewComment> reviewComments = pullRequest.listReviewComments();
+    for (GHPullRequestReviewComment comment : reviewComments) {
+      Date createdComment = comment.getCreatedAt();
+      String loginComment = comment.getUser().getLogin();
+      String bodyComment = "Comment: " + comment.getBody();
+
+      list.add(new Event(createdComment, loginComment, bodyComment));
+    }
+  }
 }
+
