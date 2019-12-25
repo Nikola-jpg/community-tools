@@ -1,6 +1,6 @@
 package com.community.tools.controller;
 
-import static org.springframework.http.ResponseEntity.*;
+import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.model.Event;
 import com.community.tools.service.GitHubEventService;
@@ -12,21 +12,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+@RequiredArgsConstructor
 @RestController
 public class GitHubController {
 
-  @Autowired
-  private GitHubEventService eventService;
-
-  @Autowired
-  private GitHubPullRequestService pullRequestService;
+  private final GitHubEventService eventService;
+  private final GitHubPullRequestService pullRequestService;
 
   @GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getHelloInJson() {
