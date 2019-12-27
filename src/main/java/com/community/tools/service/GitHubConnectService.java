@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class GitHubConnectService {
 
-  @Value("${token}")
+  @Value("${github.token}")
   private String token;
 
-  @Value("${repository}")
+  @Value("${github.repository}")
   private String nameRepository;
 
   public GitHub getGitHubConnection() {
