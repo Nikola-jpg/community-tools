@@ -60,6 +60,13 @@
       <version>1.101</version>
     </dependency>
 
+    <!--JSlack-->
+    <dependency>
+      <groupId>com.github.seratch</groupId>
+      <artifactId>jslack</artifactId>
+      <version>3.2.1</version>
+    </dependency>
+
     <!--JUnit-->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
