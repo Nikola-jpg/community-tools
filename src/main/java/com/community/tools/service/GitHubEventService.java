@@ -44,10 +44,10 @@ public class GitHubEventService {
 
         boolean period = createdAt.after(startDate) && createdAt.before(endDate);
         if (period) {
-          if (state == OPEN) {
+          if (state.equals(OPEN)) {
             listEvents.add(new EventData(createdAt, actorPullRequest, PULL_REQUEST_CREATED));
           }
-          if (state == CLOSED) {
+          if (state.equals(CLOSED)) {
             listEvents.add(new EventData(closedAt, actorPullRequest, PULL_REQUEST_CLOSED));
           }
         }
