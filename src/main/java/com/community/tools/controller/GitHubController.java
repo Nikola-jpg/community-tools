@@ -2,7 +2,7 @@ package com.community.tools.controller;
 
 import static org.springframework.http.ResponseEntity.ok;
 
-import com.community.tools.model.Event;
+import com.community.tools.model.EventData;
 import com.community.tools.service.GitHubEventService;
 import com.community.tools.service.GitHubPullRequestService;
 import java.text.DateFormat;
@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -42,13 +43,15 @@ public class GitHubController {
     return ok().body(list);
   }
 
-  @GetMapping(value = "/event/{startDate}/{endDate}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<List<Event>> getAllEvents(
-      @PathVariable String startDate, @PathVariable String endDate) throws ParseException {
+  @GetMapping(value = "/event", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<EventData>> getAllEvents(
+      @RequestParam(name = "start") String startDate,
+      @RequestParam(name = "end") String endDate) throws ParseException {
     DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
     Date start = format.parse(startDate);
     Date end = format.parse(endDate);
-    List<Event> events = eventService.getEvents(start, end);
-    return ok().body(events);
+
+    List<EventData> eventData = eventService.getEvents(start, end);
+    return ok().body(eventData);
   }
 }

@@ -1,10 +1,20 @@
 package com.community.tools.service;
 
-import com.community.tools.model.Event;
+import static com.community.tools.model.Event.COMMENT;
+import static com.community.tools.model.Event.COMMIT;
+import static com.community.tools.model.Event.PULL_REQUEST_CLOSED;
+import static com.community.tools.model.Event.PULL_REQUEST_CREATED;
+import static java.util.Comparator.comparing;
+import static org.kohsuke.github.GHIssueState.CLOSED;
+import static org.kohsuke.github.GHIssueState.OPEN;
+
+import com.community.tools.model.EventData;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHPullRequest;
@@ -20,53 +30,53 @@ public class GitHubEventService {
 
   private final GitHubConnectService service;
 
-  public List<Event> getEvents(Date startDate, Date endDate) {
+  public List<EventData> getEvents(Date startDate, Date endDate) {
     try {
-      List<Event> list = new ArrayList<>();
       GHRepository repository = service.getGitHubRepository();
+      Set<EventData> listEvents = new TreeSet<>(comparing(EventData::getCreatedAt));
 
-      getPullRequests(startDate, endDate, list, repository);
+      List<GHPullRequest> pullRequests = repository.getPullRequests(GHIssueState.ALL);
+      for (GHPullRequest pullRequest : pullRequests) {
+        Date createdAt = pullRequest.getCreatedAt();
+        Date closedAt = pullRequest.getClosedAt();
+        String actorPullRequest = pullRequest.getUser().getLogin();
+        GHIssueState state = pullRequest.getState();
 
-      return list;
+        boolean period = createdAt.after(startDate) && createdAt.before(endDate);
+        if (period) {
+          if (state == OPEN) {
+            listEvents.add(new EventData(createdAt, actorPullRequest, PULL_REQUEST_CREATED));
+          }
+          if (state == CLOSED) {
+            listEvents.add(new EventData(closedAt, actorPullRequest, PULL_REQUEST_CLOSED));
+          }
+        }
+
+        PagedIterable<GHPullRequestReviewComment> comments = pullRequest.listReviewComments();
+        for (GHPullRequestReviewComment comment : comments) {
+          Date commentCreatedAt = comment.getCreatedAt();
+          String loginComment = comment.getUser().getLogin();
+          boolean periodComment =
+              commentCreatedAt.after(startDate) && commentCreatedAt.before(endDate);
+          if (periodComment) {
+            listEvents.add(new EventData(commentCreatedAt, loginComment, COMMENT));
+          }
+        }
+
+        PagedIterable<GHPullRequestCommitDetail> commits = pullRequest.listCommits();
+        for (GHPullRequestCommitDetail commit : commits) {
+          Date dateCommit = commit.getCommit().getAuthor().getDate();
+
+          boolean periodCommit = dateCommit.after(startDate) && dateCommit.before(endDate);
+          if (periodCommit) {
+            listEvents.add(new EventData(dateCommit, actorPullRequest, COMMIT));
+          }
+        }
+      }
+
+      return new ArrayList<>(listEvents);
     } catch (IOException e) {
       throw new RuntimeException(e);
-    }
-  }
-
-  private void getPullRequests(Date startDate, Date endDate, List<Event> list,
-      GHRepository repository) throws IOException {
-    List<GHPullRequest> pullRequests = repository.getPullRequests(GHIssueState.ALL);
-    for (GHPullRequest pullRequest : pullRequests) {
-      Date createdAt = pullRequest.getCreatedAt();
-      String actorLogin = pullRequest.getUser().getLogin();
-      String state = "PullRequest: " + pullRequest.getState().name();
-
-      if (createdAt.before(endDate) && createdAt.after(startDate)) {
-        list.add(new Event(createdAt, actorLogin, state));
-        getCommits(list, pullRequest, actorLogin);
-        getComments(list, pullRequest);
-      }
-    }
-  }
-
-  private void getCommits(List<Event> list, GHPullRequest pullRequest, String actorLogin) {
-    PagedIterable<GHPullRequestCommitDetail> pullRequestCommit = pullRequest.listCommits();
-    for (GHPullRequestCommitDetail commit : pullRequestCommit) {
-      Date date = commit.getCommit().getAuthor().getDate();
-      String message = "Commit: " + commit.getCommit().getMessage();
-
-      list.add(new Event(date, actorLogin, message));
-    }
-  }
-
-  private void getComments(List<Event> list, GHPullRequest pullRequest) throws IOException {
-    PagedIterable<GHPullRequestReviewComment> reviewComments = pullRequest.listReviewComments();
-    for (GHPullRequestReviewComment comment : reviewComments) {
-      Date createdComment = comment.getCreatedAt();
-      String loginComment = comment.getUser().getLogin();
-      String bodyComment = "Comment: " + comment.getBody();
-
-      list.add(new Event(createdComment, loginComment, bodyComment));
     }
   }
 }
