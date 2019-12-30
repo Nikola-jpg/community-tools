@@ -4,22 +4,28 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GitHub;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
 @Service
-public class GitHubPullRequestService {
+public class GitHubService {
 
-  private final GitHubConnectService service;
+  @Value("${token}")
+  private String token;
+
+  @Value("${repository}")
+  private String nameRepository;
 
   public Map<String, String> getPullRequests(boolean statePullRequest) {
     Map<String, String> listUsers = new HashMap<>();
     try {
-      GHRepository repository = service.getGitHubRepository();
+      GitHub gitHub = getGitHubConnection();
+      GHRepository repository = gitHub.getRepository(nameRepository);
+
       List<GHPullRequest> pullRequests;
       if (!statePullRequest) {
         pullRequests = repository.getPullRequests(GHIssueState.CLOSED);
@@ -36,5 +42,15 @@ public class GitHubPullRequestService {
       throw new RuntimeException(e);
     }
     return listUsers;
+  }
+
+  private GitHub getGitHubConnection() {
+    GitHub gitHub;
+    try {
+      gitHub = GitHub.connectUsingOAuth(token);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    return gitHub;
   }
 }
