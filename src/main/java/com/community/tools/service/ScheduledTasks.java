@@ -76,7 +76,7 @@ public class ScheduledTasks {
     events.stream().filter(e -> !authors.contains(e.getActorLogin()))
         .forEach(e -> authors.add(e.getActorLogin()));
 
-    //мапа пользоваелей с событими
+    //мапа пользоваелей с событиями
     Map<String, Integer> sortAuthors = new HashMap<>();
     Map<String, String> authorsCount = new HashMap<>();
     for (String s : authors) {
