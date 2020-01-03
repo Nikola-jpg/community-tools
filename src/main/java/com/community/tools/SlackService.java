@@ -3,6 +3,7 @@ package com.community.tools;
 import com.github.seratch.jslack.*;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
+import com.github.seratch.jslack.api.model.Channel;
 import com.github.seratch.jslack.api.model.Im;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.rtm.*;
@@ -17,72 +18,91 @@ import org.springframework.stereotype.Service;
 import javax.websocket.DeploymentException;
 import java.io.IOException;
 
-@Service("slack")
+@Service
 public class SlackService {
-    
-    @Value("${slack.token}")
-    private String token;
 
-    public String sendPrivateMessage(String username, String messageText)
-            throws IOException, SlackApiException {
-        Slack slack = Slack.getInstance();
+  @Value("${slack.token}")
+  private String token;
 
-        User user = slack.methods(token).usersList(req -> req).getMembers().stream()
-                .filter(u -> u.getProfile().getDisplayName().equals(username))
-                .findFirst().get();
+  public String sendPrivateMessage(String username, String messageText)
+      throws IOException, SlackApiException {
+    Slack slack = Slack.getInstance();
 
-        ChatPostMessageResponse postResponse =
-            slack.methods(token).chatPostMessage(
-                    req -> req.channel(user.getId()).asUser(true).text(messageText));
+    User user = slack.methods(token).usersList(req -> req).getMembers().stream()
+        .filter(u -> u.getProfile().getDisplayName().equals(username))
+        .findFirst().get();
 
-        return postResponse.getTs();
-    }
+    ChatPostMessageResponse postResponse =
+        slack.methods(token).chatPostMessage(
+            req -> req.channel(user.getId()).asUser(true).text(messageText));
 
-    public void sendMessage(String username, String messageText)
-            throws DeploymentException, IOException, SlackApiException {
-        JsonParser jsonParser = new JsonParser();
-        Logger log = LoggerFactory.getLogger("main");
+    return postResponse.getTs();
+  }
 
-        Slack slack = Slack.getInstance();
+  public void sendMessage(String username, String messageText)
+      throws DeploymentException, IOException, SlackApiException {
+    JsonParser jsonParser = new JsonParser();
+    Logger log = LoggerFactory.getLogger("main");
 
-        User user = slack.methods(token).usersList(req -> req).getMembers().stream()
-                .filter(u -> u.getProfile().getDisplayName().equals(username))
-                .findFirst().get();
+    Slack slack = Slack.getInstance();
 
-        Im im = slack.methods(token).imList(req -> req).getIms().stream()
-                .filter(i -> i.getUser().equals(user.getId()))
-                .findFirst().get();
+    User user = slack.methods(token).usersList(req -> req).getMembers().stream()
+        .filter(u -> u.getProfile().getDisplayName().equals(username))
+        .findFirst().get();
 
-        try (RTMClient rtm = new Slack().rtm(token)) {
+    Im im = slack.methods(token).imList(req -> req).getIms().stream()
+        .filter(i -> i.getUser().equals(user.getId()))
+        .findFirst().get();
 
-            rtm.addMessageHandler((message) -> {
-                JsonObject json = jsonParser.parse(message).getAsJsonObject();
-                if (json.get("type") != null) {
-                    log.info("Handled type: {}", json.get("type").getAsString());
-                }
-            });
+    try (RTMClient rtm = new Slack().rtm(token)) {
 
-            RTMMessageHandler handler2 = (message) -> {
-                log.info("hello");
-            };
-
-            rtm.addMessageHandler(handler2);
-
-            rtm.connect();
-
-            rtm.sendMessage(Typing.builder()
-                    .id(System.currentTimeMillis())
-                    .channel(im.getId())
-                    .build().toJSONString());
-
-            rtm.sendMessage(Message.builder()
-                    .id(System.currentTimeMillis())
-                    .channel(im.getId())
-                    .text(messageText)
-                    .build().toJSONString());
-
-            rtm.removeMessageHandler(handler2);
+      rtm.addMessageHandler((message) -> {
+        JsonObject json = jsonParser.parse(message).getAsJsonObject();
+        if (json.get("type") != null) {
+          log.info("Handled type: {}", json.get("type").getAsString());
         }
+      });
+
+      RTMMessageHandler handler2 = (message) -> {
+        log.info("hello");
+      };
+
+      rtm.addMessageHandler(handler2);
+
+      rtm.connect();
+
+      rtm.sendMessage(Typing.builder()
+          .id(System.currentTimeMillis())
+          .channel(im.getId())
+          .build().toJSONString());
+
+      rtm.sendMessage(Message.builder()
+          .id(System.currentTimeMillis())
+          .channel(im.getId())
+          .text(messageText)
+          .build().toJSONString());
+
+      rtm.removeMessageHandler(handler2);
     }
+  }
+
+  public String sendMessageToChat(String channelName, String messageText)
+      throws IOException, SlackApiException {
+    Slack slack = Slack.getInstance();
+
+    Channel channel = slack.methods(token)
+        .channelsList(req -> req)
+        .getChannels()
+        .stream()
+        .filter(u -> u.getName().equals(channelName))
+        .findFirst().get();
+
+    ChatPostMessageResponse postResponse =
+        slack.methods(token).chatPostMessage(
+            req -> req.channel(channel.getId()).asUser(true).text(messageText));
+
+    return postResponse.getTs();
+  }
+
 
 }
