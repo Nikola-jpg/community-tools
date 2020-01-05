@@ -1,4 +1,4 @@
-package com.community.tools.service;
+package com.community.tools.service.github;
 
 import java.io.IOException;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.community.tools.service;
+package com.community.tools.service.github;
 
 import static com.community.tools.model.Event.COMMENT;
 import static com.community.tools.model.Event.COMMIT;

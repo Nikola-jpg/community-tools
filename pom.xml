@@ -45,6 +45,11 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+
 
     <!--Jackson - Json-->
     <dependency>
@@ -82,16 +87,22 @@
       <scope>test</scope>
     </dependency>
 
+    <!--Lombok-->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.18.10</version>
       <scope>provided</scope>
     </dependency>
+
+    <!--Postgres-->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
-
     <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
