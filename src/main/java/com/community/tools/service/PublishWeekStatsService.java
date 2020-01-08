@@ -23,12 +23,10 @@ import lombok.RequiredArgsConstructor;
 
 @EnableScheduling
 @RequiredArgsConstructor
-public class ScheduledTasks {
+public class PublishWeekStatsService {
 
   private final GitHubEventService ghEventService;
-
-  @Autowired
-  private SlackService slackService;
+  private final SlackService slackService;
 
   private final String[] emoji = {":loudspeaker: ", ":rolled_up_newspaper: ", ":moneybag:",
       ":mailbox_with_mail:"};
@@ -37,7 +35,7 @@ public class ScheduledTasks {
   public void exportStat(String chat)
       throws SlackApiException, IOException {
 
-    //екущая дата, и дата семи дневной давности
+    //текущая дата, и дата семи дневной давности
     Date endDate = new Date();
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.DATE, -7);

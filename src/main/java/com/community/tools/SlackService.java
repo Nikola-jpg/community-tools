@@ -10,6 +10,7 @@ import com.github.seratch.jslack.api.rtm.*;
 import com.github.seratch.jslack.api.rtm.message.Message;
 import com.github.seratch.jslack.api.rtm.message.Typing;
 import com.google.gson.*;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,7 @@ import javax.websocket.DeploymentException;
 import java.io.IOException;
 
 @Service
+@RequiredArgsConstructor
 public class SlackService {
 
   @Value("${slack.token}")
