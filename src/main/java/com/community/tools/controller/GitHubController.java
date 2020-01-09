@@ -3,6 +3,7 @@ package com.community.tools.controller;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.model.EventData;
+import com.community.tools.service.CountingCompletedTasksService;
 import com.community.tools.service.GitHubEventService;
 import com.community.tools.service.GitHubPullRequestService;
 import java.text.DateFormat;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GitHubController {
 
+  private final CountingCompletedTasksService completedTasks;
   private final GitHubEventService eventService;
   private final GitHubPullRequestService pullRequestService;
 
@@ -39,6 +41,14 @@ public class GitHubController {
   public ResponseEntity<List<Map<String, String>>> getPullRequests(@PathVariable boolean state) {
     Map<String, String> userPullRequest = pullRequestService.getPullRequests(state);
     List<Map<String, String>> list = new ArrayList<>();
+    list.add(userPullRequest);
+    return ok().body(list);
+  }
+
+  @GetMapping(value = "/pull_request/сlosedReq", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<Map<String, List<String>>>> getCountedPullRequests() {
+    Map<String, List<String>> userPullRequest = completedTasks.getCountedCompletedTasks();
+    List<Map<String, List<String>>> list = new ArrayList<>();
     list.add(userPullRequest);
     return ok().body(list);
   }
