@@ -9,9 +9,12 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Entity
 @Table(name = "BRO")
 public class Bro {
@@ -19,10 +22,13 @@ public class Bro {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
+  @NonNull
   @Column
   private String loginGithub;
+  @NonNull
   @Column
   private String loginSlack;
+  @NonNull
   @Column
   private Date registrationDate;
 }

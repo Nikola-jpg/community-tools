@@ -5,9 +5,8 @@ import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
 import com.github.seratch.jslack.api.model.User;
 import java.io.IOException;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +16,14 @@ public class SlackUsersService {
 
   private final SlackService service;
 
-  public Set<String> getAllUsers() {
+  public Set<User> getAllUsers() {
     try {
       Slack slack = Slack.getInstance();
-      Set<String> users = slack.methods()
+      Set<User> users = new HashSet<>(slack.methods()
           .usersList(UsersListRequest.builder()
               .token(service.getToken())
               .build())
-          .getMembers().stream().map(User::getName).collect(Collectors.toSet());
+          .getMembers());
 
       return users;
     } catch (IOException | SlackApiException e) {

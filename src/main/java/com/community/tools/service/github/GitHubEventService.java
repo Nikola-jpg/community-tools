@@ -6,7 +6,6 @@ import static com.community.tools.model.Event.PULL_REQUEST_CLOSED;
 import static com.community.tools.model.Event.PULL_REQUEST_CREATED;
 import static java.util.Comparator.comparing;
 import static org.kohsuke.github.GHIssueState.CLOSED;
-import static org.kohsuke.github.GHIssueState.OPEN;
 
 import com.community.tools.model.EventData;
 import java.io.IOException;
@@ -44,12 +43,10 @@ public class GitHubEventService {
 
         boolean period = createdAt.after(startDate) && createdAt.before(endDate);
         if (period) {
-          if (state.equals(OPEN)) {
-            listEvents.add(new EventData(createdAt, actorPullRequest, PULL_REQUEST_CREATED));
-          }
           if (state.equals(CLOSED)) {
             listEvents.add(new EventData(closedAt, actorPullRequest, PULL_REQUEST_CLOSED));
           }
+          listEvents.add(new EventData(createdAt, actorPullRequest, PULL_REQUEST_CREATED));
         }
 
         PagedIterable<GHPullRequestReviewComment> comments = pullRequest.listReviewComments();
