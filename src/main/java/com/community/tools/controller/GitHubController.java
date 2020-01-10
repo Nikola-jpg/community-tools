@@ -3,8 +3,7 @@ package com.community.tools.controller;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.model.EventData;
-import com.community.tools.service.github.GitHubEventService;
-import com.community.tools.service.github.GitHubPullRequestService;
+import com.community.tools.service.github.GitHubService;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,8 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GitHubController {
 
-  private final GitHubEventService eventService;
-  private final GitHubPullRequestService pullRequestService;
+  private final GitHubService gitService;
 
   @GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getHelloInJson() {
@@ -37,7 +35,7 @@ public class GitHubController {
 
   @GetMapping(value = "/pull_request/{state}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<Map<String, String>>> getPullRequests(@PathVariable boolean state) {
-    Map<String, String> userPullRequest = pullRequestService.getPullRequests(state);
+    Map<String, String> userPullRequest = gitService.getPullRequests(state);
     List<Map<String, String>> list = new ArrayList<>();
     list.add(userPullRequest);
     return ok().body(list);
@@ -51,7 +49,7 @@ public class GitHubController {
     Date start = format.parse(startDate);
     Date end = format.parse(endDate);
 
-    List<EventData> eventData = eventService.getEvents(start, end);
+    List<EventData> eventData = gitService.getEvents(start, end);
     return ok().body(eventData);
   }
 }

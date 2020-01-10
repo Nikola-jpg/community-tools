@@ -9,9 +9,12 @@ import static org.kohsuke.github.GHIssueState.CLOSED;
 
 import com.community.tools.model.EventData;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import lombok.RequiredArgsConstructor;
@@ -20,14 +23,37 @@ import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHPullRequestCommitDetail;
 import org.kohsuke.github.GHPullRequestReviewComment;
 import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GHUser;
 import org.kohsuke.github.PagedIterable;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class GitHubEventService {
+public class GitHubService {
 
   private final GitHubConnectService service;
+
+  public Map<String, String> getPullRequests(boolean statePullRequest) {
+    Map<String, String> listUsers = new HashMap<>();
+    try {
+      GHRepository repository = service.getGitHubRepository();
+      List<GHPullRequest> pullRequests;
+      if (!statePullRequest) {
+        pullRequests = repository.getPullRequests(GHIssueState.CLOSED);
+      } else {
+        pullRequests = repository.getPullRequests(GHIssueState.OPEN);
+      }
+
+      for (GHPullRequest repo : pullRequests) {
+        String login = repo.getUser().getLogin();
+        String title = repo.getTitle();
+        listUsers.put(login, title);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    return listUsers;
+  }
 
   public List<EventData> getEvents(Date startDate, Date endDate) {
     try {
@@ -41,8 +67,7 @@ public class GitHubEventService {
         String actorPullRequest = pullRequest.getUser().getLogin();
         GHIssueState state = pullRequest.getState();
 
-        boolean period = createdAt.after(startDate) && createdAt.before(endDate);
-        if (period) {
+        if (createdAt.after(startDate) && createdAt.before(endDate)) {
           if (state.equals(CLOSED)) {
             listEvents.add(new EventData(closedAt, actorPullRequest, PULL_REQUEST_CLOSED));
           }
@@ -76,5 +101,13 @@ public class GitHubEventService {
       throw new RuntimeException(e);
     }
   }
-}
 
+  public Set<GHUser> getGitHubAllUsers() {
+    try {
+      GHRepository repository = service.getGitHubRepository();
+      return repository.getCollaborators();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+}

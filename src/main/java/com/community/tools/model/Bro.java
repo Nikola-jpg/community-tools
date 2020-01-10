@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 @NoArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(name = "BRO")
 public class Bro {
 
   @Id

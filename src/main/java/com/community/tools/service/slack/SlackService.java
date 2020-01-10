@@ -2,6 +2,7 @@ package com.community.tools.service.slack;
 
 import com.github.seratch.jslack.*;
 import com.github.seratch.jslack.api.methods.SlackApiException;
+import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.github.seratch.jslack.api.model.Im;
 import com.github.seratch.jslack.api.model.User;
@@ -9,6 +10,8 @@ import com.github.seratch.jslack.api.rtm.*;
 import com.github.seratch.jslack.api.rtm.message.Message;
 import com.github.seratch.jslack.api.rtm.message.Typing;
 import com.google.gson.*;
+import java.util.HashSet;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +25,6 @@ public class SlackService {
 
   @Value("${slack.token}")
   private String token;
-
-  public String getToken() {
-    return token;
-  }
 
   public String sendPrivateMessage(String username, String messageText)
       throws IOException, SlackApiException {
@@ -86,6 +85,21 @@ public class SlackService {
           .build().toJSONString());
 
       rtm.removeMessageHandler(handler2);
+    }
+  }
+
+  public Set<User> getAllUsers() {
+    try {
+      Slack slack = Slack.getInstance();
+      Set<User> users = new HashSet<>(slack.methods()
+          .usersList(UsersListRequest.builder()
+              .token(token)
+              .build())
+          .getMembers());
+
+      return users;
+    } catch (IOException | SlackApiException e) {
+      throw new RuntimeException(e);
     }
   }
 }
