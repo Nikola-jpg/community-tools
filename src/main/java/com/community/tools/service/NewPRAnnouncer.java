@@ -1,74 +1,81 @@
 package com.community.tools.service;
 
-import com.community.tools.SlackService;
-import com.github.seratch.jslack.api.methods.SlackApiException;
+import com.github.seratch.jslack.Slack;
+import com.github.seratch.jslack.api.webhook.Payload;
 import java.io.IOException;
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
-import javax.websocket.DeploymentException;
+import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHEventInfo;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+@RequiredArgsConstructor
 @Service("PRAnnouncer")
+
 public class NewPRAnnouncer {
 
-  @Autowired
-  GitHubService gitHubService;
+  @Value("${slack.webhook}")
+  private String slackWebHook;
 
-  @Autowired
-  SlackService slackService;
+  private final GitHubConnectService service;
 
-  @Value("${slack.username}")
-  String userName;
+  public void sendAnnouncement(String message) {
+    try {
+      Payload payload = Payload.builder().text(message).build();
+      Slack slack = Slack.getInstance();
+      slack.send(slackWebHook, payload);
+    } catch (IOException e) {
+
+    }
+  }
 
   @Scheduled(cron = "0 0 * * * ?")
   public void prAnnouncement() {
-    long currentTime = System.currentTimeMillis();
-    List<GHEventInfo> events = null;
-    try {
-      events = gitHubService.getGitHubConnection().getEvents();
 
+    List<GHEventInfo> events;
+    try {
+      events = service.getGitHubConnection().getEvents();
       for (GHEventInfo event : events) {
         long eventTime = event.getCreatedAt().getTime();
-        if (timeComparing(currentTime, eventTime)) {
+        if (timeComparing(eventTime)) {
           String eventName = event.getType().name();
           if (eventName.equalsIgnoreCase("ready for review")) {
-            slackService.sendMessage(userName,
-                event.getActor().getName() + " " + event.getRepository().getName());
+            sendAnnouncement(event.getActor().getName() + " " + event.getRepository().getName());
           }
         }
       }
-      GHRepository repository = gitHubService.getGitHubConnection()
-          .getRepository(gitHubService.nameRepository);
+      GHRepository repository = service.getGitHubRepository();
       List<GHPullRequest> pullList = repository.getPullRequests(GHIssueState.OPEN);
       for (GHPullRequest pullReq : pullList) {
         long eventTime = pullReq.getCreatedAt().getTime();
-        if (timeComparing(currentTime, eventTime)) {
+        if (timeComparing(eventTime)) {
           String prDescription = pullReq.getBody();
-          slackService.sendMessage(userName, prDescription);
+          sendAnnouncement(prDescription);
         }
       }
     } catch (IOException e) {
 
-    } catch (DeploymentException e) {
-    } catch (SlackApiException e) {
     }
   }
 
-  public boolean timeComparing(long currentTime, long eventTime) {
-    Calendar currentTimeCal = Calendar.getInstance();
-    Calendar eventTimeCal = Calendar.getInstance();
-    currentTimeCal.setTimeInMillis(currentTime);
-    eventTimeCal.setTimeInMillis(eventTime);
-    return currentTimeCal.get(Calendar.HOUR_OF_DAY) == eventTimeCal.get(Calendar.HOUR_OF_DAY)
-        && currentTimeCal.get(Calendar.DAY_OF_MONTH) == eventTimeCal.get(Calendar.DAY_OF_MONTH)
-        && currentTimeCal.get(Calendar.MONTH) == eventTimeCal.get(Calendar.MONTH)
-        && currentTimeCal.get(Calendar.YEAR) == eventTimeCal.get(Calendar.YEAR);
+  public long initialTime() {
+
+    LocalDateTime now = LocalDateTime.now();
+    return LocalDateTime.of(now.getYear(), now.getMonthValue()
+        , now.getDayOfMonth(), now.getHour(), 0)
+        .atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+
+  }
+
+  public boolean timeComparing(long eventTime) {
+
+    long deviationTime = eventTime - initialTime();
+    return deviationTime < 3_600_000;
   }
 }
