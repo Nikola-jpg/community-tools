@@ -37,12 +37,9 @@ public class PublishWeekStatsService {
     List<EventData> events = ghEventService.getEvents(startDate, endDate);
     StringBuilder messageBuilder = new StringBuilder();
 
-    Map<Event, List<EventData>> typeMap;
-    typeMap = events.stream().collect(Collectors.groupingBy(EventData::getType));
-
     messageBuilder.append(":construction: ТИПЫ :construction:");
     List<Event> sortedEventList = new ArrayList<>();
-    typeMap.entrySet().stream()
+    events.stream().collect(Collectors.groupingBy(EventData::getType)).entrySet().stream()
         .sorted(Comparator
             .comparingInt((Entry<Event, List<EventData>> entry) -> entry.getValue().size())
             .reversed())
