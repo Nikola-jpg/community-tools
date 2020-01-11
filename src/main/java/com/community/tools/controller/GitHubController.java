@@ -6,6 +6,7 @@ import com.community.tools.model.EventData;
 import com.community.tools.service.CountingCompletedTasksService;
 import com.community.tools.service.GitHubEventService;
 import com.community.tools.service.GitHubPullRequestService;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,7 +47,7 @@ public class GitHubController {
   }
 
   @GetMapping(value = "/pull_request/сlosedReq", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Map<String, List<String>>> getCountedPullRequests() {
+  public ResponseEntity<Map<String, List<String>>> getCountedPullRequests() throws IOException {
     Map<String, List<String>> userPullRequest = completedTasks.getCountedCompletedTasks();
     return ok().body(userPullRequest);
   }
