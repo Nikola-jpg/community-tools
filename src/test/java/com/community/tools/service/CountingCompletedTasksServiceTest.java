@@ -2,6 +2,7 @@ package com.community.tools.service;
 
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,11 +17,9 @@ import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHUser;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
 class CountingCompletedTasksServiceTest {
 
 
@@ -33,20 +32,20 @@ class CountingCompletedTasksServiceTest {
     Collection<GHLabel> colLabel = new ArrayList<>();
     GHLabel ghLabel = mock(GHLabel.class);
     colLabel.add(ghLabel);
-    Mockito.when(ghLabel.getName()).thenReturn("done");
-    Mockito.when(pr.getLabels()).thenReturn(colLabel);
+    when(ghLabel.getName()).thenReturn("done");
+    when(pr.getLabels()).thenReturn(colLabel);
 
     GHUser user = mock(GHUser.class);
-    Mockito.when(user.getLogin()).thenReturn("roman");
-    Mockito.when(pr.getUser()).thenReturn(user);
+    when(user.getLogin()).thenReturn("roman");
+    when(pr.getUser()).thenReturn(user);
 
-    Mockito.when(pr.getTitle()).thenReturn("exercise_1");
+    when(pr.getTitle()).thenReturn("exercise_1");
     fakeReq.add(pr);
 
     GitHubConnectService service = mock(GitHubConnectService.class);
     GHRepository rep = mock(GHRepository.class);
-    Mockito.when(service.getGitHubRepository()).thenReturn(rep);
-    Mockito.when(rep.getPullRequests(GHIssueState.CLOSED)).thenReturn(fakeReq);
+    when(service.getGitHubRepository()).thenReturn(rep);
+    when(rep.getPullRequests(GHIssueState.CLOSED)).thenReturn(fakeReq);
 
     CountingCompletedTasksService cct = new CountingCompletedTasksService(service);
 

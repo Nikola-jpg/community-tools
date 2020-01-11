@@ -46,11 +46,9 @@ public class GitHubController {
   }
 
   @GetMapping(value = "/pull_request/сlosedReq", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<List<Map<String, List<String>>>> getCountedPullRequests() {
+  public ResponseEntity<Map<String, List<String>>> getCountedPullRequests() {
     Map<String, List<String>> userPullRequest = completedTasks.getCountedCompletedTasks();
-    List<Map<String, List<String>>> list = new ArrayList<>();
-    list.add(userPullRequest);
-    return ok().body(list);
+    return ok().body(userPullRequest);
   }
 
   @GetMapping(value = "/event", produces = MediaType.APPLICATION_JSON_VALUE)
