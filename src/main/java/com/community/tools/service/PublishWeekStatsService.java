@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,34 +38,34 @@ public class PublishWeekStatsService {
     List<EventData> events = ghEventService.getEvents(startDate, endDate);
     StringBuilder messageBuilder = new StringBuilder();
 
+    Map<String,List<EventData>> sortedMapGroupByActors = new HashMap<>();
+    events.stream().filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
+        .forEach(ed->sortedMapGroupByActors.put(ed.getActorLogin(),new ArrayList<>()));
+
     messageBuilder.append(":construction: ТИПЫ :construction:");
-    List<Event> sortedEventList = new ArrayList<>();
-    events.stream().collect(Collectors.groupingBy(EventData::getType)).entrySet().stream()
+    events.stream()
+        .collect(Collectors.groupingBy(EventData::getType))
+        .entrySet().stream()
         .sorted(Comparator
             .comparingInt((Entry<Event, List<EventData>> entry) -> entry.getValue().size())
             .reversed())
         .forEach(entry -> {
-          sortedEventList.add(entry.getKey());
+          entry.getValue().forEach(e-> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
           messageBuilder.append("\n");
           messageBuilder.append(entry.getKey()).append(emojiGen(entry.getKey()));
           messageBuilder.append(": ");
           messageBuilder.append(entry.getValue().size());
         });
     messageBuilder.append("\n ----------------------------------------");
-
-    Map<String, List<EventData>> mapGroupByActors = events.stream()
-        .collect(Collectors.groupingBy(EventData::getActorLogin));
-
     messageBuilder.append("\n").append(":construction: АКТИВНОСТЬ :construction:\n");
-    mapGroupByActors.entrySet().stream()
+    sortedMapGroupByActors.entrySet().stream()
         .sorted(Comparator
             .comparingInt((Entry<String, List<EventData>> entry) -> entry.getValue().size())
             .reversed())
         .forEach(name -> {
           StringBuilder authorsActivMessage = new StringBuilder();
-          sortedEventList.forEach(event ->
-              mapGroupByActors.get(name.getKey()).stream().filter(e -> event.equals(e.getType()))
-                  .forEach(eventData -> authorsActivMessage.append(emojiGen(eventData.getType()))));
+          name.getValue().forEach(eventData -> authorsActivMessage.append(emojiGen(eventData.getType())));
+
           messageBuilder.append(name.getKey());
           messageBuilder.append(": ");
           messageBuilder.append(authorsActivMessage);
