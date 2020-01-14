@@ -1,18 +1,24 @@
 package com.community.tools;
 
-import com.github.seratch.jslack.Slack;
-import com.github.seratch.jslack.api.methods.SlackApiException;
-import com.github.seratch.jslack.api.methods.response.chat.ChatDeleteResponse;
-import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
-
-import java.io.IOException;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class SlackServiceTest {
 
+  public SlackService slackService = mock(SlackService.class);
+
+  @Test
+  void sendMessageTest() {
+
+    String actualInputData_username = "roman";
+    String actualInputData_messageText = "test message";
+
+    assertDoesNotThrow(() -> {
+      slackService.sendPrivateMessage(actualInputData_username, actualInputData_messageText);
+      Mockito.verify(slackService).sendPrivateMessage("roman", "test message");
+    });
+  }
 }
