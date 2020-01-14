@@ -88,23 +88,4 @@ public class SlackService {
     }
   }
 
-  public String sendMessageToChat(String channelName, String messageText)
-      throws IOException, SlackApiException {
-    Slack slack = Slack.getInstance();
-
-    Channel channel = slack.methods(token)
-        .channelsList(req -> req)
-        .getChannels()
-        .stream()
-        .filter(u -> u.getName().equals(channelName))
-        .findFirst().get();
-
-    ChatPostMessageResponse postResponse =
-        slack.methods(token).chatPostMessage(
-            req -> req.channel(channel.getId()).asUser(true).text(messageText));
-
-    return postResponse.getTs();
-  }
-
-
 }
