@@ -38,9 +38,9 @@ public class PublishWeekStatsService {
     List<EventData> events = ghEventService.getEvents(startDate, endDate);
     StringBuilder messageBuilder = new StringBuilder();
 
-    Map<String,List<EventData>> sortedMapGroupByActors = new HashMap<>();
+    Map<String, List<EventData>> sortedMapGroupByActors = new HashMap<>();
     events.stream().filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
-        .forEach(ed->sortedMapGroupByActors.put(ed.getActorLogin(),new ArrayList<>()));
+        .forEach(ed -> sortedMapGroupByActors.put(ed.getActorLogin(), new ArrayList<>()));
 
     messageBuilder.append(":construction: ТИПЫ :construction:");
     events.stream()
@@ -50,7 +50,7 @@ public class PublishWeekStatsService {
             .comparingInt((Entry<Event, List<EventData>> entry) -> entry.getValue().size())
             .reversed())
         .forEach(entry -> {
-          entry.getValue().forEach(e-> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
+          entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
           messageBuilder.append("\n");
           messageBuilder.append(entry.getKey()).append(emojiGen(entry.getKey()));
           messageBuilder.append(": ");
@@ -64,7 +64,8 @@ public class PublishWeekStatsService {
             .reversed())
         .forEach(name -> {
           StringBuilder authorsActivMessage = new StringBuilder();
-          name.getValue().forEach(eventData -> authorsActivMessage.append(emojiGen(eventData.getType())));
+          name.getValue()
+              .forEach(eventData -> authorsActivMessage.append(emojiGen(eventData.getType())));
 
           messageBuilder.append(name.getKey());
           messageBuilder.append(": ");
