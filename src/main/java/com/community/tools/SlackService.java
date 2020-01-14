@@ -40,5 +40,4 @@ public class SlackService {
 
     return postResponse.getTs();
   }
-
 }
