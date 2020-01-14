@@ -1,6 +1,7 @@
 package com.community.tools.service;
 
-import com.community.tools.SlackService;
+import com.community.tools.service.github.GitHubService;
+import com.community.tools.service.slack.SlackService;
 import com.community.tools.model.Event;
 import com.community.tools.model.EventData;
 import com.github.seratch.jslack.api.methods.SlackApiException;
@@ -18,12 +19,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import lombok.RequiredArgsConstructor;
 
-
 @EnableScheduling
 @RequiredArgsConstructor
 public class PublishWeekStatsService {
 
-  private final GitHubEventService ghEventService;
+  private final GitHubService ghEventService;
   private final SlackService slackService;
 
   @Scheduled(cron = "0 0 8 ? * MON *")

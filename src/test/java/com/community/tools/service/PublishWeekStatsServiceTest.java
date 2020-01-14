@@ -4,7 +4,8 @@ package com.community.tools.service;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
-import com.community.tools.SlackService;
+import com.community.tools.service.github.GitHubService;
+import com.community.tools.service.slack.SlackService;
 import com.community.tools.model.Event;
 import com.community.tools.model.EventData;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ class PublishWeekStatsServiceTest {
     EventData evet = new EventData(new Date(), "roman", Event.PULL_REQUEST_CLOSED);
     events.add(evet);
 
-    GitHubEventService gitHubEventService = mock(GitHubEventService.class);
+    GitHubService gitHubEventService = mock(GitHubService.class);
     SlackService slackService = mock(SlackService.class);
     Mockito.when(gitHubEventService.getEvents(any(), any())).thenReturn(events);
 
@@ -52,7 +53,7 @@ class PublishWeekStatsServiceTest {
         new EventData(new Date(), "roman", Event.COMMENT),
         new EventData(new Date(), "roman", Event.COMMENT));
 
-    GitHubEventService gitHubEventService = mock(GitHubEventService.class);
+    GitHubService gitHubEventService = mock(GitHubService.class);
     SlackService slackService = mock(SlackService.class);
     Mockito.when(gitHubEventService.getEvents(any(), any())).thenReturn(events);
 
@@ -89,7 +90,7 @@ class PublishWeekStatsServiceTest {
         new EventData(new Date(), "Ilona", Event.COMMENT)
     );
 
-    GitHubEventService gitHubEventService = mock(GitHubEventService.class);
+    GitHubService gitHubEventService = mock(GitHubService.class);
     SlackService slackService = mock(SlackService.class);
     Mockito.when(gitHubEventService.getEvents(any(), any())).thenReturn(events);
 

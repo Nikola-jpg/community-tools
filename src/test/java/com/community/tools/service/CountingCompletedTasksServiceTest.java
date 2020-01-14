@@ -1,9 +1,11 @@
 package com.community.tools.service;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
+import com.community.tools.service.github.GitHubConnectService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,9 +18,6 @@ import org.kohsuke.github.GHLabel;
 import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHUser;
-import org.mockito.Mockito;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class CountingCompletedTasksServiceTest {
 

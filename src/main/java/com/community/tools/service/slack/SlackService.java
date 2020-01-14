@@ -1,10 +1,13 @@
-package com.community.tools;
+package com.community.tools.service.slack;
 
 import com.github.seratch.jslack.*;
 import com.github.seratch.jslack.api.methods.SlackApiException;
+import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.github.seratch.jslack.api.model.Channel;
 import com.github.seratch.jslack.api.model.User;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -50,4 +53,18 @@ public class SlackService {
     return postResponse.getTs();
   }
 
+  public Set<User> getAllUsers() {
+    try {
+      Slack slack = Slack.getInstance();
+      Set<User> users = new HashSet<>(slack.methods()
+          .usersList(UsersListRequest.builder()
+              .token(token)
+              .build())
+          .getMembers());
+
+      return users;
+    } catch (IOException | SlackApiException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
