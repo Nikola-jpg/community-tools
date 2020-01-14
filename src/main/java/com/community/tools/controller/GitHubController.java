@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GitHubController {
 
-  private final GitHubService gitService;
+  private final GitHubService gitHubService;
 
   @GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getHelloInJson() {
@@ -35,7 +35,7 @@ public class GitHubController {
 
   @GetMapping(value = "/pull_request/{state}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<Map<String, String>>> getPullRequests(@PathVariable boolean state) {
-    Map<String, String> userPullRequest = gitService.getPullRequests(state);
+    Map<String, String> userPullRequest = gitHubService.getPullRequests(state);
     List<Map<String, String>> list = new ArrayList<>();
     list.add(userPullRequest);
     return ok().body(list);
@@ -49,7 +49,7 @@ public class GitHubController {
     Date start = format.parse(startDate);
     Date end = format.parse(endDate);
 
-    List<EventData> eventData = gitService.getEvents(start, end);
+    List<EventData> eventData = gitHubService.getEvents(start, end);
     return ok().body(eventData);
   }
 }
