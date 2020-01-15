@@ -3,12 +3,15 @@ package com.community.tools.controller;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.model.EventData;
+import com.community.tools.service.CountingCompletedTasksService;
 import com.community.tools.service.github.GitHubService;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GitHubController {
 
   private final GitHubService gitHubService;
-
+  private final CountingCompletedTasksService completedTasksService;
   @GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getHelloInJson() {
     List<String> list = new ArrayList<>();
@@ -39,6 +42,12 @@ public class GitHubController {
     List<Map<String, String>> list = new ArrayList<>();
     list.add(userPullRequest);
     return ok().body(list);
+  }
+
+  @GetMapping(value = "/pull_request/сlosedReq", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Map<String, List<String>>> getPullRequests() throws IOException {
+    Map<String, List<String>> map = completedTasksService.getCountedCompletedTasks();
+    return ok().body(map);
   }
 
   @GetMapping(value = "/event", produces = MediaType.APPLICATION_JSON_VALUE)
