@@ -8,6 +8,7 @@ import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.rtm.*;
 import com.github.seratch.jslack.api.rtm.message.Message;
 import com.github.seratch.jslack.api.rtm.message.Typing;
+import com.github.seratch.jslack.api.webhook.Payload;
 import com.google.gson.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,9 @@ public class SlackService {
     
     @Value("${slack.token}")
     private String token;
+
+    @Value("${slack.webhook}")
+    private String slackWebHook;
 
     public String sendPrivateMessage(String username, String messageText)
             throws IOException, SlackApiException {
@@ -82,6 +86,16 @@ public class SlackService {
                     .build().toJSONString());
 
             rtm.removeMessageHandler(handler2);
+        }
+    }
+
+    public void sendAnnouncement(String message) {
+        try {
+            Payload payload = Payload.builder().text(message).build();
+            Slack slack = Slack.getInstance();
+            slack.send(slackWebHook, payload);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

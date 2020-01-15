@@ -1,17 +1,16 @@
 package com.community.tools.service;
 
-import com.github.seratch.jslack.Slack;
-import com.github.seratch.jslack.api.webhook.Payload;
+import com.community.tools.SlackService;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHEventInfo;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -20,20 +19,8 @@ import org.springframework.stereotype.Service;
 
 public class NewPRAnnouncer {
 
-  @Value("${slack.webhook}")
-  private String slackWebHook;
-
   private final GitHubConnectService service;
-
-  public void sendAnnouncement(String message) {
-    try {
-      Payload payload = Payload.builder().text(message).build();
-      Slack slack = Slack.getInstance();
-      slack.send(slackWebHook, payload);
-    } catch (IOException e) {
-
-    }
-  }
+  private final SlackService slackService;
 
   @Scheduled(cron = "0 0 * * * ?")
   public void prAnnouncement() {
@@ -42,40 +29,35 @@ public class NewPRAnnouncer {
     try {
       events = service.getGitHubConnection().getEvents();
       for (GHEventInfo event : events) {
-        long eventTime = event.getCreatedAt().getTime();
-        if (timeComparing(eventTime)) {
+        long eventOccuranceTime = event.getCreatedAt().getTime();
+        int eventDayofYear = LocalDate.ofEpochDay(eventOccuranceTime).getDayOfYear();
+        int timeofEvent = LocalTime.ofSecondOfDay(eventOccuranceTime).getHour();
+        int presentDayofYear = LocalDateTime.now().getDayOfYear();
+        int presentTime = LocalDateTime.now().getHour();
+        if (eventDayofYear == presentDayofYear && timeofEvent == presentTime) {
           String eventName = event.getType().name();
           if (eventName.equalsIgnoreCase("ready for review")) {
-            sendAnnouncement(event.getActor().getName() + " " + event.getRepository().getName());
+            slackService.sendAnnouncement(
+                event.getActor().getName() + " " + event.getRepository().getName());
           }
         }
       }
       GHRepository repository = service.getGitHubRepository();
       List<GHPullRequest> pullList = repository.getPullRequests(GHIssueState.OPEN);
       for (GHPullRequest pullReq : pullList) {
-        long eventTime = pullReq.getCreatedAt().getTime();
-        if (timeComparing(eventTime)) {
+        long pullReqTime = pullReq.getCreatedAt().getTime();
+        int pullReqDayofYear = LocalDate.ofEpochDay(pullReqTime).getDayOfYear();
+        int timeofPullReq = LocalTime.ofSecondOfDay(pullReqTime).getHour();
+        int presentDayofYear = LocalDateTime.now().getDayOfYear();
+        int presentTime = LocalDateTime.now().getHour();
+        if (pullReqDayofYear == presentDayofYear && timeofPullReq == presentTime) {
           String prDescription = pullReq.getBody();
-          sendAnnouncement(prDescription);
+          slackService.sendAnnouncement(prDescription);
         }
       }
     } catch (IOException e) {
-
+      throw new RuntimeException(e);
     }
   }
 
-  public long initialTime() {
-
-    LocalDateTime now = LocalDateTime.now();
-    return LocalDateTime.of(now.getYear(), now.getMonthValue()
-        , now.getDayOfMonth(), now.getHour(), 0)
-        .atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-
-  }
-
-  public boolean timeComparing(long eventTime) {
-
-    long deviationTime = eventTime - initialTime();
-    return deviationTime < 3_600_000;
-  }
 }
