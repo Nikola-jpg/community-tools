@@ -3,8 +3,9 @@ package com.community.tools.controller;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.model.EventData;
-import com.community.tools.service.GitHubEventService;
-import com.community.tools.service.GitHubPullRequestService;
+import com.community.tools.service.CountingCompletedTasksService;
+import com.community.tools.service.github.GitHubService;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,9 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GitHubController {
 
-  private final GitHubEventService eventService;
-  private final GitHubPullRequestService pullRequestService;
-
+  private final GitHubService gitHubService;
+  private final CountingCompletedTasksService completedTasksService;
   @GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getHelloInJson() {
     List<String> list = new ArrayList<>();
@@ -37,10 +37,16 @@ public class GitHubController {
 
   @GetMapping(value = "/pull_request/{state}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<Map<String, String>>> getPullRequests(@PathVariable boolean state) {
-    Map<String, String> userPullRequest = pullRequestService.getPullRequests(state);
+    Map<String, String> userPullRequest = gitHubService.getPullRequests(state);
     List<Map<String, String>> list = new ArrayList<>();
     list.add(userPullRequest);
     return ok().body(list);
+  }
+
+  @GetMapping(value = "/pull_request/сlosedReq", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Map<String, List<String>>> getPullRequests() throws IOException {
+    Map<String, List<String>> map = completedTasksService.getCountedCompletedTasks();
+    return ok().body(map);
   }
 
   @GetMapping(value = "/event", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,7 +57,7 @@ public class GitHubController {
     Date start = format.parse(startDate);
     Date end = format.parse(endDate);
 
-    List<EventData> eventData = eventService.getEvents(start, end);
+    List<EventData> eventData = gitHubService.getEvents(start, end);
     return ok().body(eventData);
   }
 }
