@@ -1,0 +1,32 @@
+name: Deploy master
+on:
+  push:
+    branches:
+    - master
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: Checkout source code
+      uses: actions/checkout@v1
+      
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+
+    - name: Generate deployment package
+      run: mvn -B package --file pom.xml
+      
+    - name: Deploy to EB
+      uses: einaregilsson/beanstalk-deploy@v4
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: broscorp-community
+        environment_name: BroscorpCommunity-test
+        version_label: 12345
+        region: eu-west-1
+        deployment_package: target/community-tools-1-SNAPSHOT.jar
