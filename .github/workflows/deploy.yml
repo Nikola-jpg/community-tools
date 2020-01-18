@@ -19,11 +19,6 @@ jobs:
 
     - name: Generate deployment package
       run: mvn -B package --file pom.xml
-
-    - name: Generate build number
-      uses: einaregilsson/build-number@v2
-      with:
-        token: ${{secrets.github_token}}
       
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v4
