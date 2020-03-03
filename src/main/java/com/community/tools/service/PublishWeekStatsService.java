@@ -18,18 +18,18 @@ import java.util.stream.Collectors;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-@EnableScheduling
+@Component
 @RequiredArgsConstructor
 public class PublishWeekStatsService {
 
   private final GitHubService ghEventService;
   private final SlackService slackService;
 
-  @Scheduled(cron = "0 0 8 ? * MON *")
-  public void exportStat(String chat)
+  @Scheduled(cron = "0 0 0 * * MON")
+  public void exportStat()
       throws SlackApiException, IOException {
-
     Date endDate = new Date();
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.DATE, -7);
@@ -73,7 +73,7 @@ public class PublishWeekStatsService {
           messageBuilder.append("\n");
         });
 
-    slackService.sendMessageToChat(chat, messageBuilder.toString());
+    slackService.sendMessageToChat("test", messageBuilder.toString());
   }
 
   private String emojiGen(Event type) {
