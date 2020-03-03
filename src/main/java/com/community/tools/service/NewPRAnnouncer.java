@@ -1,7 +1,8 @@
 package com.community.tools.service;
 
-import com.community.tools.SlackService;
+
 import com.community.tools.service.github.GitHubConnectService;
+import com.community.tools.service.slack.SlackService;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,12 +13,13 @@ import org.kohsuke.github.GHEventInfo;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHRepository;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service("PRAnnouncer")
-
+@EnableScheduling
 public class NewPRAnnouncer {
 
   private final GitHubConnectService service;
