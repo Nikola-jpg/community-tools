@@ -27,6 +27,7 @@ public class GitHubController {
 
   private final GitHubService gitHubService;
   private final CountingCompletedTasksService completedTasksService;
+
   @GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getHelloInJson() {
     List<String> list = new ArrayList<>();
