@@ -6,13 +6,13 @@ import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.stereotype.Component;
 
-public class ReservedAction implements Action<PurchaseState, PurchaseEvent> {
+public class AgreeLicenseAction implements Action<PurchaseState, PurchaseEvent> {
 
 
 
   @Override
   public void execute(StateContext<PurchaseState, PurchaseEvent> stateContext) {
-    final  String productId = stateContext.getExtendedState().get("PRODUCT_ID", String.class);
-    System.out.println("Товар с номером " + productId + " Зарезервирован");
+    // TODO: 22.04.2020 Добавить логику для пользоваельского соглашения
+    System.out.println("Юзер принял пльзовательское соглашение");
   }
 }

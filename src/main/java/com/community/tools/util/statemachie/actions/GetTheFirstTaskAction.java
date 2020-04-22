@@ -6,11 +6,11 @@ import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 
 
-public class BuyAction implements Action<PurchaseState, PurchaseEvent> {
+public class GetTheFirstTaskAction implements Action<PurchaseState, PurchaseEvent> {
 
   @Override
   public void execute(final StateContext<PurchaseState, PurchaseEvent> context) {
-    final String productId = context.getExtendedState().get("PRODUCT_ID", String.class);
-    System.out.println("Товар с номером " + productId + " успешно куплен");
+    // TODO: 22.04.2020 Добавить логику для получения юзером первого задания
+    System.out.println("Юзер получил первое задание");
   }
 }

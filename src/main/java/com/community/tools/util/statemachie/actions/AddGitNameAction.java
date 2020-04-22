@@ -6,11 +6,11 @@ import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 
 
-public class CancelAction implements Action<PurchaseState, PurchaseEvent> {
+public class AddGitNameAction implements Action<PurchaseState, PurchaseEvent> {
 
   @Override
   public void execute(final StateContext<PurchaseState, PurchaseEvent> context) {
-    final String productId = context.getExtendedState().get("PRODUCT_ID", String.class);
-    System.out.println("Резервирование товара " + productId + " отменено");
+    // TODO: 22.04.2020 добавиь логику для использования гит никнейма
+    System.out.println("Добавили гит ник нейм");
   }
 }
