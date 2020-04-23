@@ -6,7 +6,6 @@ import com.esotericsoftware.kryo.io.Output;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
@@ -16,8 +15,8 @@ import org.springframework.statemachine.kryo.StateMachineContextSerializer;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PurchaseStateMachinePersister implements
-    StateMachinePersist<PurchaseState, PurchaseEvent, String> {
+public class StateMachinePersister implements
+    StateMachinePersist<State, Event, String> {
 
 
   @Value("${DB_URL}")
@@ -35,7 +34,7 @@ public class PurchaseStateMachinePersister implements
 
 
   @Override
-  public void write(StateMachineContext<PurchaseState, PurchaseEvent> context, String userID) {
+  public void write(StateMachineContext<State, Event> context, String userID) {
     byte[] data = serialize(context);
     SingleConnectionDataSource connect = new SingleConnectionDataSource();
     connect.setUrl(url);
@@ -48,7 +47,7 @@ public class PurchaseStateMachinePersister implements
   }
 
   @Override
-  public StateMachineContext<PurchaseState, PurchaseEvent> read(String s) {
+  public StateMachineContext<State, Event> read(String s) {
     SingleConnectionDataSource connect = new SingleConnectionDataSource();
     connect.setUrl(url);
     connect.setUsername(username);
@@ -72,7 +71,7 @@ public class PurchaseStateMachinePersister implements
     return bytes;
   }
 
-  private byte[] serialize(StateMachineContext<PurchaseState, PurchaseEvent> context) {
+  private byte[] serialize(StateMachineContext<State, Event> context) {
     Kryo kryo = kryoThreadLocal.get();
 
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -84,13 +83,13 @@ public class PurchaseStateMachinePersister implements
   }
 
 
-  private StateMachineContext<PurchaseState, PurchaseEvent> deserialize(byte[] data) {
+  private StateMachineContext<State, Event> deserialize(byte[] data) {
     if (data == null || data.length == 0) {
       return null;
     }
     Kryo kryo = kryoThreadLocal.get();
     ByteArrayInputStream in = new ByteArrayInputStream(data);
-    return (StateMachineContext<PurchaseState, PurchaseEvent>) kryo
+    return (StateMachineContext<State, Event>) kryo
         .readClassAndObject(new Input(in));
   }
 
