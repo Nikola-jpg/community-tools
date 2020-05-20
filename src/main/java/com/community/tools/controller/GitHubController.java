@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 public class GitHubController {
-
+  private final SlackService slackService;
   private final GitHubService gitHubService;
   private final CountingCompletedTasksService completedTasksService;
 
@@ -95,7 +95,7 @@ public class GitHubController {
         + "\t}\n"
         + "]";
     try {
-      new SlackService().sendEventsMessage("roman", message);
+      slackService.sendEventsMessage("roman", message);
     } catch (IOException | SlackApiException e) {
       e.printStackTrace();
     }
