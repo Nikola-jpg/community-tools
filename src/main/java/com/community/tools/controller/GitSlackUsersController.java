@@ -63,7 +63,19 @@ public class GitSlackUsersController {
 
     try {
       usersService.sendPrivateMessage("roman",
-          "Message :"+pl.getMessage());
+          "Message : \n\n  Name:\n "+pl.getUser().getName()+"\n\n"
+              +"User:\n "+pl.getUser()+"\n\n"
+              +" Type:\n "+pl.getType()+"\n\n"
+              +" AppID:\n " +pl.getApiAppId() +"\n\n"
+              +" ResponseUrl:\n " +pl.getResponseUrl() +"\n\n"
+              +" Token:\n " +pl.getToken() +"\n\n"
+              +" TriggerId:\n " +pl.getTriggerId() +"\n\n"
+              +" Actions:\n " +pl.getActions() +"\n\n"
+              +" Channel:\n " +pl.getChannel() +"\n\n"
+              +" Container: \n" +pl.getContainer() +"\n\n"
+              +" Team:\n " +pl.getTeam() +"\n\n"
+              +" Message:\n " +pl.getMessage() +"\n\n"
+              );
     } catch (IOException | SlackApiException e) {
       throw  new RuntimeException(e);
     }
