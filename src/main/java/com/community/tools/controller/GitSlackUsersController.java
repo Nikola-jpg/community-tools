@@ -77,7 +77,7 @@ public class GitSlackUsersController {
     StringBuilder message2 = new StringBuilder("User:\n " + pl.getUser() + "\n\n" +
         " Message:\n " + pl.getMessage().toString() + "\n\n");
     if (pl.getMessage().toString()
-        .contains("text=Read and confirm that you agree to our rules BOY :v:.")) {
+        .contains("text=Read and confirm that you agree to")) {
       changeMachine = true;
     }
     message2.append("\n\nChange Machine :").append(changeMachine);
