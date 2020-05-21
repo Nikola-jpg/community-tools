@@ -100,4 +100,34 @@ public class GitHubController {
       e.printStackTrace();
     }
   }
+
+  @GetMapping(value = "/sendTestMessage2", produces = MediaType.APPLICATION_JSON_VALUE)
+  public void getSendMessage() throws ParseException {
+    String message = "[\n"
+        + "\t{\n"
+        + "\t\t\"type\": \"divider\"\n"
+        + "\t},\n"
+        + "\t{\n"
+        + "\t\t\"type\": \"section\",\n"
+        + "\t\t\"text\": {\n"
+        + "\t\t\t\"type\": \"mrkdwn\",\n"
+        + "\t\t\t\"text\": \"This is not work button. \"\n"
+        + "\t\t},\n"
+        + "\t\t\"accessory\": {\n"
+        + "\t\t\t\"type\": \"button\",\n"
+        + "\t\t\t\"text\": {\n"
+        + "\t\t\t\t\"type\": \"plain_text\",\n"
+        + "\t\t\t\t\"text\": \"Button\",\n"
+        + "\t\t\t\t\"emoji\": true\n"
+        + "\t\t\t},\n"
+        + "\t\t\t\"value\": \"click_me_123\"\n"
+        + "\t\t}\n"
+        + "\t}\n"
+        + "]";
+    try {
+      slackService.sendEventsMessage("roman", message);
+    } catch (IOException | SlackApiException e) {
+      e.printStackTrace();
+    }
+  }
 }
