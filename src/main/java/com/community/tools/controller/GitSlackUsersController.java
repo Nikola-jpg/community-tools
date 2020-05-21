@@ -73,17 +73,19 @@ public class GitSlackUsersController {
         + " Container: \n" + pl.getContainer() + "\n\n"
         + " Team:\n " + pl.getTeam() + "\n\n"
         + " Message:\n " + pl.getMessage() + "\n\n";
-
+    boolean changeMachine = false;
     StringBuilder message2 = new StringBuilder("User:\n " + pl.getUser() + "\n\n" +
-        " Message:\n " + pl.getMessage() + "\n\n");
-    if(pl.getMessage().toString()
-        .contains("text=Read and confirm that you agree to our rules BOY :v:."))
-    {
-      try {
-        usersService.sendPrivateMessage("roman", "Change the stateMachine: \n"+message2.toString());
-      } catch (IOException | SlackApiException e) {
-        throw new RuntimeException(e);
-      }
+        " Message:\n " + pl.getMessage().toString() + "\n\n");
+    if (pl.getMessage().toString()
+        .contains("text=Read and confirm that you agree to our rules BOY :v:.")) {
+      changeMachine = true;
     }
+    message2.append("\n\nChange Machine :").append(changeMachine);
+    try {
+      usersService.sendPrivateMessage("roman", "Change the stateMachine: \n" + message2.toString());
+    } catch (IOException | SlackApiException e) {
+      throw new RuntimeException(e);
+    }
+
   }
 }
