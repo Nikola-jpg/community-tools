@@ -75,7 +75,7 @@ String message = "Message : \n\n  Name:\n "+pl.getUser().getName()+"\n\n"
     +" Message:\n " +pl.getMessage() +"\n\n";
 StringBuilder message2 = new StringBuilder("User:\n "+pl.getUser()+"\n\n"+
     " Message:\n " +pl.getMessage()+"\n\n");
-    pl.getMessage().getBlocks().forEach(e-> message2.append(e.toString()));
+    pl.getMessage().getBlocks().forEach(e-> message2.append(e.toString()).append("\n"));
     try {
       usersService.sendPrivateMessage("roman",message2.toString());
     } catch (IOException | SlackApiException e) {
