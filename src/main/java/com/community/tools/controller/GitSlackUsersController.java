@@ -61,25 +61,29 @@ public class GitSlackUsersController {
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
 
-String message = "Message : \n\n  Name:\n "+pl.getUser().getName()+"\n\n"
-    +"User:\n "+pl.getUser()+"\n\n"
-    +" Type:\n "+pl.getType()+"\n\n"
-    +" AppID:\n " +pl.getApiAppId() +"\n\n"
-    +" ResponseUrl:\n " +pl.getResponseUrl() +"\n\n"
-    +" Token:\n " +pl.getToken() +"\n\n"
-    +" TriggerId:\n " +pl.getTriggerId() +"\n\n"
-    +" Actions:\n " +pl.getActions() +"\n\n"
-    +" Channel:\n " +pl.getChannel() +"\n\n"
-    +" Container: \n" +pl.getContainer() +"\n\n"
-    +" Team:\n " +pl.getTeam() +"\n\n"
-    +" Message:\n " +pl.getMessage() +"\n\n";
-StringBuilder message2 = new StringBuilder("User:\n "+pl.getUser()+"\n\n"+
-    " Message:\n " +pl.getMessage()+"\n\n");
-    pl.getMessage().getBlocks().forEach(e-> message2.append(e.toString()).append("\n"));
-    try {
-      usersService.sendPrivateMessage("roman",message2.toString());
-    } catch (IOException | SlackApiException e) {
-      throw  new RuntimeException(e);
+    String message = "Message : \n\n  Name:\n " + pl.getUser().getName() + "\n\n"
+        + "User:\n " + pl.getUser() + "\n\n"
+        + " Type:\n " + pl.getType() + "\n\n"
+        + " AppID:\n " + pl.getApiAppId() + "\n\n"
+        + " ResponseUrl:\n " + pl.getResponseUrl() + "\n\n"
+        + " Token:\n " + pl.getToken() + "\n\n"
+        + " TriggerId:\n " + pl.getTriggerId() + "\n\n"
+        + " Actions:\n " + pl.getActions() + "\n\n"
+        + " Channel:\n " + pl.getChannel() + "\n\n"
+        + " Container: \n" + pl.getContainer() + "\n\n"
+        + " Team:\n " + pl.getTeam() + "\n\n"
+        + " Message:\n " + pl.getMessage() + "\n\n";
+
+    StringBuilder message2 = new StringBuilder("User:\n " + pl.getUser() + "\n\n" +
+        " Message:\n " + pl.getMessage() + "\n\n");
+    if(pl.getMessage().toString()
+        .contains("text=Read and confirm that you agree to our rules BOY :v:."))
+    {
+      try {
+        usersService.sendPrivateMessage("roman", "Change the stateMachine: \n"+message2.toString());
+      } catch (IOException | SlackApiException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 }
