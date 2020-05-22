@@ -1,20 +1,19 @@
 package com.community.tools.controller;
 
 import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
+import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.State.NEW_USER;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.model.User.Profile;
 import com.github.seratch.jslack.app_backend.interactive_messages.payload.BlockActionPayload;
 import com.github.seratch.jslack.common.json.GsonFactory;
 import com.google.gson.Gson;
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHPerson;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.statemachine.StateMachine;
@@ -42,6 +42,12 @@ public class GitSlackUsersController {
   private StateMachineFactory<State, Event> factory;
   @Autowired
   private StateMachinePersister<State, Event, String> persister;
+  @Value("${addGitName}")
+  private String addGitName;
+  @Value("${noOneCase}")
+  private String noOneCase;
+  @Value("${notThatMessage}")
+  private String notThatMessage;
 
   private final SlackService usersService;
   private final GitHubService gitService;
@@ -68,125 +74,38 @@ public class GitSlackUsersController {
   }
 
 
-  @GetMapping(value = "/sendTestMessage", produces = MediaType.APPLICATION_JSON_VALUE)
-  public void getAllEvents() throws ParseException {
-    String message = "[\n"
-        + "\t{\n"
-        + "\t\t\"type\": \"image\",\n"
-        + "\t\t\"title\": {\n"
-        + "\t\t\t\"type\": \"plain_text\",\n"
-        + "\t\t\t\"text\": \"image1\",\n"
-        + "\t\t\t\"emoji\": true\n"
-        + "\t\t},\n"
-        + "\t\t\"image_url\": \"https://api.slack.com/img/blocks/bkb_template_images/beagle.png\",\n"
-        + "\t\t\"alt_text\": \"image1\"\n"
-        + "\t},\n"
-        + "\t{\n"
-        + "\t\t\"type\": \"section\",\n"
-        + "\t\t\"text\": {\n"
-        + "\t\t\t\"type\": \"mrkdwn\",\n"
-        + "\t\t\t\"text\": \"Read and confirm that you agree to our <https://www.youtube.com/watch?v=O6YzU00oack|rules> BOY :v:. \"\n"
-        + "\t\t},\n"
-        + "\t\t\"accessory\": {\n"
-        + "\t\t\t\"type\": \"button\",\n"
-        + "\t\t\t\"text\": {\n"
-        + "\t\t\t\t\"type\": \"plain_text\",\n"
-        + "\t\t\t\t\"text\": \"Agree\",\n"
-        + "\t\t\t\t\"emoji\": true\n"
-        + "\t\t\t},\n"
-        + "\t\t\t\"value\": \"click_me_123\"\n"
-        + "\t\t}\n"
-        + "\t}\n"
-        + "]";
-    try {
-      usersService.sendEventsMessage("roman", message);
-    } catch (IOException | SlackApiException e) {
-      e.printStackTrace();
-    }
-  }
-
-  @GetMapping(value = "/sendTestMessage2", produces = MediaType.APPLICATION_JSON_VALUE)
-  public void getSendMessage() throws ParseException {
-    String message = "[\n"
-        + "\t{\n"
-        + "\t\t\"type\": \"divider\"\n"
-        + "\t},\n"
-        + "\t{\n"
-        + "\t\t\"type\": \"section\",\n"
-        + "\t\t\"text\": {\n"
-        + "\t\t\t\"type\": \"mrkdwn\",\n"
-        + "\t\t\t\"text\": \"This is not work button. \"\n"
-        + "\t\t},\n"
-        + "\t\t\"accessory\": {\n"
-        + "\t\t\t\"type\": \"button\",\n"
-        + "\t\t\t\"text\": {\n"
-        + "\t\t\t\t\"type\": \"plain_text\",\n"
-        + "\t\t\t\t\"text\": \"Button\",\n"
-        + "\t\t\t\t\"emoji\": true\n"
-        + "\t\t\t},\n"
-        + "\t\t\t\"value\": \"click_me_123\"\n"
-        + "\t\t}\n"
-        + "\t}\n"
-        + "]";
-    try {
-      usersService.sendEventsMessage("roman", message);
-    } catch (IOException | SlackApiException e) {
-      e.printStackTrace();
-    }
-  }
-
-  @GetMapping(value = "/addUserToStateMachine", produces = MediaType.APPLICATION_JSON_VALUE)
-  public void getUserToStateMachine() throws Exception {
-
-    StateMachine<State, Event> machine = factory.getStateMachine();
-    machine.start();
-    persister.persist(machine, "rr.zagorulko");
-  }
-
   @RequestMapping(value = "/slack/action", method = RequestMethod.POST)
-  public void action(
-      @RequestParam(name = "payload") String payload
-  ) throws Exception {
+  public void action(@RequestParam(name = "payload") String payload) throws Exception {
 
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
-/*    String message = "Message : \n\n  Name:\n " + pl.getUser().getName() + "\n\n"
-        + "User:\n " + pl.getUser() + "\n\n"
-        + " Type:\n " + pl.getType() + "\n\n"
-        + " AppID:\n " + pl.getApiAppId() + "\n\n"
-        + " ResponseUrl:\n " + pl.getResponseUrl() + "\n\n"
-        + " Token:\n " + pl.getToken() + "\n\n"
-        + " TriggerId:\n " + pl.getTriggerId() + "\n\n"
-        + " Actions:\n " + pl.getActions() + "\n\n"
-        + " Channel:\n " + pl.getChannel() + "\n\n"
-        + " Container: \n" + pl.getContainer() + "\n\n"
-        + " Team:\n " + pl.getTeam() + "\n\n"
-        + " Message:\n " + pl.getMessage() + "\n\n";*/
-    StringBuilder message2 = new StringBuilder("User:\n " + pl.getUser() + "\n\n" +
-        " Message:\n " + pl.getMessage().toString() + "\n\n");
 
-    boolean changeMachine = false;
     StateMachine<State, Event> machine = factory.getStateMachine();
-    StateMachine<State, Event> machine1 = factory.getStateMachine();
+    String user = usersService.getUserById(pl.getUser().getId());
 
-    persister.restore(machine, pl.getUser().toString());
+    switch (pl.getActions().get(0).getValue()) {
+      case "AGREE_LICENSE":
+        persister.restore(machine, pl.getUser().getId());
+        if (machine.getState().getId() == NEW_USER) {
+          machine.sendEvent(AGREE_LICENSE);
+          persister.persist(machine, pl.getUser().getId());
+          usersService.sendBlocksMessage(user, addGitName);
+        } else {
+          usersService.sendBlocksMessage(user, notThatMessage);
+        }
+        break;
+      case "theEnd":
+        persister.restore(machine, pl.getUser().getId());
+        if (machine.getState().getId() == GOT_THE_FIRST_TASK) {
+          usersService
+              .sendPrivateMessage(user, "that was the end, congrats");
+        } else {
+          usersService.sendBlocksMessage(user, notThatMessage);
+        }
+        break;
+      default:
+        usersService.sendBlocksMessage(user, noOneCase);
 
-    if (pl.getMessage().toString()
-        .contains("text=Read and confirm that you agree to")) {
-      changeMachine = true;
-      machine.sendEvent(AGREE_LICENSE);
-      persister.persist(machine, pl.getUser().toString());
-      machine.stop();
-      persister.restore(machine1, pl.getUser().toString());
     }
-
-    message2.append("\n\nState of Machine : ").append(machine1.getState().getId());
-    message2.append("\n\nChange Machine :").append(changeMachine);
-    try {
-      usersService.sendPrivateMessage("roman", "Change the stateMachine: \n" + message2.toString());
-    } catch (IOException | SlackApiException e) {
-      throw new RuntimeException(e);
-    }
-
   }
 }
