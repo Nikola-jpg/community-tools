@@ -4,13 +4,16 @@ import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.app_backend.events.EventsDispatcher;
 
 import com.github.seratch.jslack.app_backend.events.handler.AppMentionHandler;
-
-import com.github.seratch.jslack.app_backend.events.handler.TeamJoinHandler;
 import com.github.seratch.jslack.app_backend.events.payload.AppMentionPayload;
+import com.github.seratch.jslack.app_backend.events.handler.TeamJoinHandler;
 
 import com.github.seratch.jslack.app_backend.events.payload.TeamJoinPayload;
+import com.github.seratch.jslack.app_backend.events.handler.MessageBotHandler;
+import com.github.seratch.jslack.app_backend.events.payload.MessageBotPayload;
 import com.github.seratch.jslack.app_backend.events.servlet.SlackEventsApiServlet;
 import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -44,12 +47,37 @@ public class GreetNewMemberService {
     }
   };
 
-  public class GreatNewMemberServlet extends SlackEventsApiServlet {
+  private MessageBotHandler messageBotHandler = new MessageBotHandler() {
+    @Override
+    public void handle(MessageBotPayload teamJoinPayload) {
+      try {
 
+        slackService.sendPrivateMessage("roman",
+            teamJoinPayload.getEvent().getText());
+      } catch (IOException | SlackApiException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  };
+
+  public class GreatNewMemberServlet extends SlackEventsApiServlet {
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+      try {
+        slackService.sendPrivateMessage("roman",
+            "maybe, just maybe, some one press the button");
+      } catch (SlackApiException e) {
+        e.printStackTrace();
+      }
+      super.doPost(req, resp);
+    }
     @Override
     protected void setupDispatcher(EventsDispatcher dispatcher) {
       dispatcher.register(teamJoinHandler);
       dispatcher.register(appMentionHandler);
+
+      dispatcher.register(messageBotHandler);
+
     }
   }
 

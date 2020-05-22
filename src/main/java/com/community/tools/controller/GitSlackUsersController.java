@@ -4,8 +4,13 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
+import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.model.User.Profile;
+import com.github.seratch.jslack.app_backend.interactive_messages.payload.BlockActionPayload;
+import com.github.seratch.jslack.common.json.GsonFactory;
+import com.google.gson.Gson;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,6 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -45,5 +52,40 @@ public class GitSlackUsersController {
         .map(Profile::getDisplayName).collect(Collectors.toList());
 
     return ok().body(listSlackUsersName);
+  }
+
+  @RequestMapping(value = "/slack/action", method = RequestMethod.POST)
+  public void action(
+      @RequestParam(name = "payload") String payload
+  ) {
+    Gson snakeCase = GsonFactory.createSnakeCase();
+    BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
+
+    String message = "Message : \n\n  Name:\n " + pl.getUser().getName() + "\n\n"
+        + "User:\n " + pl.getUser() + "\n\n"
+        + " Type:\n " + pl.getType() + "\n\n"
+        + " AppID:\n " + pl.getApiAppId() + "\n\n"
+        + " ResponseUrl:\n " + pl.getResponseUrl() + "\n\n"
+        + " Token:\n " + pl.getToken() + "\n\n"
+        + " TriggerId:\n " + pl.getTriggerId() + "\n\n"
+        + " Actions:\n " + pl.getActions() + "\n\n"
+        + " Channel:\n " + pl.getChannel() + "\n\n"
+        + " Container: \n" + pl.getContainer() + "\n\n"
+        + " Team:\n " + pl.getTeam() + "\n\n"
+        + " Message:\n " + pl.getMessage() + "\n\n";
+    boolean changeMachine = false;
+    StringBuilder message2 = new StringBuilder("User:\n " + pl.getUser() + "\n\n" +
+        " Message:\n " + pl.getMessage().toString() + "\n\n");
+    if (pl.getMessage().toString()
+        .contains("text=Read and confirm that you agree to")) {
+      changeMachine = true;
+    }
+    message2.append("\n\nChange Machine :").append(changeMachine);
+    try {
+      usersService.sendPrivateMessage("roman", "Change the stateMachine: \n" + message2.toString());
+    } catch (IOException | SlackApiException e) {
+      throw new RuntimeException(e);
+    }
+
   }
 }
