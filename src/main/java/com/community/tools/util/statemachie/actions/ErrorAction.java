@@ -10,6 +10,6 @@ public class ErrorAction implements Action<State, Event> {
 
   @Override
   public void execute(final StateContext<State, Event> context) {
-    System.out.println("Ошибка при переходе в статус " + context.getTarget().getId());
+    System.out.println("Error with " + context.getTarget().getId());
   }
 }

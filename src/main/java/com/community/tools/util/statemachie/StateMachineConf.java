@@ -28,7 +28,7 @@ import org.springframework.statemachine.persist.DefaultStateMachinePersister;
 
 @Configuration
 @EnableStateMachineFactory
-public class Conf extends EnumStateMachineConfigurerAdapter<State, Event> {
+public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, Event> {
 
   @Autowired
   StateMachinePersister persister;
