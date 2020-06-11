@@ -50,8 +50,8 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
   }
 
   @Override
-  public void configure(final StateMachineTransitionConfigurer<State, Event> transitions)
-      throws Exception {
+  public  void configure(final StateMachineTransitionConfigurer<State, Event> transitions)
+    throws Exception{
     transitions
         .withExternal()
         .source(NEW_USER)
@@ -64,7 +64,6 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
         .source(AGREED_LICENSE)
         .target(ADDED_GIT)
         .event(ADD_GIT_NAME)
-        .guard(hideGuard())
         .action(addGitNameAction(), errorAction())
 
         .and()
