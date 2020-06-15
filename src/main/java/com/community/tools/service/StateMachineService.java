@@ -65,9 +65,8 @@ public class StateMachineService {
             if (nicknameMatch) {
                 StateEntity stateEntity = new StateEntity();
                 stateEntity.setUserID(userId);
-                stateEntity.setGit_name(nickName);
+                stateEntity.setGitName(nickName);
                 stateMachineRepository.save(new StateEntity(userId,nickName));
-                slackService.sendPrivateMessage(user, "User id = " + userId + " , User nickname = " + nickName);
                 slackService.sendPrivateMessage(user, congratsAvailableNick);
                 machine.sendEvent(ADD_GIT_NAME);
 

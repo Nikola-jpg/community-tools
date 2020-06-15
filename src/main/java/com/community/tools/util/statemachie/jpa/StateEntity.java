@@ -10,7 +10,7 @@ public class StateEntity {
     @Id
     private String userID;
     private byte[] stateMachine;
-    private String git_name;
+    private String gitName;
 
     public StateEntity() {
     }
@@ -19,16 +19,16 @@ public class StateEntity {
         this.stateMachine = stateMachine;
         this.userID = userID;
     }
-    public StateEntity(String userID, String git_name) {
-        this.git_name = git_name;
+    public StateEntity(String userID, String gitName) {
+        this.gitName = gitName;
         this.userID = userID;
     }
     public void setUserID(String userID) {
         this.userID = userID;
     }
 
-    public void setGit_name(String git_name) {
-        this.git_name = git_name;
+    public void setGitName(String gitName) {
+        this.gitName = gitName;
     }
 
     public void setStateMachine(byte[] stateMachine) {
@@ -43,7 +43,7 @@ public class StateEntity {
         return stateMachine;
     }
 
-    public String getGit_name() {
-        return git_name;
+    public String getGitName() {
+        return gitName;
     }
 }
