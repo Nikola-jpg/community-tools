@@ -19,7 +19,10 @@ public class StateEntity {
         this.stateMachine = stateMachine;
         this.userID = userID;
     }
-
+    public StateEntity(String userID, String git_name) {
+        this.git_name = git_name;
+        this.userID = userID;
+    }
     public void setUserID(String userID) {
         this.userID = userID;
     }

@@ -66,7 +66,7 @@ public class StateMachineService {
                 StateEntity stateEntity = new StateEntity();
                 stateEntity.setUserID(userId);
                 stateEntity.setGit_name(nickName);
-                stateMachineRepository.save(stateEntity);
+                stateMachineRepository.save(new StateEntity(userId,nickName));
 
                 slackService.sendPrivateMessage(user, congratsAvailableNick);
                 machine.sendEvent(ADD_GIT_NAME);
