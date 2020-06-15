@@ -63,7 +63,8 @@ public class StateMachineService {
             boolean nicknameMatch = gitHubService.getGitHubAllUsers().stream()
                     .anyMatch(e -> e.getLogin().equals(nickName));
             if (nicknameMatch) {
-                 StateEntity stateEntity = stateMachineRepository.findByUserID(userId).get();
+                 StateEntity stateEntity = new StateEntity();
+                 stateEntity.setUserID("123123");
                  stateEntity.setGitName(nickName);
                 stateMachineRepository.save(stateEntity);
                 if (stateMachineRepository.findByUserID(userId).get().getGitName() != nickName){
