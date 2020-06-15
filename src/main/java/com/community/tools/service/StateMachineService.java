@@ -63,10 +63,10 @@ public class StateMachineService {
             boolean nicknameMatch = gitHubService.getGitHubAllUsers().stream()
                     .anyMatch(e -> e.getLogin().equals(nickName));
             if (nicknameMatch) {
-                StateEntity stateEntity = new StateEntity();
-                stateEntity.setUserID(userId);
-                stateEntity.setGitName(nickName);
-                stateMachineRepository.save(new StateEntity(userId,nickName));
+                 StateEntity stateEntity = stateMachineRepository.findByUserID(userId).get();
+                 stateEntity.setGitName(nickName);
+                stateMachineRepository.save(stateEntity);
+
                 slackService.sendPrivateMessage(user, congratsAvailableNick);
                 machine.sendEvent(ADD_GIT_NAME);
 
