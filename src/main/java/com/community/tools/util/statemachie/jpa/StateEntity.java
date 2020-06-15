@@ -9,8 +9,8 @@ import javax.persistence.Table;
 public class StateEntity {
     @Id
     private String userID;
-    private byte[] stateMachine;
     private String gitName;
+    private byte[] stateMachine;
 
     public StateEntity() {
     }
