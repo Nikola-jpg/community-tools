@@ -66,7 +66,6 @@ public class StateMachineService {
                  StateEntity stateEntity = stateMachineRepository.findByUserID(userId).get();
                  stateEntity.setGitName(nickName);
                 stateMachineRepository.save(stateEntity);
-                slackService.sendPrivateMessage(user,"Nick name  = " +stateMachineRepository.findByUserID(userId).get().getGitName() + " + " + nickName );
                 if (stateMachineRepository.findByUserID(userId).get().getGitName() != nickName){
                     slackService.sendPrivateMessage(user, "we got some problems, git nick name = " + stateEntity.getGitName());
                 }
