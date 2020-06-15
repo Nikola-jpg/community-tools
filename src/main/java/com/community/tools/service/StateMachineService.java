@@ -4,11 +4,11 @@ import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.jpa.StateEntity;
+import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.persist.StateMachinePersister;
@@ -20,12 +20,8 @@ import static com.community.tools.util.statemachie.State.*;
 @RequiredArgsConstructor
 @Service
 public class StateMachineService {
-    @Value("${DB_URL}")
-    private String dbUrl;
-    @Value("${DB_USER_NAME}")
-    private String username;
-    @Value("${DB_PASSWORD}")
-    private String password;
+    @Autowired
+    private StateMachineRepository stateMachineRepository;
 
     @Value("${welcome}")
     private String welcome;
@@ -56,42 +52,39 @@ public class StateMachineService {
     private final SlackService slackService;
 
     public void agreeForGitHubNickName(String nickName, String userId) throws Exception {
-              String user = slackService.getUserById(userId);
+        String user = slackService.getUserById(userId);
 
-            StateMachine<State, Event> machine = restoreMachine(userId);
+        StateMachine<State, Event> machine = restoreMachine(userId);
 
-            if (machine.getState().getId() == AGREED_LICENSE) {
-                slackService.sendPrivateMessage(user,
-                        checkNickName + nickName);
+        if (machine.getState().getId() == AGREED_LICENSE) {
+            slackService.sendPrivateMessage(user,
+                    checkNickName + nickName);
 
-                boolean nicknameMatch = gitHubService.getGitHubAllUsers().stream()
-                        .anyMatch(e -> e.getLogin().equals(nickName));
-                if (nicknameMatch) {
-                    SingleConnectionDataSource connect = new SingleConnectionDataSource();
-                    connect.setDriverClassName("org.postgresql.Driver");
-                    connect.setUrl(dbUrl);
-                    connect.setUsername(username);
-                    connect.setPassword(password);
-                    JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
-                    jdbcTemplate.update("UPDATE public.state_entity SET  git_name= '" + nickName + "'"
-                            + "\tWHERE userid='" + userId + "';");
+            boolean nicknameMatch = gitHubService.getGitHubAllUsers().stream()
+                    .anyMatch(e -> e.getLogin().equals(nickName));
+            if (nicknameMatch) {
+                StateEntity stateEntity = new StateEntity();
+                stateEntity.setUserID(userId);
+                stateEntity.setGit_name(nickName);
+                stateMachineRepository.save(stateEntity);
 
-                    slackService.sendPrivateMessage(user, congratsAvailableNick);
-                    machine.sendEvent(ADD_GIT_NAME);
+                slackService.sendPrivateMessage(user, congratsAvailableNick);
+                machine.sendEvent(ADD_GIT_NAME);
 
-                    slackService.sendBlocksMessage(user, getFirstTask);
-                    machine.sendEvent(GET_THE_FIRST_TASK);
-                    persistMachine(machine, userId);
-
-                } else {
-                    slackService.sendPrivateMessage(user, failedCheckNickName);
-                }
+                slackService.sendBlocksMessage(user, getFirstTask);
+                machine.sendEvent(GET_THE_FIRST_TASK);
+                persistMachine(machine, userId);
 
             } else {
-                slackService.sendPrivateMessage(user, doNotUnderstandWhatTodo);
-
+                slackService.sendPrivateMessage(user, failedCheckNickName);
             }
+
+        } else {
+            slackService.sendPrivateMessage(user, doNotUnderstandWhatTodo);
+
+        }
     }
+
     public void checkActionsFromButton(String action, String userId) throws Exception {
         StateMachine<State, Event> machine = restoreMachine(userId);
         String user = slackService.getUserById(userId);
