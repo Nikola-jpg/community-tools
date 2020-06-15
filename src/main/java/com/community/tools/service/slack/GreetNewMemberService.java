@@ -1,6 +1,8 @@
 package com.community.tools.service.slack;
 
 import com.community.tools.service.StateMachineService;
+import com.community.tools.util.statemachie.jpa.StateEntity;
+import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import com.github.seratch.jslack.app_backend.events.EventsDispatcher;
 import com.github.seratch.jslack.app_backend.events.handler.MessageHandler;
 import com.github.seratch.jslack.app_backend.events.handler.TeamJoinHandler;
@@ -8,6 +10,7 @@ import com.github.seratch.jslack.app_backend.events.payload.MessagePayload;
 import com.github.seratch.jslack.app_backend.events.payload.TeamJoinPayload;
 import com.github.seratch.jslack.app_backend.events.servlet.SlackEventsApiServlet;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +31,8 @@ public class GreetNewMemberService {
 
   private final SlackService slackService;
   private final StateMachineService stateMachineService;
+  @Autowired
+  private StateMachineRepository stateMachineRepository;
 
   private TeamJoinHandler teamJoinHandler = new TeamJoinHandler() {
     @Override
@@ -35,6 +40,10 @@ public class GreetNewMemberService {
 
       try {
         String user = teamJoinPayload.getEvent().getUser().getId();
+        StateEntity stateEntity = new StateEntity();
+        stateEntity.setUserID(user);
+        stateMachineRepository.save(stateEntity);
+
         stateMachineService.persistMachineForNewUser(user);
         slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser().getRealName(),
             welcome);
