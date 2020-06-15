@@ -24,66 +24,66 @@ import java.io.IOException;
 @Component
 public class GreetNewMemberService {
 
-  @Value("${welcome}")
-  private String welcome;
-  @Value("${agreeMessage}")
-  private String agreeMessage;
+    @Value("${welcome}")
+    private String welcome;
+    @Value("${agreeMessage}")
+    private String agreeMessage;
 
-  private final SlackService slackService;
-  private final StateMachineService stateMachineService;
-  @Autowired
-  private StateMachineRepository stateMachineRepository;
+    private final SlackService slackService;
+    private final StateMachineService stateMachineService;
+    @Autowired
+    private StateMachineRepository stateMachineRepository;
 
-  private TeamJoinHandler teamJoinHandler = new TeamJoinHandler() {
-    @Override
-    public void handle(TeamJoinPayload teamJoinPayload) {
+    private TeamJoinHandler teamJoinHandler = new TeamJoinHandler() {
+        @Override
+        public void handle(TeamJoinPayload teamJoinPayload) {
 
-      try {
-        String user = teamJoinPayload.getEvent().getUser().getId();
-        StateEntity stateEntity = new StateEntity();
-        stateEntity.setUserID(user);
-        stateMachineRepository.save(stateEntity);
+            try {
+                String user = teamJoinPayload.getEvent().getUser().getId();
+                StateEntity stateEntity = new StateEntity();
+                stateEntity.setUserID(user);
+                stateMachineRepository.save(stateEntity);
 
-        stateMachineService.persistMachineForNewUser(user);
-        slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser().getRealName(),
-            welcome);
-        slackService
-            .sendBlocksMessage(teamJoinPayload.getEvent().getUser().getRealName(), agreeMessage);
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }
-  };
-
-  private MessageHandler messageHandler = new MessageHandler() {
-    @Override
-    public void handle(MessagePayload teamJoinPayload) {
-      if (!teamJoinPayload.getEvent().getUser().equals("UQWD538CT")) {
-        try {
-          stateMachineService.agreeForGitHubNickName(teamJoinPayload.getEvent().getText(), teamJoinPayload.getEvent().getUser());
-        } catch (Exception e) {
-          throw new RuntimeException(e);
+                stateMachineService.persistMachineForNewUser(user);
+                slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser().getRealName(),
+                        welcome);
+                slackService
+                        .sendBlocksMessage(teamJoinPayload.getEvent().getUser().getRealName(), agreeMessage);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
-      }
+    };
+
+    private MessageHandler messageHandler = new MessageHandler() {
+        @Override
+        public void handle(MessagePayload teamJoinPayload) {
+            if (!teamJoinPayload.getEvent().getUser().equals("UQWD538CT")) {
+                try {
+                    stateMachineService.agreeForGitHubNickName(teamJoinPayload.getEvent().getText(), teamJoinPayload.getEvent().getUser());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    };
+
+    public class GreatNewMemberServlet extends SlackEventsApiServlet {
+
+        @Override
+        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            super.doPost(req, resp);
+        }
+
+        @Override
+        protected void setupDispatcher(EventsDispatcher dispatcher) {
+            dispatcher.register(teamJoinHandler);
+            dispatcher.register(messageHandler);
+        }
     }
-  };
 
-  public class GreatNewMemberServlet extends SlackEventsApiServlet {
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-      super.doPost(req, resp);
+    @Bean
+    public ServletRegistrationBean<GreatNewMemberServlet> servletRegistrationBean() {
+        return new ServletRegistrationBean<>(new GreatNewMemberServlet(), "/greatNewMember/*");
     }
-
-    @Override
-    protected void setupDispatcher(EventsDispatcher dispatcher) {
-      dispatcher.register(teamJoinHandler);
-      dispatcher.register(messageHandler);
-    }
-  }
-
-  @Bean
-  public ServletRegistrationBean<GreatNewMemberServlet> servletRegistrationBean() {
-    return new ServletRegistrationBean<>(new GreatNewMemberServlet(), "/greatNewMember/*");
-  }
 }
