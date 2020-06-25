@@ -26,6 +26,8 @@ public class GreetNewMemberService {
 
     @Value("${welcome}")
     private String welcome;
+    @Value("${idOfSLackBot}")
+    private String idOfSlackBot;
     @Value("${agreeMessage}")
     private String agreeMessage;
 
@@ -58,7 +60,7 @@ public class GreetNewMemberService {
     private MessageHandler messageHandler = new MessageHandler() {
         @Override
         public void handle(MessagePayload teamJoinPayload) {
-            if (!teamJoinPayload.getEvent().getUser().equals("UQWD538CT")) {
+            if (!teamJoinPayload.getEvent().getUser().equals(idOfSlackBot)) {
                 try {
                     stateMachineService.agreeForGitHubNickName(teamJoinPayload.getEvent().getText(), teamJoinPayload.getEvent().getUser());
                 } catch (Exception e) {
