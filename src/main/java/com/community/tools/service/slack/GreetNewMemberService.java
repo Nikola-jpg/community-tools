@@ -26,7 +26,7 @@ public class GreetNewMemberService {
 
     @Value("${welcome}")
     private String welcome;
-    @Value("${idOfSLackBot}")
+    @Value("${idOfSlackBot}")
     private String idOfSlackBot;
     @Value("${agreeMessage}")
     private String agreeMessage;
