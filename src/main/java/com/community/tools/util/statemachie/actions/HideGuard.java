@@ -30,7 +30,7 @@ public class HideGuard implements Guard<State, Event> {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
     String nickName = stateContext.getExtendedState().getVariables().get("gitNick").toString();
     try {
-      slackService.sendPrivateMessage(user,
+      slackService.sendPrivateMessage(slackService.getUserById(user),
           checkNickName + nickName);
     } catch (IOException | SlackApiException e) {
       throw new RuntimeException(e);
