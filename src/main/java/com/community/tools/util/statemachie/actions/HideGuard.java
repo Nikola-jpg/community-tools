@@ -39,7 +39,7 @@ public class HideGuard implements Guard<State, Event> {
         .anyMatch(e -> e.getLogin().equals(nickName));
     if (!nicknameMatch) {
       try {
-        slackService.sendPrivateMessage(user, failedCheckNickName);
+        slackService.sendPrivateMessage(slackService.getUserById(user), failedCheckNickName);
       } catch (IOException | SlackApiException e) {
         throw new RuntimeException(e);
       }
