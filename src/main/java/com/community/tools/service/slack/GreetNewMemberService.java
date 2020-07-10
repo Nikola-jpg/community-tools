@@ -65,8 +65,7 @@ public class GreetNewMemberService {
     public void handle(MessagePayload teamJoinPayload) {
       if (!teamJoinPayload.getEvent().getUser().equals(idOfSlackBot)) {
         try {
-          String user = slackService.getUserById(teamJoinPayload.getEvent().getUser());
-          StateMachine<State, Event> machine = stateMachineService.restoreMachine(user);
+          StateMachine<State, Event> machine = stateMachineService.restoreMachine(teamJoinPayload.getEvent().getUser());
           machine.getExtendedState().getVariables()
               .put("gitNick", teamJoinPayload.getEvent().getText());
           machine.sendEvent(Event.ADD_GIT_NAME);
