@@ -69,6 +69,7 @@ public class GreetNewMemberService {
           machine.getExtendedState().getVariables()
               .put("gitNick", teamJoinPayload.getEvent().getText());
           machine.sendEvent(Event.ADD_GIT_NAME);
+          machine.sendEvent(Event.GET_THE_FIRST_TASK);
           stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
         } catch (Exception e) {
           throw new RuntimeException(e);
