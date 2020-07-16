@@ -51,8 +51,13 @@ public class GitHubHookServlet extends HttpServlet {
         connect.setUsername(username);
         connect.setPassword(password);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
-
-        if (json.get("action").toString().equals("opened")) {
+        boolean labeled = false;
+        if (json.get("action").toString().equals("labeled")){
+          if(json.getJSONObject("pull_request").getJSONObject("labels").getString("name").equals("ready for review")){
+            labeled = true;
+          }
+        }
+        if (json.get("action").toString().equals("opened") || labeled) {
           JSONObject pull = json.getJSONObject("pull_request");
           String user = pull.getJSONObject("user").getString("login");
           String url = pull.getJSONObject("_links").getJSONObject("html").getString("href");
