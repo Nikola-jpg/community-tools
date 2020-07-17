@@ -5,6 +5,7 @@ import static org.springframework.http.ResponseEntity.ok;
 import com.community.tools.model.EventData;
 import com.community.tools.service.CountingCompletedTasksService;
 import com.community.tools.service.github.GitHubService;
+import com.community.tools.service.slack.SlackService;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 public class GitHubController {
-
+  private final SlackService slackService;
   private final GitHubService gitHubService;
   private final CountingCompletedTasksService completedTasksService;
 
