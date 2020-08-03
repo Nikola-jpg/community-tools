@@ -36,6 +36,9 @@ public class GitHubHookServlet extends HttpServlet {
   private String secret;
   @Autowired
   private SlackService service;
+  @Autowired
+  private GitHubGiveNewTask gitHubGiveNewTask;
+
 
 
   @Override
@@ -74,7 +77,9 @@ public class GitHubHookServlet extends HttpServlet {
           service
               .sendMessageToChat("test", "User" + user + " create a pull request \n url: " + url);
         }
-
+        if(json.get("action").toString().equals("opened")){
+          gitHubGiveNewTask.gaveNewTask(json);
+        }
         jdbcTemplate.update(
             "INSERT INTO public.\"GitHookData\" (time, jsonb_data) VALUES ('" + new Date() + "','"
                 + json + "'::jsonb);");
