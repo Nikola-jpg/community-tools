@@ -20,7 +20,7 @@ public class LastTaskAction implements Action<State, Event> {
   public void execute(final StateContext<State, Event> context) {
     String user = context.getExtendedState().getVariables().get("id").toString();
     try {
-      slackService.sendBlocksMessage(slackService.getUserById(user),lastTask );
+      slackService.sendPrivateMessage(slackService.getUserById(user),lastTask );
     } catch (IOException | SlackApiException e) {
       throw new RuntimeException(e);
     }
