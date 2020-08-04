@@ -5,6 +5,7 @@ import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.persist.StateMachinePersister;
@@ -12,7 +13,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class GitHubGiveNewTask {
-
+  @Value("${git.number.of.tasks}")
+  private Integer numberOfTasks;
   @Autowired
   private StateMachineFactory<State, Event> factory;
   @Autowired
@@ -25,7 +27,7 @@ public class GitHubGiveNewTask {
     try {
       StateMachine<State, Event> machine =stateMachineService.restoreMachineByNick(user);
       machine.sendEvent(Event.GET_THE_NEW_TASK);
-      if((Integer)machine.getExtendedState().getVariables().get("taskNumber") == 2){
+      if((Integer)machine.getExtendedState().getVariables().get("taskNumber") ==  numberOfTasks){
         machine.sendEvent(Event.LAST_TASK);
       }else{
         machine.sendEvent(Event.CHANGE_TASK);
