@@ -26,11 +26,12 @@ public class AddGitNameAction implements Action<State, Event> {
   @Override
   public void execute(final StateContext<State, Event> context) {
     String user = context.getExtendedState().getVariables().get("id").toString();
+    String nickname = context.getExtendedState().getVariables().get("gitNick").toString();
     StateEntity stateEntity = stateMachineRepository.findByUserID(user).get();
-    stateEntity.setGitName(context.getExtendedState().getVariables().get("gitNick").toString());
+    stateEntity.setGitName(nickname);
     stateMachineRepository.save(stateEntity);
     try {
-      slackService.sendPrivateMessage(slackService.getUserById(user), congratsAvailableNick);
+      slackService.sendPrivateMessage(slackService.getUserById(user), "nickname = " +nickname + "./ "+congratsAvailableNick);
     } catch (IOException | SlackApiException e) {
       throw new RuntimeException(e);
     }
