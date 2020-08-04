@@ -4,6 +4,8 @@ import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.jpa.StateEntity;
+import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ public class HideGuard implements Guard<State, Event> {
   private SlackService slackService;
   @Autowired
   private GitHubService gitHubService;
+  @Autowired
+  private StateMachineRepository stateMachineRepository;
 
   @Override
   public boolean evaluate(StateContext<State, Event> stateContext) {
@@ -39,6 +43,9 @@ public class HideGuard implements Guard<State, Event> {
         .anyMatch(e -> e.getLogin().equals(nickName));
     if (!nicknameMatch) {
       try {
+        StateEntity stateEntity = stateMachineRepository.findByUserID(user).get();
+        stateEntity.setGitName(nickName);
+        stateMachineRepository.save(stateEntity);
         slackService.sendPrivateMessage(slackService.getUserById(user), failedCheckNickName);
       } catch (IOException | SlackApiException e) {
         throw new RuntimeException(e);
