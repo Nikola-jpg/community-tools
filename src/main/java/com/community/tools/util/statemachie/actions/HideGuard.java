@@ -26,8 +26,6 @@ public class HideGuard implements Guard<State, Event> {
   private SlackService slackService;
   @Autowired
   private GitHubService gitHubService;
-  @Autowired
-  private StateMachineRepository stateMachineRepository;
 
   @Override
   public boolean evaluate(StateContext<State, Event> stateContext) {
@@ -43,9 +41,6 @@ public class HideGuard implements Guard<State, Event> {
         .anyMatch(e -> e.getLogin().equals(nickName));
     if (!nicknameMatch) {
       try {
-        StateEntity stateEntity = stateMachineRepository.findByUserID(user).get();
-        stateEntity.setGitName(nickName);
-        stateMachineRepository.save(stateEntity);
         slackService.sendPrivateMessage(slackService.getUserById(user), failedCheckNickName);
       } catch (IOException | SlackApiException e) {
         throw new RuntimeException(e);
