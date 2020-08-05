@@ -18,13 +18,24 @@ public class CheckForNewTaskAction implements Action<State, Event> {
     @Override
     public void execute(final StateContext<State, Event> context) {
       List<String> tasks = new ArrayList<>();
-      tasks.add(0,"https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/a_patform");
-      tasks.add(1,"https://www.youtube.com/watch?v=BIGsMPnqjkY&t");
-      tasks.add(2,"https://coub.com/view/27e36d");
-      tasks.add(3,"https://coub.com/view/2h06my");
+      tasks.add(0,"a_patform");
+      tasks.add(1,"b_bytecode");
+      tasks.add(2,"d_gc");
+      tasks.add(3,"e_primitives");
+      tasks.add(4,"f_boxing");
+      tasks.add(5,"gvalueref");
+      tasks.add(6,"hgenerics");
+      tasks.add(7,"i_equals_hashcode");
+      tasks.add(8,"j_exceptions");
+      tasks.add(9,"k_classpath");
+      tasks.add(10,"l_inner_classes");
+      tasks.add(12,"m_override_overload");
+      tasks.add(13,"n_strings");
+      tasks.add(14,"o_git");
+
       int i = (Integer)context.getExtendedState().getVariables().get("taskNumber");
       String getFirstTask =
-          "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Here is your next <"
+          "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Here is your next <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/"
               + tasks.get(i) + "|TASK>. gl :face_with_cowboy_hat:\"}}]";
       String user = context.getExtendedState().getVariables().get("id").toString();
      try {
