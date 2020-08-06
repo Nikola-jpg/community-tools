@@ -18,6 +18,7 @@ public class CheckForNewTaskAction implements Action<State, Event> {
     @Override
     public void execute(final StateContext<State, Event> context) {
       List<String> tasks = new ArrayList<>();
+      tasks.add(0,"a_patform");
       tasks.add(1,"b_bytecode");
       tasks.add(2,"d_gc");
       tasks.add(3,"e_primitives");
@@ -28,9 +29,9 @@ public class CheckForNewTaskAction implements Action<State, Event> {
       tasks.add(8,"j_exceptions");
       tasks.add(9,"k_classpath");
       tasks.add(10,"l_inner_classes");
-      tasks.add(12,"m_override_overload");
-      tasks.add(13,"n_strings");
-      tasks.add(14,"o_git");
+      tasks.add(11,"m_override_overload");
+      tasks.add(12,"n_strings");
+      tasks.add(13,"o_git");
 
       int i = (Integer)context.getExtendedState().getVariables().get("taskNumber");
       String getFirstTask =
