@@ -38,8 +38,6 @@ public class StateMachineService {
   private String failedCheckNickName;
   @Value("${doNotUnderstandWhatTodo}")
   private String doNotUnderstandWhatTodo;
-  @Value("${agreeMessage}")
-  private String agreeMessage;
 
   @Value("${noOneCase}")
   private String noOneCase;
