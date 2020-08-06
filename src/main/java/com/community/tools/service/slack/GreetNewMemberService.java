@@ -61,7 +61,7 @@ public class GreetNewMemberService {
         slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser().getRealName(),
             welcome);
         slackService
-            .sendBlocksMessage(teamJoinPayload.getEvent().getUser().getRealName(), agreeMessage);
+            .sendPrivateMessage(teamJoinPayload.getEvent().getUser().getRealName(), agreeMessage);
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
