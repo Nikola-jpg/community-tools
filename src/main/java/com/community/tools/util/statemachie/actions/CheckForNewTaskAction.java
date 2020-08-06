@@ -18,7 +18,6 @@ public class CheckForNewTaskAction implements Action<State, Event> {
     @Override
     public void execute(final StateContext<State, Event> context) {
       List<String> tasks = new ArrayList<>();
-      tasks.add(0,"a_patform");
       tasks.add(1,"b_bytecode");
       tasks.add(2,"d_gc");
       tasks.add(3,"e_primitives");
