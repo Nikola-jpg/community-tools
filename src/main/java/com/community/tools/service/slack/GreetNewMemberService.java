@@ -91,6 +91,7 @@ public class GreetNewMemberService {
               }else{
                 slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(), notThatMessage);
               }
+              break;
             case FIRST_LICENSE_MESS:
               if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)){
                 machine.sendEvent(Event.SECOND_AGREE_MESS);
