@@ -33,7 +33,7 @@ public class SecondAgreeLicenseAction implements Action<State, Event> {
             "2.2. Удали метку changes requested и добавь метку ready for review.\n" +
             "2.3. Метка done – задание принято.\n" +
             "2.4. Если ты не можешь менять метки – значит мы провтыкали и не добавили тебя в команду (или добавили, но приглашение не было принято, так что проверь почту) – напиши об этом Anton Chernetskiy в слеке.\n" +
-            "Сообщение для диалога со стажером:\n" +
+            "\n" +
             "Yay, you've read all the requirements! Congratulations! Below is a link to your first task. Good luck :) + ссылка на первое задание.";
     try {
       slackService.sendPrivateMessage(slackService.getUserById(user), secondAgreeMessage);
