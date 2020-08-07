@@ -14,6 +14,7 @@ import com.github.seratch.jslack.app_backend.events.handler.TeamJoinHandler;
 import com.github.seratch.jslack.app_backend.events.payload.MessagePayload;
 import com.github.seratch.jslack.app_backend.events.payload.TeamJoinPayload;
 import com.github.seratch.jslack.app_backend.events.servlet.SlackEventsApiServlet;
+import com.google.gson.JsonParseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -117,6 +118,7 @@ public class GreetNewMemberService {
             welcome);
         slackService
             .sendBlocksMessage(teamJoinPayload.getEvent().getUser().getRealName(), agreeMessage);
+      }catch (JsonParseException e){
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
