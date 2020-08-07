@@ -84,14 +84,6 @@ public class GreetNewMemberService {
               machine.sendEvent(Event.GET_THE_FIRST_TASK);
               stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
-            case NEW_USER:
-              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)){
-                machine.sendEvent(Event.FIRST_AGREE_MESS);
-                stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-              }else{
-                slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(), notThatMessage);
-              }
-              break;
             case FIRST_LICENSE_MESS:
               if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)){
                 machine.sendEvent(Event.SECOND_AGREE_MESS);
