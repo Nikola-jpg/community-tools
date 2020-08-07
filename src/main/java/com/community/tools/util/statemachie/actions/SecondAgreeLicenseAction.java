@@ -7,6 +7,7 @@ import com.github.seratch.jslack.api.methods.SlackApiException;
 
 import java.io.IOException;
 
+import com.google.gson.JsonParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -90,7 +91,9 @@ public class SecondAgreeLicenseAction implements Action<State, Event> {
             "\t]";
     try {
       slackService.sendBlocksMessage(slackService.getUserById(user), secondAgreeMessage);
-    } catch (IOException | SlackApiException e) {
+    }catch (JsonParseException e){
+    }
+    catch (IOException | SlackApiException e) {
       throw new RuntimeException(e);
     }
   }
