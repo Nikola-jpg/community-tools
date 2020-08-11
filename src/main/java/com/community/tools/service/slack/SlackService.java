@@ -100,6 +100,7 @@ public class SlackService {
       throw new RuntimeException(e);
     }
   }
+
   public String getIdByUser(String id){
     Slack slack = Slack.getInstance();
     try {
