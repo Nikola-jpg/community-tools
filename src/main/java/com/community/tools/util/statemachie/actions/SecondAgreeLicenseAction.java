@@ -23,7 +23,8 @@ public class SecondAgreeLicenseAction implements Action<State, Event> {
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    secondAgreeMessage ="[\n" +
+    secondAgreeMessage ="{\n" +
+            "\t\"blocks\": [\n" +
             "\t\t{\n" +
             "\t\t\t\"type\": \"header\",\n" +
             "\t\t\t\"text\": {\n" +
@@ -87,8 +88,18 @@ public class SecondAgreeLicenseAction implements Action<State, Event> {
             "\t\t\t\t\t\"text\": \"```Если ты не можешь менять метки – значит мы провтыкали и не добавили тебя в команду (или добавили, но приглашение не было принято, так что проверь почту) – напиши об этом Liliya Stepanovna в слеке.```\"\n" +
             "\t\t\t\t}\n" +
             "\t\t\t]\n" +
+            "\t\t},\n" +
+            "\t\t{\n" +
+            "\t\t\t\"type\": \"context\",\n" +
+            "\t\t\t\"elements\": [\n" +
+            "\t\t\t\t{\n" +
+            "\t\t\t\t\t\"type\": \"mrkdwn\",\n" +
+            "\t\t\t\t\t\"text\": \"`If you agree, enter \\\"I agree\\\" to continue.`\"\n" +
+            "\t\t\t\t}\n" +
+            "\t\t\t]\n" +
             "\t\t}\n" +
-            "\t]";
+            "\t]\n" +
+            "}";
     try {
       slackService.sendBlocksMessage(slackService.getUserById(user), secondAgreeMessage);
     }catch (JsonParseException e){
