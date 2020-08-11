@@ -22,8 +22,7 @@ public class FirstAgreeLicenseAction implements Action<State,Event> {
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    firstAgreeMessage = "{\n" +
-            "\t\"blocks\": [\n" +
+    firstAgreeMessage = "[\n" +
             "\t\t{\n" +
             "\t\t\t\"type\": \"header\",\n" +
             "\t\t\t\"text\": {\n" +
@@ -80,8 +79,7 @@ public class FirstAgreeLicenseAction implements Action<State,Event> {
             "\t\t\t\t}\n" +
             "\t\t\t]\n" +
             "\t\t}\n" +
-            "\t]\n" +
-            "}";
+            "\t]";
     try {
       slackService.sendBlocksMessage(slackService.getUserById(user), firstAgreeMessage);
     }catch (JsonParseException e){

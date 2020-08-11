@@ -23,8 +23,7 @@ public class SecondAgreeLicenseAction implements Action<State, Event> {
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    secondAgreeMessage ="{\n" +
-            "\t\"blocks\": [\n" +
+    secondAgreeMessage ="[\n" +
             "\t\t{\n" +
             "\t\t\t\"type\": \"header\",\n" +
             "\t\t\t\"text\": {\n" +
@@ -98,8 +97,7 @@ public class SecondAgreeLicenseAction implements Action<State, Event> {
             "\t\t\t\t}\n" +
             "\t\t\t]\n" +
             "\t\t}\n" +
-            "\t]\n" +
-            "}";
+            "\t]";
     try {
       slackService.sendBlocksMessage(slackService.getUserById(user), secondAgreeMessage);
     }catch (JsonParseException e){

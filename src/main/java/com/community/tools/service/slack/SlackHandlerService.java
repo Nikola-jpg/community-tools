@@ -50,8 +50,7 @@ public class SlackHandlerService {
   private TeamJoinHandler teamJoinHandler = new TeamJoinHandler() {
     @Override
     public void handle(TeamJoinPayload teamJoinPayload) {
-      agreeMessage = "{\n" +
-              "\t\"blocks\": [\n" +
+      agreeMessage = "[\n" +
               "\t\t{\n" +
               "\t\t\t\"type\": \"header\",\n" +
               "\t\t\t\"text\": {\n" +
@@ -115,8 +114,7 @@ public class SlackHandlerService {
               "\t\t\t\t}\n" +
               "\t\t\t]\n" +
               "\t\t}\n" +
-              "\t]\n" +
-              "}";
+              "\t]";
 
       try {
         String user = teamJoinPayload.getEvent().getUser().getId();
