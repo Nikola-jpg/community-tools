@@ -91,7 +91,7 @@ public class GitHubHookServlet extends HttpServlet {
         addMentorService.sendNotifyWithMentor(user, url);
       } else {
         service
-                .sendMessageToChat("test", "User" + user + " create a pull request \n url: " + url);
+                .sendMessageToChat("test_2", "User " + user + " create a pull request \n url: " + url);
 
       }
     }
