@@ -69,11 +69,17 @@ public class GitHubHookServlet extends HttpServlet {
         jdbcTemplate.update(
             "INSERT INTO public.\"GitHookData\" (time, jsonb_data) VALUES ('" + new Date() + "','"
                 + json + "'::jsonb);");
-        sendNotificationMessageAboutPR(json);
-        giveNewTaskIfPrOpened(json);
-        addMentorIfEventIsReview(json);
+        boolean actionExist = false;
+        try {
+          json.get("action");
+          actionExist = true;
+        }catch (JSONException ignored){}
 
-
+        if(actionExist) {
+          sendNotificationMessageAboutPR(json);
+          giveNewTaskIfPrOpened(json);
+          addMentorIfEventIsReview(json);
+        }
       }
     } catch (NoSuchAlgorithmException | InvalidKeyException | SlackApiException e) {
       throw new RuntimeException(e);
