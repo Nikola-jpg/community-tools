@@ -68,7 +68,7 @@ public class GitHubHookServlet extends HttpServlet {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
         jdbcTemplate.update(
             "INSERT INTO public.\"GitHookData\" (time, jsonb_data) VALUES ('" + new Date() + "','"
-                + json + "'::jsonb);");
+                + json.toString().replace("'","''") + "'::jsonb);");
         boolean actionExist = false;
         try {
           json.get("action");
