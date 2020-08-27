@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServlet;
@@ -105,9 +106,8 @@ public class GitHubHookServlet extends HttpServlet {
   private boolean checkForLabeled(JSONObject json){
     if (json.get("action").toString().equals(labeledStr)) {
       List<Object> list = json.getJSONObject("pull_request").getJSONArray("labels").toList();
-      Optional<JSONObject> label = list.stream().map(o -> (JSONObject) o)
-              .filter(e -> e.getString("name").equals("ready for review")).findFirst();
-      return label.isPresent();
+      return list.stream().map(o -> (HashMap) o)
+          .anyMatch(e -> e.get("name").equals("ready for review"));
     }
     return false;
   }
