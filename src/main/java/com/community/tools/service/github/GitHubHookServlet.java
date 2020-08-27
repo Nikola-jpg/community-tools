@@ -119,7 +119,13 @@ public class GitHubHookServlet extends HttpServlet {
       }catch (JSONException e){
         mentor = json.getJSONObject("review").getJSONObject("user").getString("login");
       }
-      creator = json.getJSONObject("pull_request").getJSONObject("user").getString("login");
+      try {
+        creator = json.getJSONObject("pull_request").getJSONObject("user").getString("login");
+      }catch (JSONException e){
+        creator = json.getJSONObject("issue").getJSONObject("user").getString("login");
+      }
+
+
       addMentorService.addMentor(mentor,creator);
     }
   }
