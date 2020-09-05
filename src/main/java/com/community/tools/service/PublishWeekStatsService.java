@@ -73,7 +73,7 @@ public class PublishWeekStatsService {
           messageBuilder.append("\n");
         });
 
-    slackService.sendMessageToChat("test_2", messageBuilder.toString());
+    slackService.sendMessageToConversation("test_3", messageBuilder.toString());
   }
 
   private String emojiGen(Event type) {
