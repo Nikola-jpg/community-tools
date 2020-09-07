@@ -31,7 +31,7 @@ class PublishWeekStatsServiceTest {
         slackService);
     assertDoesNotThrow(() -> {
       taskTestService.exportStat();
-      Mockito.verify(slackService).sendMessageToChat(eq("test_2"), anyString());
+      Mockito.verify(slackService).sendMessageToConversation(eq("test_3"), anyString());
     });
   }
 
@@ -61,7 +61,7 @@ class PublishWeekStatsServiceTest {
         slackService);
     assertDoesNotThrow(() -> {
       taskTestService.exportStat();
-      Mockito.verify(slackService).sendMessageToChat(anyString(), eq(message));
+      Mockito.verify(slackService).sendMessageToConversation(anyString(), eq(message));
     });
   }
 
@@ -98,7 +98,7 @@ class PublishWeekStatsServiceTest {
         slackService);
     assertDoesNotThrow(() -> {
       taskTestService.exportStat();
-      Mockito.verify(slackService).sendMessageToChat(anyString(), eq(message));
+      Mockito.verify(slackService).sendMessageToConversation(anyString(), eq(message));
     });
   }
 }
