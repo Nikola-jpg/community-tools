@@ -1,8 +1,5 @@
 package com.community.tools.service.slack;
 
-import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
-import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
-
 import com.community.tools.service.StateMachineService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
@@ -26,6 +23,8 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static com.community.tools.util.statemachie.Event.*;
 
 @RequiredArgsConstructor
 @Component
@@ -72,17 +71,25 @@ public class SlackHandlerService {
   private MessageHandler messageHandler = new MessageHandler() {
     @Override
     public void handle(MessagePayload teamJoinPayload) {
+      
       if (!teamJoinPayload.getEvent().getUser().equals(idOfSlackBot)) {
         try {
           StateMachine<State, Event> machine = stateMachineService
               .restoreMachine(teamJoinPayload.getEvent().getUser());
           switch (machine.getState().getId()) {
+            case CHECK_LOGIN:
+              if(teamJoinPayload.getEvent().getText().equals("yes")) {
+                machine.sendEvent(Event.ADD_GIT_NAME);
+                machine.sendEvent(Event.GET_THE_FIRST_TASK);
+                stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
+              }else if (teamJoinPayload.getEvent().getText().equals("no")) {
+                machine.sendEvent(DID_NOT_PASS_VERIFICATION_GIT_LOGIN);
+              }
+              break;
             case AGREED_LICENSE:
               machine.getExtendedState().getVariables()
                   .put("gitNick", teamJoinPayload.getEvent().getText());
-
-              machine.sendEvent(Event.ADD_GIT_NAME);
-              machine.sendEvent(Event.GET_THE_FIRST_TASK);
+              machine.sendEvent(Event.LOGIN_CONFIRMATION);
               stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
             case NEW_USER:

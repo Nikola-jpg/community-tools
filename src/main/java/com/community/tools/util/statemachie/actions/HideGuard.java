@@ -7,7 +7,11 @@ import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateEntity;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import com.github.seratch.jslack.api.methods.SlackApiException;
+
 import java.io.IOException;
+import java.util.Scanner;
+
+import org.kohsuke.github.GHFileNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -18,8 +22,8 @@ public class HideGuard implements Guard<State, Event> {
 
   @Value("${checkNickName}")
   private String checkNickName;
-  @Value("${failedCheckNickName}")
-  private String failedCheckNickName;
+  @Value("${failedNickName}")
+  private String failedNickName;
   @Value("${addGitName}")
   private String addGitName;
   @Autowired
@@ -37,13 +41,14 @@ public class HideGuard implements Guard<State, Event> {
     } catch (IOException | SlackApiException e) {
       throw new RuntimeException(e);
     }
-    boolean nicknameMatch = gitHubService.getGitHubAllUsers().stream()
-        .anyMatch(e -> e.getLogin().equals(nickName));
-    if (!nicknameMatch) {
+    boolean nicknameMatch = false;
+    try {
+      nicknameMatch = gitHubService.getUserByLoginInGitHub(nickName).getLogin().equals(nickName);
+    } catch (GHFileNotFoundException e) {
       try {
-        slackService.sendPrivateMessage(slackService.getUserById(user), failedCheckNickName);
-      } catch (IOException | SlackApiException e) {
-        throw new RuntimeException(e);
+        slackService.sendPrivateMessage(slackService.getUserById(user), failedNickName);
+      } catch (IOException | SlackApiException ex) {
+        throw new RuntimeException(ex);
       }
     }
     return nicknameMatch;

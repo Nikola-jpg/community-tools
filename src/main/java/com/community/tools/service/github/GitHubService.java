@@ -18,19 +18,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import lombok.RequiredArgsConstructor;
-import org.kohsuke.github.GHIssueState;
-import org.kohsuke.github.GHPullRequest;
-import org.kohsuke.github.GHPullRequestCommitDetail;
-import org.kohsuke.github.GHPullRequestReviewComment;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GHUser;
-import org.kohsuke.github.PagedIterable;
+import org.kohsuke.github.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 public class GitHubService {
-
+  @Autowired
   private final GitHubConnectService service;
 
   public Map<String, String> getPullRequests(boolean statePullRequest) {
@@ -97,6 +92,14 @@ public class GitHubService {
       }
 
       return new ArrayList<>(listEvents);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public GHUser getUserByLoginInGitHub(String gitHubLogin) throws GHFileNotFoundException {
+    try {
+      return service.getGitHubConnection().getUser(gitHubLogin);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
