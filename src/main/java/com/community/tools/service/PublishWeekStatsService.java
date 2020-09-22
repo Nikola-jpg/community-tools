@@ -72,7 +72,6 @@ public class PublishWeekStatsService {
           messageBuilder.append(authorsActivMessage);
           messageBuilder.append("\n");
         });
-
     slackService.sendMessageToConversation("test_3", messageBuilder.toString());
   }
 
