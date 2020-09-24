@@ -75,8 +75,12 @@ public class SlackHandlerService {
     stateEntity.setUserID(id);
     stateMachineRepository.save(stateEntity);
     stateMachineService.persistMachineForNewUser(id);
-    slackService.sendPrivateMessage(slackService.getUserById(id),
-            welcome);
+    slackService
+            .sendPrivateMessage(slackService.getUserById(id),
+                    welcome);
+    slackService
+            .sendBlocksMessage(slackService.getUserById(id),
+                    agreeMessage);
   }
 
   private MessageHandler messageHandler = new MessageHandler() {
