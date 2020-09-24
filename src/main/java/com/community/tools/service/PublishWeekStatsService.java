@@ -1,9 +1,9 @@
 package com.community.tools.service;
 
-import com.community.tools.service.github.GitHubService;
-import com.community.tools.service.slack.SlackService;
 import com.community.tools.model.Event;
 import com.community.tools.model.EventData;
+import com.community.tools.service.github.GitHubService;
+import com.community.tools.service.slack.SlackService;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,9 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,6 +28,11 @@ public class PublishWeekStatsService {
   private final GitHubService ghEventService;
   private final SlackService slackService;
 
+  /**
+   * Publish statistics of Events for last week. Statistic sends every Monday.
+   * @throws SlackApiException SlackApiException
+   * @throws IOException IOException
+   */
   @Scheduled(cron = "0 0 0 * * MON")
   public void exportStat()
       throws SlackApiException, IOException {

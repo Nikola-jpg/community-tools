@@ -15,6 +15,9 @@ import com.github.seratch.jslack.app_backend.events.payload.MessagePayload;
 import com.github.seratch.jslack.app_backend.events.payload.TeamJoinPayload;
 import com.github.seratch.jslack.app_backend.events.servlet.SlackEventsApiServlet;
 import com.google.gson.JsonParseException;
+import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,9 +26,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @RequiredArgsConstructor
 @Component
@@ -62,7 +62,8 @@ public class SlackHandlerService {
             welcome);
         slackService
             .sendBlocksMessage(teamJoinPayload.getEvent().getUser().getRealName(), agreeMessage);
-      }catch (JsonParseException e){
+      } catch (JsonParseException e) {
+        e.getMessage();
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
@@ -86,30 +87,34 @@ public class SlackHandlerService {
               stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
             case NEW_USER:
-              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)){
+              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)) {
                 machine.sendEvent(Event.FIRST_AGREE_MESS);
                 stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-              }else{
-                slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(), notThatMessage);
+              } else {
+                slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(),
+                        notThatMessage);
               }
               break;
             case FIRST_LICENSE_MESS:
-              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)){
+              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)) {
                 machine.sendEvent(Event.SECOND_AGREE_MESS);
                 stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-              }else{
-                slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(), notThatMessage);
+              } else {
+                slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(),
+                        notThatMessage);
               }
               break;
             case SECOND_LICENSE_MESS:
-              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)){
+              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)) {
                 machine.sendEvent(AGREE_LICENSE);
                 stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-              }else{
-                slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(), notThatMessage);
+              } else {
+                slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(),
+                        notThatMessage);
               }
               break;
-
+            default:
+              break;
           }
         } catch (Exception e) {
           throw new RuntimeException(e);
