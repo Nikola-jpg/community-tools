@@ -1,7 +1,6 @@
 package com.community.tools.service.slack;
 
 import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
-import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
 
 import com.community.tools.service.StateMachineService;
 import com.community.tools.util.statemachie.Event;
@@ -41,6 +40,8 @@ public class SlackHandlerService {
   private String agreeMessage;
   @Value("${usersAgreeMessage}")
   private String usersAgreeMessage;
+  @Value("${testModeSwitcher}")
+  private Boolean testModeSwitcher;
 
   private final SlackService slackService;
   private final StateMachineService stateMachineService;
@@ -59,53 +60,65 @@ public class SlackHandlerService {
 
         stateMachineService.persistMachineForNewUser(user);
         slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser().getRealName(),
-            welcome);
+                welcome);
         slackService
-            .sendBlocksMessage(teamJoinPayload.getEvent().getUser().getRealName(), agreeMessage);
-      }catch (JsonParseException e){
+                .sendBlocksMessage(teamJoinPayload.getEvent().getUser().getRealName(), agreeMessage);
+      } catch (JsonParseException e){
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
     }
   };
 
+  private void resetUser(String id) throws Exception {
+    StateEntity stateEntity = new StateEntity();
+    stateEntity.setUserID(id);
+    stateMachineRepository.save(stateEntity);
+    stateMachineService.persistMachineForNewUser(id);
+    slackService.sendPrivateMessage(slackService.getUserById(id),
+            welcome);
+  }
+
   private MessageHandler messageHandler = new MessageHandler() {
     @Override
     public void handle(MessagePayload teamJoinPayload) {
       if (!teamJoinPayload.getEvent().getUser().equals(idOfSlackBot)) {
         try {
+          if (teamJoinPayload.getEvent().getText().equals("reset") && testModeSwitcher) {
+            resetUser(slackService.getIdByUser(teamJoinPayload.getEvent().getUser()));
+          }
           StateMachine<State, Event> machine = stateMachineService
-              .restoreMachine(teamJoinPayload.getEvent().getUser());
+                  .restoreMachine(teamJoinPayload.getEvent().getUser());
           switch (machine.getState().getId()) {
             case AGREED_LICENSE:
               machine.getExtendedState().getVariables()
-                  .put("gitNick", teamJoinPayload.getEvent().getText());
+                      .put("gitNick", teamJoinPayload.getEvent().getText());
 
               machine.sendEvent(Event.ADD_GIT_NAME);
               machine.sendEvent(Event.GET_THE_FIRST_TASK);
               stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
             case NEW_USER:
-              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)){
+              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)) {
                 machine.sendEvent(Event.FIRST_AGREE_MESS);
                 stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-              }else{
+              } else {
                 slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(), notThatMessage);
               }
               break;
             case FIRST_LICENSE_MESS:
-              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)){
+              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)) {
                 machine.sendEvent(Event.SECOND_AGREE_MESS);
                 stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-              }else{
+              } else {
                 slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(), notThatMessage);
               }
               break;
             case SECOND_LICENSE_MESS:
-              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)){
+              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)) {
                 machine.sendEvent(AGREE_LICENSE);
                 stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-              }else{
+              } else {
                 slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(), notThatMessage);
               }
               break;
@@ -127,7 +140,9 @@ public class SlackHandlerService {
 
     @Override
     protected void setupDispatcher(EventsDispatcher dispatcher) {
-      dispatcher.register(teamJoinHandler);
+      if (!testModeSwitcher) {
+        dispatcher.register(teamJoinHandler);
+      }
       dispatcher.register(messageHandler);
     }
   }
