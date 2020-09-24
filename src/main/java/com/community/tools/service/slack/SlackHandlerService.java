@@ -72,18 +72,16 @@ public class SlackHandlerService {
 
 
   private void resetUser(String id) throws Exception {
-    StateEntity stateEntity = new StateEntity();
     String user = slackService.getUserById(id);
-
+    StateEntity stateEntity = new StateEntity();
     stateEntity.setUserID(id);
     stateMachineRepository.save(stateEntity);
+
     stateMachineService.persistMachineForNewUser(id);
+    slackService.sendPrivateMessage(user,
+            welcome);
     slackService
-            .sendPrivateMessage(user,
-                    welcome);
-    slackService
-            .sendBlocksMessage(user,
-                    agreeMessage);
+            .sendBlocksMessage(user, agreeMessage);
   }
 
   private MessageHandler messageHandler = new MessageHandler() {
@@ -92,7 +90,7 @@ public class SlackHandlerService {
       if (!teamJoinPayload.getEvent().getUser().equals(idOfSlackBot)) {
         try {
           if (teamJoinPayload.getEvent().getText().equals("reset") && testModeSwitcher) {
-            resetUser(teamJoinPayload.getEvent().getParentUserId());
+            resetUser(new TeamJoinPayload().getEvent().getUser().getId());
           }
           StateMachine<State, Event> machine = stateMachineService
                   .restoreMachine(teamJoinPayload.getEvent().getUser());
