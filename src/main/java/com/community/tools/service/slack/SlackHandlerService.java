@@ -70,9 +70,11 @@ public class SlackHandlerService {
     }
   };
 
+
   private void resetUser(String user) throws Exception {
     StateEntity stateEntity = new StateEntity();
     String id = slackService.getIdByUser(user);
+
     stateEntity.setUserID(id);
     stateMachineRepository.save(stateEntity);
     stateMachineService.persistMachineForNewUser(id);
