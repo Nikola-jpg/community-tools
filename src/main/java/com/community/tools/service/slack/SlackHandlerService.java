@@ -90,7 +90,7 @@ public class SlackHandlerService {
       if (!teamJoinPayload.getEvent().getUser().equals(idOfSlackBot)) {
         try {
           if (teamJoinPayload.getEvent().getText().equals("reset") && testModeSwitcher) {
-            resetUser(new TeamJoinPayload().getEvent().getUser().getId());
+            resetUser(teamJoinPayload.getEvent().getUser());
           }
           StateMachine<State, Event> machine = stateMachineService
                   .restoreMachine(teamJoinPayload.getEvent().getUser());
