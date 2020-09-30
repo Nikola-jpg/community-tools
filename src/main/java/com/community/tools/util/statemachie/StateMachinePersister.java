@@ -1,6 +1,6 @@
 package com.community.tools.util.statemachie;
 
-import com.community.tools.util.statemachie.jpa.StateEntity;
+import com.community.tools.model.StateEntity;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
