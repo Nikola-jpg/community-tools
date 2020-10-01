@@ -64,10 +64,10 @@ public class GitHubController {
   @ApiOperation(value = "Returns list of pull requests, comments"
           + " and commits in the defined interval")
   @ApiImplicitParams({
-          @ApiImplicitParam(name = "start", dataType = "string",
-                  paramType = "query", value = "Date in format 'yyyy-MM-dd'"),
-          @ApiImplicitParam(name = "end", dataType = "string",
-                  paramType = "query", value = "Date in format 'yyyy-MM-dd'")
+          @ApiImplicitParam(name = "start", required = true,
+                  value = "Date in format 'yyyy-MM-dd'"),
+          @ApiImplicitParam(name = "end", required = true,
+                  value = "Date in format 'yyyy-MM-dd'")
   })
   @GetMapping(value = "/event", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<EventData>> getAllEvents(
