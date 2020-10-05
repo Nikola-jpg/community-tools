@@ -1,20 +1,14 @@
 package com.community.tools.util.statemachie.actions;
 
-import com.community.tools.controller.GitHubController;
-import com.community.tools.controller.GitSlackUsersController;
-import com.community.tools.controller.ServletConfig;
-import com.community.tools.service.StateMachineService;
-import com.community.tools.service.github.AddMentorService;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubHookServlet;
 import com.community.tools.service.github.GitHubService;
-import com.community.tools.service.github.jpa.MentorsRepository;
+import com.community.tools.service.slack.SlackHandlerService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import com.github.seratch.jslack.api.methods.SlackApiException;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,10 +21,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateContext;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.persistence.EntityManagerFactory;
 import javax.transaction.Transactional;
 
 import java.io.IOException;
@@ -45,11 +37,12 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @Transactional
 @TestPropertySource(locations = "/application-test.properties")
-@Sql(value = "/test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class HideGuardTest {
 
   @Autowired
   private HideGuard hideGuard;
+  @MockBean
+  private SlackHandlerService slackHandlerService;
   @MockBean
   private StateMachineRepository repository;
   @MockBean
@@ -78,10 +71,6 @@ public class HideGuardTest {
     repoService.set(hideGuard, gitHubService);
   }
 
-  @After
-  public void tearDown() throws Exception {
-  }
-
   @Test
   public void checkingIfThereIsALoginInTheGithubAndReturnTrue() throws IOException, SlackApiException {
     Map<Object, Object> mockData = new HashMap<>();
@@ -108,7 +97,7 @@ public class HideGuardTest {
   }
 
   @Test
-  public void checkWhenThereIsNoLoginInTheGithub() throws IOException, SlackApiException {
+  public void checkWhenThereIsNotLoginInTheGithub() throws IOException {
     Map<Object, Object> mockData = new HashMap<>();
     mockData.put("id", "U0191K2V20K");
     mockData.put("gitNick", "likeRewca");

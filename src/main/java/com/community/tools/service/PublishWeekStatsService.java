@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,8 @@ public class PublishWeekStatsService {
 
   private final GitHubService ghEventService;
   private final SlackService slackService;
+  @Value("${channel}")
+  private String channel;
 
   @Scheduled(cron = "0 0 0 * * MON")
   public void exportStat()
@@ -72,7 +76,7 @@ public class PublishWeekStatsService {
           messageBuilder.append(authorsActivMessage);
           messageBuilder.append("\n");
         });
-    slackService.sendMessageToConversation("test_3", messageBuilder.toString());
+    slackService.sendMessageToConversation(channel, messageBuilder.toString());
   }
 
   private String emojiGen(Event type) {

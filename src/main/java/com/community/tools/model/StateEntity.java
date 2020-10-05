@@ -1,6 +1,5 @@
 package com.community.tools.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -9,11 +8,8 @@ import javax.persistence.Table;
 @Table(name = "state_entity")
 public class StateEntity {
     @Id
-    @Column(name="user_id")
     private String userID;
-    @Column(name="git_name")
     private String gitName;
-    @Column(name = "state_machine")
     private byte[] stateMachine;
 
     public StateEntity() {

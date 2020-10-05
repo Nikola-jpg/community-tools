@@ -4,9 +4,6 @@ import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.github.seratch.jslack.api.methods.SlackApiException;
-
-import java.io.IOException;
 
 import org.kohsuke.github.GHFileNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,21 +29,13 @@ public class HideGuard implements Guard<State, Event> {
   public boolean evaluate(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
     String nickName = stateContext.getExtendedState().getVariables().get("gitNick").toString();
-    try {
       slackService.sendPrivateMessage(slackService.getUserById(user),
           checkNickName + nickName);
-    } catch (IOException | SlackApiException e) {
-      throw new RuntimeException(e);
-    }
     boolean nicknameMatch = false;
     try {
       nicknameMatch = gitHubService.getUserByLoginInGitHub(nickName).getLogin().equals(nickName);
     } catch (GHFileNotFoundException e) {
-      try {
-        slackService.sendPrivateMessage(slackService.getUserById(user), failedNickName);
-      } catch (IOException | SlackApiException ex) {
-        throw new RuntimeException(ex);
-      }
+      slackService.sendPrivateMessage(slackService.getUserById(user), failedNickName);
     }
     return nicknameMatch;
   }

@@ -11,5 +11,3 @@ CREATE TABLE if not exists state_entity
 delete state_entity;
 
 INSERT into state_entity values ('Yura', 'testName', 1);
-
-/*select * from "public".state_entity;*/

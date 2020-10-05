@@ -104,8 +104,10 @@ public class SlackHandlerService {
                 machine.sendEvent(Event.ADD_GIT_NAME);
                 machine.sendEvent(Event.GET_THE_FIRST_TASK);
                 stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-              }else if (teamJoinPayload.getEvent().getText().equals("no")) {
+              } else if (teamJoinPayload.getEvent().getText().equals("no")) {
                 machine.sendEvent(DID_NOT_PASS_VERIFICATION_GIT_LOGIN);
+              } else {
+                slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(), notThatMessage);
               }
               break;
             case AGREED_LICENSE:

@@ -5,17 +5,17 @@ import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.github.seratch.jslack.api.methods.SlackApiException;
+import org.kohsuke.github.GHFileNotFoundException;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 
-import java.io.IOException;
-
-
 public class VerificationLoginAction implements Action<State, Event> {
 
+  @Value("${askAboutProfile}")
+  private String askAboutProfile;
   @Autowired
   private SlackService slackService;
   @Autowired
@@ -27,14 +27,13 @@ public class VerificationLoginAction implements Action<State, Event> {
   public void execute(StateContext<State, Event> context) {
     String user = context.getExtendedState().getVariables().get("id").toString();
     String nickname = context.getExtendedState().getVariables().get("gitNick").toString();
-    GHUser userGitLogin;
-
+    GHUser userGitLogin = new GHUser();
     try {
       userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
-      slackService.sendPrivateMessage(slackService.getUserById(user),
-          "Please tell me is that you? (yes/no) \n" + userGitLogin.getHtmlUrl().toString());
-    } catch (IOException | SlackApiException e) {
+    } catch (GHFileNotFoundException e) {
       throw new RuntimeException(e);
     }
+    slackService.sendPrivateMessage(slackService.getUserById(user),
+        userGitLogin.getHtmlUrl().toString());
   }
 }

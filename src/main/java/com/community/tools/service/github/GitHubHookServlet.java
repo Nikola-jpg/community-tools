@@ -38,6 +38,8 @@ public class GitHubHookServlet extends HttpServlet {
   private String password;
   @Value("${GITHUB_SECRET_TOKEN}")
   private String secret;
+  @Value("${channel}")
+  private String channel;
   @Autowired
   private SlackService service;
   @Autowired
@@ -98,7 +100,7 @@ public class GitHubHookServlet extends HttpServlet {
         addMentorService.sendNotifyWithMentor(user, url);
       } else {
         service
-                .sendMessageToConversation("test_3", "User " + user + " create a pull request \n url: " + url);
+                .sendMessageToConversation(channel, "User " + user + " create a pull request \n url: " + url);
 
       }
     }

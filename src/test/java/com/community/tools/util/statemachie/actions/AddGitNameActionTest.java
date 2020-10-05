@@ -1,16 +1,14 @@
 package com.community.tools.util.statemachie.actions;
 
-import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubHookServlet;
 import com.community.tools.service.github.GitHubService;
+import com.community.tools.service.slack.SlackHandlerService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.model.StateEntity;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
-import com.github.seratch.jslack.api.methods.SlackApiException;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +56,8 @@ public class AddGitNameActionTest {
   private SlackService slackSer;
   @MockBean
   private GitHubHookServlet gitHubHookServlet;
+  @MockBean
+  private SlackHandlerService slackHandlerService;
   @Mock
   private StateMachine<State, Event> machine;
   @Mock
@@ -87,10 +87,6 @@ public class AddGitNameActionTest {
 
   }
 
-  @After
-  public void tearDown() throws Exception {
-  }
-
   @Test
   public void executeTest() throws Exception {
     Map<Object, Object> mockData = new HashMap<>();
@@ -114,7 +110,8 @@ public class AddGitNameActionTest {
     doNothing().when(team).add(user);
 
     when(slackSer.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
-    when(slackSer.sendPrivateMessage("Горб Юра", "Hurray! Your nick is available. Nice to meet you :smile:")).thenReturn("");
+    when(slackSer.sendPrivateMessage("Горб Юра",
+        "Hurray! Your nick is available. Nice to meet you :smile:")).thenReturn("");
     when(slackSer.sendMessageToConversation(anyString(), anyString())).thenReturn("");
 
     addGitNameAction.execute(stateContext);
@@ -128,19 +125,45 @@ public class AddGitNameActionTest {
     verify(slackSer, times(1)).sendMessageToConversation(anyString(), anyString());
   }
 
-  @Test(expected = RuntimeException.class)
-  public void executeException() throws IOException, SlackApiException {
+
+  @Test
+  public void shouldGetExceptionWhenAddingToRole() throws IOException {
     Map<Object, Object> mockData = new HashMap<>();
     mockData.put("id", "U0191K2V20K");
     mockData.put("gitNick", "likeRewca");
 
+    Set<GHTeam> mockSet = new HashSet<>();
+    mockSet.add(team);
+
+    StateEntity entity = new StateEntity();
+
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
 
+    when(repository.findByUserID("U0191K2V20K")).thenReturn(Optional.of(entity));
+
+    when(gitHubService.getUserByLoginInGitHub("likeRewca")).thenReturn(user);
+    when(gitHubConnectService.getGitHubRepository()).thenReturn(ghRepository);
+    when(ghRepository.getTeams()).thenReturn(mockSet);
+    when(team.getName()).thenReturn("trainees");
+    doThrow(IOException.class).when(team).add(user);
+
     when(slackSer.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
     when(slackSer.sendPrivateMessage("Горб Юра",
-        "Hurray! Your nick is available. Nice to meet you :smile:")).thenThrow(SlackApiException.class);
+        "Something went wrong when adding to role. You need to contact the admin!")).thenReturn("");
 
     addGitNameAction.execute(stateContext);
+
+    verify(stateContext, times(2)).getExtendedState();
+    verify(gitHubService, times(1)).getUserByLoginInGitHub("likeRewca");
+    verify(gitHubConnectService, times(1)).getGitHubRepository();
+    verify(slackSer, times(3)).getUserById("U0191K2V20K");
+    verify(slackSer, times(1))
+        .sendPrivateMessage("Горб Юра",
+            "Hurray! Your nick is available. Nice to meet you :smile:");
+    verify(slackSer, times(1))
+        .sendPrivateMessage("Горб Юра",
+            "Something went wrong when adding to role. You need to contact the admin!");
+    verify(slackSer, times(1)).sendMessageToConversation(anyString(), anyString());
   }
 }

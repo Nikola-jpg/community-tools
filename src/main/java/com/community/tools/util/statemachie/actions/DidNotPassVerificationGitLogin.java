@@ -8,6 +8,7 @@ import com.community.tools.util.statemachie.State;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 
@@ -15,6 +16,8 @@ import java.io.IOException;
 
 public class DidNotPassVerificationGitLogin implements Action<State, Event> {
 
+  @Value("${answeredNoDuringVerification}")
+  private String answeredNoDuringVerification;
   @Autowired
   private SlackService slackService;
   @Autowired
@@ -25,11 +28,7 @@ public class DidNotPassVerificationGitLogin implements Action<State, Event> {
   @Override
   public void execute(StateContext<State, Event> context) {
     String user = context.getExtendedState().getVariables().get("id").toString();
-    try {
-      slackService.sendPrivateMessage(slackService.getUserById(user),
-          "Lets try again! \nWrite your nike again.");
-    } catch (IOException | SlackApiException e) {
-      throw new RuntimeException(e);
-    }
+    slackService.sendPrivateMessage(slackService.getUserById(user),
+        answeredNoDuringVerification);
   }
 }
