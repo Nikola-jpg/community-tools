@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Value;
 
 class PublishWeekStatsServiceTest {
 
@@ -31,7 +32,7 @@ class PublishWeekStatsServiceTest {
         slackService);
     assertDoesNotThrow(() -> {
       taskTestService.exportStat();
-      Mockito.verify(slackService).sendMessageToConversation(eq("test_3"), anyString());
+      Mockito.verify(slackService).sendMessageToConversation(any(), anyString());
     });
   }
 
@@ -61,7 +62,7 @@ class PublishWeekStatsServiceTest {
         slackService);
     assertDoesNotThrow(() -> {
       taskTestService.exportStat();
-      Mockito.verify(slackService).sendMessageToConversation(anyString(), eq(message));
+      Mockito.verify(slackService).sendMessageToConversation(any(), eq(message));
     });
   }
 
@@ -98,7 +99,7 @@ class PublishWeekStatsServiceTest {
         slackService);
     assertDoesNotThrow(() -> {
       taskTestService.exportStat();
-      Mockito.verify(slackService).sendMessageToConversation(anyString(), eq(message));
+      Mockito.verify(slackService).sendMessageToConversation(any(), eq(message));
     });
   }
 }
