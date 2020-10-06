@@ -1,6 +1,7 @@
 package com.community.tools;
 
-import com.community.tools.util.ConvertUnicode;
+import static com.community.tools.util.ReadPropertyFromFile.readPropertiesFromFile;
+
 import java.util.HashMap;
 import java.util.Properties;
 import lombok.SneakyThrows;
@@ -13,7 +14,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class Application {
 
   /**
-   * Main method of Spring application.
+   * Build Spring Application with additional properties.
+   * Spring application uses application.properties and Properties from props().
    * @param args args
    */
   public static void main(String[] args) {
@@ -29,8 +31,7 @@ public class Application {
    */
   @SneakyThrows
   private static Properties props() {
-    ConvertUnicode convert = new ConvertUnicode();
-    HashMap<String,String> prop = convert.convertToUnicode("src/main/resources/property.txt");
+    HashMap<String,String> prop = readPropertiesFromFile("src/main/resources/property.txt");
     Properties properties = new Properties();
     properties.putAll(prop);
     return properties;

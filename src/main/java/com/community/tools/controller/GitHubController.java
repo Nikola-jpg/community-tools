@@ -43,7 +43,7 @@ public class GitHubController {
 
   /**
    * Endpoint /pull_request/{state}.
-   * @param state boolean variable, that shows pull request status
+   * @param state boolean variable, that shows pull request status. True - open, False - closed
    * @return  ResponseEntity with Status.OK and body.
    Body contains List of Map(user,title) with this status
    */
