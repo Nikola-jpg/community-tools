@@ -50,7 +50,7 @@ public class PublishWeekStatsService {
 
     messageBuilder.append("[{\"type\": \"header\",\t\"text\": {\"type\":"
             + " \"plain_text\",\"text\": \"Statistic:\"}},"
-            + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \">>>");
+            + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"");
     events.stream()
         .collect(Collectors.groupingBy(EventData::getType))
         .entrySet().stream()
@@ -60,8 +60,8 @@ public class PublishWeekStatsService {
         .forEach(entry -> {
           entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
           messageBuilder.append("\n");
-          messageBuilder.append(entry.getKey()).append(emojiGen(entry.getKey()));
-          messageBuilder.append(": ");
+          messageBuilder.append(changeTypeName(entry.getKey())).append(emojiGen(entry.getKey()));
+          messageBuilder.append(":  ");
           messageBuilder.append(entry.getValue().size());
         });
     messageBuilder.append("\"\t}]},{\"type\": \"header\",\"text\": "
@@ -72,27 +72,12 @@ public class PublishWeekStatsService {
             .reversed())
         .forEach(name -> {
           StringBuilder authorsActivMessage = new StringBuilder();
-          HashMap<String, Integer> active = new HashMap<>();
           name.getValue()
-                .forEach(eventData -> {
-                  active.putIfAbsent(emojiGen(eventData.getType()), 1);
-                  active.computeIfPresent(emojiGen(eventData.getType()), (key, val) -> val + 1);
-                });
-          active.forEach((key, value) ->
-                  authorsActivMessage.append(key + ":    " + value + "  \\n "));
+                  .forEach(eventData -> authorsActivMessage.append(emojiGen(eventData.getType())));
           messageBuilder.append(",{\"type\": \"context\",\n"
-                  + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"`");
+                  + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*");
           messageBuilder.append(name.getKey());
-          messageBuilder.append(":` \"\n"
-                  + "\t\t\t}\n"
-                  + "\t\t]\n"
-                  + "\t},\n"
-                  + "\t{\n"
-                  + "\t\t\"type\": \"context\",\n"
-                  + "\t\t\"elements\": [\n"
-                  + "\t\t\t{\n"
-                  + "\t\t\t\t\"type\": \"mrkdwn\",\n"
-                  + "\t\t\t\t\"text\": \">>>");
+          messageBuilder.append("*: ");
           messageBuilder.append(authorsActivMessage);
           messageBuilder.append("\"}]}");
         });
@@ -110,6 +95,21 @@ public class PublishWeekStatsService {
         return ":moneybag:";
       case PULL_REQUEST_CREATED:
         return ":mailbox_with_mail:";
+      default:
+        return "";
+    }
+  }
+
+  private String changeTypeName(Event type) {
+    switch (type) {
+      case COMMENT:
+        return "*Commit*";
+      case COMMIT:
+        return "*Comment*";
+      case PULL_REQUEST_CLOSED:
+        return "*Pull Request created*";
+      case PULL_REQUEST_CREATED:
+        return "*Pull Request closed*";
       default:
         return "";
     }
