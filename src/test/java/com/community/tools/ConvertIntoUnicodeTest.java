@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.community.tools.util.ConvertUnicode;
 import com.mgnt.utils.StringUnicodeEncoderDecoder;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -55,6 +57,7 @@ public class ConvertIntoUnicodeTest {
       property.put(arr[0], arr[1]);
     }
     linesProp.close();
+
   }
 
   @Test
@@ -105,6 +108,18 @@ public class ConvertIntoUnicodeTest {
   public void convertProperty() {
     HashMap<String,String> prop = convertUnicode.convertToUnicode("src/test/resources/prop.txt");
     assertEquals(prop.get("firstValue"), "My first value");
+  }
+
+  @Test
+  public void readFromFile() {
+    Stream<String> stream = new BufferedReader(
+        new InputStreamReader(ClassLoader.getSystemResourceAsStream("property.txt"))).lines();
+    List<String> propList = stream.collect(Collectors.toList());
+    for (String str : propList) {
+      String[] arr = str.split(" = ");
+      System.out.println(arr[0] + " " + arr[1]);
+    }
+    stream.close();
   }
 
 }

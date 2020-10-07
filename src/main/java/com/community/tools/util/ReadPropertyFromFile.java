@@ -1,5 +1,7 @@
 package com.community.tools.util;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,8 +23,8 @@ public class ReadPropertyFromFile {
   @SneakyThrows
   public static HashMap<String, String> readPropertiesFromFile(String fileName) {
     HashMap<String,String> property = new HashMap<>();
-    Path pathProp = Paths.get(fileName);
-    Stream<String> linesProp = Files.lines(pathProp);
+    Stream<String> linesProp = new BufferedReader(
+        new InputStreamReader(ClassLoader.getSystemResourceAsStream(fileName))).lines();
     List<String> propList = linesProp.collect(Collectors.toList());
     for (String str : propList) {
       String[] arr = str.split(" = ");
