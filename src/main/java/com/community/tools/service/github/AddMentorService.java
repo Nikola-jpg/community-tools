@@ -7,6 +7,7 @@ import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,8 @@ import java.io.IOException;
 
 @Service
 public class AddMentorService {
-
+  @Value("${generalInformationChannel}")
+  private String channel;
   @Autowired
   private StateMachineService stateMachineService;
   @Autowired
@@ -37,16 +39,12 @@ public class AddMentorService {
   }
 
   public void sendNotifyWithMentor(String user, String url) {
-    try {
-      service
-          .sendMessageToChat("test_2", "User " + user + " create a pull request \n url: " + url
-              + "\n Please check it : <@" + mentorsRepository
-              .findByGitNick(stateMachineService.restoreMachineByNick(user)
-                  .getExtendedState().getVariables().get("mentor").toString()).get().getSlackId()
-              + ">");
-    } catch (IOException | SlackApiException e) {
-      throw new RuntimeException(e);
-    }
+    service
+        .sendMessageToConversation(channel, "User " + user + " created a pull request \n url: " + url
+            + "\n Please check it : <@" + mentorsRepository
+            .findByGitNick(stateMachineService.restoreMachineByNick(user)
+                .getExtendedState().getVariables().get("mentor").toString()).get().getSlackId()
+            + ">");
   }
 
 }

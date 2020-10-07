@@ -9,7 +9,7 @@ import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.jpa.StateEntity;
+import com.community.tools.model.StateEntity;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
