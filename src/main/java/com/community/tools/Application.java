@@ -2,6 +2,8 @@ package com.community.tools;
 
 import static com.community.tools.util.ReadPropertyFromFile.readPropertiesFromFile;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Properties;
 import lombok.SneakyThrows;
@@ -31,7 +33,7 @@ public class Application {
    */
   @SneakyThrows
   private static Properties props() {
-    HashMap<String,String> prop = readPropertiesFromFile("src/main/resources/property.txt");
+    HashMap<String,String> prop = readPropertiesFromFile("property.txt");
     Properties properties = new Properties();
     properties.putAll(prop);
     return properties;
