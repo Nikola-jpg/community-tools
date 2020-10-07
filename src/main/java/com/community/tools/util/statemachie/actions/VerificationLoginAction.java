@@ -34,6 +34,6 @@ public class VerificationLoginAction implements Action<State, Event> {
       throw new RuntimeException(e);
     }
     slackService.sendPrivateMessage(slackService.getUserById(user),
-        userGitLogin.getHtmlUrl().toString());
+        askAboutProfile + userGitLogin.getHtmlUrl().toString());
   }
 }
