@@ -15,7 +15,7 @@ import java.io.IOException;
 
 @Service
 public class AddMentorService {
-  @Value("${channel}")
+  @Value("${generalInformationChannel}")
   private String channel;
   @Autowired
   private StateMachineService stateMachineService;

@@ -38,7 +38,7 @@ public class GitHubHookServlet extends HttpServlet {
   private String password;
   @Value("${GITHUB_SECRET_TOKEN}")
   private String secret;
-  @Value("${channel}")
+  @Value("${generalInformationChannel}")
   private String channel;
   @Autowired
   private SlackService service;

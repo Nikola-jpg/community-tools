@@ -28,7 +28,7 @@ public class PublishWeekStatsService {
 
   private final GitHubService ghEventService;
   private final SlackService slackService;
-  @Value("${channel}")
+  @Value("${generalInformationChannel}")
   private String channel;
 
   @Scheduled(cron = "0 0 0 * * MON")

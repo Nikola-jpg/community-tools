@@ -20,7 +20,7 @@ public class AddGitNameAction implements Action<State, Event> {
 
   @Value("${congratsAvailableNick}")
   private String congratsAvailableNick;
-  @Value("${channel}")
+  @Value("${generalInformationChannel}")
   private String channel;
   @Autowired
   private SlackService slackService;
