@@ -96,12 +96,8 @@ public class GitHubService {
     }
   }
 
-  public GHUser getUserByLoginInGitHub(String gitHubLogin) throws GHFileNotFoundException {
-    try {
-      return service.getGitHubConnection().getUser(gitHubLogin);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+  public GHUser getUserByLoginInGitHub(String gitHubLogin) throws IOException {
+    return service.getGitHubConnection().getUser(gitHubLogin);
   }
 
   public Set<GHUser> getGitHubAllUsers() {

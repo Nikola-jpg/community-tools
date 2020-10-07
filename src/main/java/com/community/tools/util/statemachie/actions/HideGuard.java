@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.guard.Guard;
 
+import java.io.IOException;
+
 
 public class HideGuard implements Guard<State, Event> {
 
@@ -34,7 +36,7 @@ public class HideGuard implements Guard<State, Event> {
     boolean nicknameMatch = false;
     try {
       nicknameMatch = gitHubService.getUserByLoginInGitHub(nickName).getLogin().equals(nickName);
-    } catch (GHFileNotFoundException e) {
+    } catch (IOException e) {
       slackService.sendPrivateMessage(slackService.getUserById(user), failedNickName);
     }
     return nicknameMatch;

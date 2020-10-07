@@ -109,7 +109,7 @@ public class HideGuardTest {
     when(slackSer.sendPrivateMessage("Горб Юра",
         "Okay! Let me check your nick, " + mockData.get("gitNick"))).thenReturn("");
 
-    when(gitHubService.getUserByLoginInGitHub("likeRewca")).thenThrow(GHFileNotFoundException.class);
+    when(gitHubService.getUserByLoginInGitHub("likeRewca")).thenThrow(IOException.class);
 
     when(slackSer.sendPrivateMessage("Горб Юра",
         "Sry but looks like you are not registered on Github :worried:")).thenReturn("");

@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 
+import java.io.IOException;
+
 public class VerificationLoginAction implements Action<State, Event> {
 
   @Value("${askAboutProfile}")
@@ -30,10 +32,10 @@ public class VerificationLoginAction implements Action<State, Event> {
     GHUser userGitLogin = new GHUser();
     try {
       userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
-    } catch (GHFileNotFoundException e) {
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
     slackService.sendPrivateMessage(slackService.getUserById(user),
-        askAboutProfile + userGitLogin.getHtmlUrl().toString());
+        askAboutProfile + "\n" + userGitLogin.getHtmlUrl().toString());
   }
 }
