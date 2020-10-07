@@ -1,6 +1,5 @@
 package com.community.tools.service;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -25,7 +24,7 @@ class CountingCompletedTasksServiceTest {
   @Test
   void getCountedCompletedTasks() throws IOException {
 
-    List<GHPullRequest> fakeReq = new ArrayList<>();
+
     GHPullRequest pr = mock(GHPullRequest.class);
 
     Collection<GHLabel> colLabel = new ArrayList<>();
@@ -35,10 +34,12 @@ class CountingCompletedTasksServiceTest {
     when(pr.getLabels()).thenReturn(colLabel);
 
     GHUser user = mock(GHUser.class);
+
     when(user.getLogin()).thenReturn("roman");
     when(pr.getUser()).thenReturn(user);
 
     when(pr.getTitle()).thenReturn("exercise_1");
+    List<GHPullRequest> fakeReq = new ArrayList<>();
     fakeReq.add(pr);
 
     GitHubConnectService service = mock(GitHubConnectService.class);

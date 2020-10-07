@@ -1,6 +1,5 @@
 package com.community.tools.service;
 
-
 import com.community.tools.service.github.GitHubConnectService;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,7 +18,11 @@ public class CountingCompletedTasksService {
 
   private final GitHubConnectService service;
 
-
+  /**
+   * Counting completed task, e.g closed pull request with label "done".
+   * @return Map with key - User login and Value - title of Pull request
+   * @throws IOException IOException
+   */
   public Map<String, List<String>> getCountedCompletedTasks() throws IOException {
 
     Map<String, List<GHPullRequest>> mapUsers1;
