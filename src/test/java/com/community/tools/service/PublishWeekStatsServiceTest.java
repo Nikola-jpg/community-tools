@@ -1,13 +1,15 @@
 package com.community.tools.service;
 
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 
-import com.community.tools.service.github.GitHubService;
-import com.community.tools.service.slack.SlackService;
 import com.community.tools.model.Event;
 import com.community.tools.model.EventData;
+import com.community.tools.service.github.GitHubService;
+import com.community.tools.service.slack.SlackService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -75,7 +77,8 @@ class PublishWeekStatsServiceTest {
         + "PULL_REQUEST_CLOSED:moneybag:: 1\n"
         + " ----------------------------------------\n"
         + ":construction: АКТИВНОСТЬ :construction:\n"
-        + "roman: :loudspeaker: :loudspeaker: :loudspeaker: :mailbox_with_mail::mailbox_with_mail::moneybag:\n"
+        + "roman: :loudspeaker: :loudspeaker: :loudspeaker:"
+        + " :mailbox_with_mail::mailbox_with_mail::moneybag:\n"
         + "Ilona: :loudspeaker: :mailbox_with_mail::rolled_up_newspaper::rolled_up_newspaper:\n";
     List<EventData> events = Arrays.asList(
         new EventData(new Date(), "roman", Event.PULL_REQUEST_CLOSED),

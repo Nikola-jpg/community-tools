@@ -29,6 +29,10 @@ public class GitHubController {
   private final GitHubService gitHubService;
   private final CountingCompletedTasksService completedTasksService;
 
+  /**
+   * Endpoint /hello.
+   * @return ResponseEntity with Status.OK and List "Hello World"
+   */
   @GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getHelloInJson() {
     List<String> list = new ArrayList<>();
@@ -37,6 +41,12 @@ public class GitHubController {
     return ok().body(list);
   }
 
+  /**
+   * Endpoint /pull_request/{state}.
+   * @param state boolean variable, that shows pull request status. True - open, False - closed
+   * @return  ResponseEntity with Status.OK and body.
+   Body contains List of Map(user,title) with this status
+   */
   @GetMapping(value = "/pull_request/{state}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<Map<String, String>>> getPullRequests(@PathVariable boolean state) {
     Map<String, String> userPullRequest = gitHubService.getPullRequests(state);
@@ -51,6 +61,14 @@ public class GitHubController {
     return ok().body(map);
   }
 
+  /**
+   * Endpount /event.
+   * @param startDate startDate
+   * @param endDate endDate
+   * @return ResponseEntity with Status.OK and body.
+   Body contains List of EbentData in interval from startDate to endDate
+   * @throws ParseException error while parsing Date from String
+   */
   @GetMapping(value = "/event", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<EventData>> getAllEvents(
       @RequestParam(name = "start") String startDate,
