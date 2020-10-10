@@ -1,5 +1,7 @@
 package com.community.tools.controller;
 
+import static org.springframework.http.ResponseEntity.ok;
+
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
@@ -10,18 +12,20 @@ import com.github.seratch.jslack.common.json.GsonFactory;
 import com.google.gson.Gson;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHPerson;
 import org.kohsuke.github.GHUser;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.springframework.http.ResponseEntity.ok;
 
 @RequiredArgsConstructor
 @RestController

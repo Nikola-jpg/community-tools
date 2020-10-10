@@ -1,5 +1,7 @@
 package com.community.tools.controller;
 
+import static org.springframework.http.ResponseEntity.ok;
+
 import com.community.tools.model.EventData;
 import com.community.tools.service.CountingCompletedTasksService;
 import com.community.tools.service.github.GitHubService;
@@ -7,14 +9,6 @@ import com.community.tools.service.slack.SlackService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -23,8 +17,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import static org.springframework.http.ResponseEntity.ok;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
