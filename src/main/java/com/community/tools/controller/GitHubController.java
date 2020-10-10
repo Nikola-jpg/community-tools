@@ -33,6 +33,10 @@ public class GitHubController {
   private final GitHubService gitHubService;
   private final CountingCompletedTasksService completedTasksService;
 
+  /**
+   * Endpoint /hello.
+   * @return ResponseEntity with Status.OK and List "Hello World"
+   */
   @ApiOperation(value = "Test endpoint that returns list ['Hello', 'World']")
   @GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getHelloInJson() {
@@ -42,6 +46,12 @@ public class GitHubController {
     return ok().body(list);
   }
 
+  /**
+   * Endpoint /pull_request/{state}.
+   * @param state boolean variable, that shows pull request status. True - open, False - closed
+   * @return  ResponseEntity with Status.OK and body.
+   Body contains List of Map(user,title) with this status
+   */
   @ApiOperation(value = "Returns map of 'username: pull request title'")
   @ApiImplicitParam(name = "state", dataType = "boolean", paramType = "path",
     required = true, value = "'true' returns opened pull requests, 'false' - closed")
@@ -61,6 +71,14 @@ public class GitHubController {
     return ok().body(map);
   }
 
+  /**
+   * Endpount /event.
+   * @param startDate startDate
+   * @param endDate endDate
+   * @return ResponseEntity with Status.OK and body.
+   Body contains List of EbentData in interval from startDate to endDate
+   * @throws ParseException error while parsing Date from String
+   */
   @ApiOperation(value = "Returns list of pull requests, comments"
           + " and commits in the defined interval")
   @ApiImplicitParams({

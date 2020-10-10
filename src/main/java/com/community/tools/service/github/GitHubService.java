@@ -33,6 +33,11 @@ public class GitHubService {
 
   private final GitHubConnectService service;
 
+  /**
+   * Get GitHub pull requests according to state.
+   * @param statePullRequest state of pull. T - open, F - closed
+   * @return Map of GH login trainee as a key, title of pull as value
+   */
   public Map<String, String> getPullRequests(boolean statePullRequest) {
     Map<String, String> listUsers = new HashMap<>();
     try {
@@ -55,6 +60,12 @@ public class GitHubService {
     return listUsers;
   }
 
+  /**
+   * Get all events by the date interval.
+   * @param startDate startDate
+   * @param endDate endDate
+   * @return list of EventData by the date interval
+   */
   public List<EventData> getEvents(Date startDate, Date endDate) {
     try {
       GHRepository repository = service.getGitHubRepository();
@@ -102,6 +113,10 @@ public class GitHubService {
     }
   }
 
+  /**
+   * Get all GitHub Collaborators.
+   * @return Set of GH Users
+   */
   public Set<GHUser> getGitHubAllUsers() {
     try {
       GHRepository repository = service.getGitHubRepository();
