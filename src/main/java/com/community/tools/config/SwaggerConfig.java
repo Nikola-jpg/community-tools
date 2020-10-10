@@ -33,6 +33,10 @@ public class SwaggerConfig {
           "@Brobot",
           new ArrayList<>());
 
+  /**
+   * Describes Docket object via builder.
+   * @return docket
+   */
   @Bean
   public Docket api() {
     return new Docket(DocumentationType.SWAGGER_2)

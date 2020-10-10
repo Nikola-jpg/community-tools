@@ -54,7 +54,7 @@ public class GitHubController {
    */
   @ApiOperation(value = "Returns map of 'username: pull request title'")
   @ApiImplicitParam(name = "state", dataType = "boolean", paramType = "path",
-    required = true, value = "'true' returns opened pull requests, 'false' - closed")
+          required = true, value = "'true' returns opened pull requests, 'false' - closed")
   @GetMapping(value = "/pull_request/{state}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<Map<String, String>>> getPullRequests(@PathVariable boolean state) {
     Map<String, String> userPullRequest = gitHubService.getPullRequests(state);

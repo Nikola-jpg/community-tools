@@ -1,8 +1,5 @@
 package com.community.tools.controller;
 
-import static org.springframework.http.ResponseEntity.ok;
-
-import com.community.tools.service.StateMachineService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
@@ -11,11 +8,6 @@ import com.github.seratch.jslack.api.model.User.Profile;
 import com.github.seratch.jslack.app_backend.interactive_messages.payload.BlockActionPayload;
 import com.github.seratch.jslack.common.json.GsonFactory;
 import com.google.gson.Gson;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +15,13 @@ import org.kohsuke.github.GHPerson;
 import org.kohsuke.github.GHUser;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.springframework.http.ResponseEntity.ok;
 
 @RequiredArgsConstructor
 @RestController
@@ -78,7 +71,7 @@ public class GitSlackUsersController {
    */
   @ApiOperation(value = "Deserializes Slack payload and sends message to user")
   @ApiImplicitParam(name = "payload", dataType = "string", paramType = "query",
-    required = true, value = "payload")
+      required = true, value = "payload")
   @RequestMapping(value = "/slack/action", method = RequestMethod.POST)
   public void action(@RequestParam(name = "payload") String payload) throws Exception {
 
