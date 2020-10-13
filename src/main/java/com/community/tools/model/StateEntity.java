@@ -11,6 +11,7 @@ public class StateEntity {
     private String userID;
     private String gitName;
     private byte[] stateMachine;
+    private int karma = 0;
 
     public StateEntity() {
     }
@@ -35,6 +36,10 @@ public class StateEntity {
         this.stateMachine = stateMachine;
     }
 
+    public void setKarma(int karma) {
+        this.karma = karma;
+    }
+
     public String getUserID() {
         return userID;
     }
@@ -45,5 +50,9 @@ public class StateEntity {
 
     public String getGitName() {
         return gitName;
+    }
+
+    public int getKarma() {
+        return karma;
     }
 }

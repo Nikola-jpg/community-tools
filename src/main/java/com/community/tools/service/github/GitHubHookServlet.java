@@ -4,13 +4,17 @@ import com.community.tools.service.StateMachineService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.GithubAuthChecker;
 import com.github.seratch.jslack.api.methods.SlackApiException;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,6 +52,8 @@ public class GitHubHookServlet extends HttpServlet {
   private AddMentorService addMentorService;
   @Autowired
   private StateMachineService stateMachineService;
+  @Autowired
+  private KarmaService karmaService;
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -82,6 +88,7 @@ public class GitHubHookServlet extends HttpServlet {
           sendNotificationMessageAboutPR(json);
           giveNewTaskIfPrOpened(json);
           addMentorIfEventIsReview(json);
+          addKarmaForCommentApproved(json);
         }
       }
     } catch (NoSuchAlgorithmException | InvalidKeyException | SlackApiException e) {
@@ -100,7 +107,7 @@ public class GitHubHookServlet extends HttpServlet {
         addMentorService.sendNotifyWithMentor(user, url);
       } else {
         service
-                .sendMessageToConversation(channel, "User " + user + " create a pull request \n url: " + url);
+            .sendMessageToConversation(channel, "User " + user + " create a pull request \n url: " + url);
 
       }
     }
@@ -131,6 +138,36 @@ public class GitHubHookServlet extends HttpServlet {
       addMentorService.addMentor(mentor,creator);
     }
   }
+
+  private void addKarmaForCommentApproved(JSONObject json) {
+    boolean checkCommentApproved = false;
+    String traineeReviewer = "";
+    if (json.get("action").equals("created") && checkIssueAndComment(json)) {
+      traineeReviewer = json.getJSONObject("comment").getJSONObject("user").getString("login");
+      checkCommentApproved = json.getJSONObject("comment")
+          .getString("body").toLowerCase().equals("approved");
+    } else if (json.get("action").equals("submitted")){
+      traineeReviewer = json.getJSONObject("review").getJSONObject("user").getString("login");
+      checkCommentApproved = json.getJSONObject("review")
+          .getString("body").toLowerCase().equals("approved");
+    }
+    if (checkCommentApproved) {
+      karmaService.increaseKarmaForCommentApproved(traineeReviewer);
+    }
+  }
+
+  private boolean checkIssueAndComment(JSONObject json){
+    boolean checkIssue =false;
+    if (checkComment(json)){
+      try {
+        json.getJSONObject("issue");
+        checkIssue = true;
+      } catch (JSONException ignored) {
+      }
+    }
+    return checkIssue;
+  }
+
   private boolean checkComment(JSONObject json){
     boolean checkComment = false;
     try{
