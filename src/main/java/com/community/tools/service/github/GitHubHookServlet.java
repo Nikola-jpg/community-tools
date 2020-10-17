@@ -1,9 +1,11 @@
 package com.community.tools.service.github;
 
+import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.GithubAuthChecker;
 import com.github.seratch.jslack.api.methods.SlackApiException;
+
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.stereotype.Service;
+import springfox.documentation.spring.web.json.Json;
 
 @Service
 public class GitHubHookServlet extends HttpServlet {
@@ -46,6 +49,8 @@ public class GitHubHookServlet extends HttpServlet {
   private AddMentorService addMentorService;
   @Autowired
   private StateMachineService stateMachineService;
+  @Autowired
+  private PointsTaskService pointsTaskService;
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -60,7 +65,7 @@ public class GitHubHookServlet extends HttpServlet {
 
     try {
       if (new GithubAuthChecker(secret)
-          .checkSignature(req.getHeader("X-Hub-Signature"), builder.toString())) {
+              .checkSignature(req.getHeader("X-Hub-Signature"), builder.toString())) {
 
         SingleConnectionDataSource connect = new SingleConnectionDataSource();
         connect.setUrl(url);
@@ -68,8 +73,9 @@ public class GitHubHookServlet extends HttpServlet {
         connect.setPassword(password);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
         jdbcTemplate.update(
-            "INSERT INTO public.\"GitHookData\" (time, jsonb_data) VALUES ('" + new Date() + "','"
-                + json.toString().replace("'","''") + "'::jsonb);");
+                "INSERT INTO public.\"GitHookData\" (time, jsonb_data) VALUES ('"
+                        + new Date() + "','"
+                        + json.toString().replace("'", "''") + "'::jsonb);");
         boolean actionExist = false;
         try {
           json.get("action");
@@ -82,6 +88,7 @@ public class GitHubHookServlet extends HttpServlet {
           sendNotificationMessageAboutPR(json);
           giveNewTaskIfPrOpened(json);
           addMentorIfEventIsReview(json);
+          addPointIfPullLabeledDone(json);
         }
       }
     } catch (NoSuchAlgorithmException | InvalidKeyException | SlackApiException e) {
@@ -112,9 +119,20 @@ public class GitHubHookServlet extends HttpServlet {
     if (json.get("action").toString().equals(labeledStr)) {
       List<Object> list = json.getJSONObject("pull_request").getJSONArray("labels").toList();
       return list.stream().map(o -> (HashMap) o)
-          .anyMatch(e -> e.get("name").equals("ready for review"));
+              .anyMatch(e -> e.get("name").equals("ready for review"));
     }
     return false;
+  }
+
+  private void addPointIfPullLabeledDone(JSONObject json) {
+    if (json.get("action").toString().equals(labeledStr)
+            && json.getJSONObject("label").getString("name").equals("done")) {
+      List<Object> list = json.getJSONObject("pull_request").getJSONArray("labels").toList();
+      String sender = json.getJSONObject("sender").getString("login");
+      String creator = json.getJSONObject("pull_request").getJSONObject("user").getString("login");
+      String pullName = json.getJSONObject("pull_request").getString("title");
+      pointsTaskService.addPointForCompletedTask(sender, creator, pullName);
+    }
   }
 
   private void addMentorIfEventIsReview(JSONObject json) {
@@ -133,7 +151,7 @@ public class GitHubHookServlet extends HttpServlet {
       }
 
 
-      addMentorService.addMentor(mentor,creator);
+      addMentorService.addMentor(mentor, creator);
     }
   }
 

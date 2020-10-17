@@ -1,0 +1,30 @@
+{
+  "label": {
+    "name": "done"
+  },
+  "action": "labeled",
+  "sender": {
+    "url": "https://api.github.com/users/test",
+    "type": "User",
+    "login": "test"
+  },
+  "pull_request": {
+    "user": {
+      "url": "https://api.github.com/users/test",
+      "type": "User",
+      "login": "test"
+    },
+    "title": "inner/classes",
+    "labels": [
+      {
+        "name": "changes requested"
+      },
+      {
+        "name": "done"
+      },
+      {
+        "name": "ready for review"
+      }
+    ]
+  }
+}
