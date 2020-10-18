@@ -5,11 +5,7 @@ import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.GithubAuthChecker;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -89,6 +85,7 @@ public class GitHubHookServlet extends HttpServlet {
           giveNewTaskIfPrOpened(json);
           addMentorIfEventIsReview(json);
           addKarmaForCommentApproved(json);
+          checkReactionToChangeKarma(json);
         }
       }
     } catch (NoSuchAlgorithmException | InvalidKeyException | SlackApiException e) {
@@ -152,7 +149,15 @@ public class GitHubHookServlet extends HttpServlet {
           .getString("body").toLowerCase().equals("approved");
     }
     if (checkCommentApproved) {
-      karmaService.increaseKarmaForCommentApproved(traineeReviewer);
+      karmaService.changeKarmaForCommentApproved(traineeReviewer, 1);
+    }
+  }
+
+  private void checkReactionToChangeKarma(JSONObject json){
+    if (json.get("action").equals("label")
+        && json.getJSONObject("label").getString("name").equals("done")) {
+      int numberOfPullRequest = Integer.parseInt(json.getString("number").trim());
+      karmaService.changeKarmaBasedOnReaction(numberOfPullRequest);
     }
   }
 
