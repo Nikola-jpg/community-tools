@@ -11,6 +11,8 @@ public class StateEntity {
   private String userID;
   private String gitName;
   private byte[] stateMachine;
+  private Integer pointByTask = 0;
+  private Integer karma = 0;
 
   public StateEntity() {
   }
@@ -23,6 +25,10 @@ public class StateEntity {
   public StateEntity(String userID, String gitName) {
     this.gitName = gitName;
     this.userID = userID;
+  }
+
+  public Integer getTotalPoints() {
+    return this.karma + this.pointByTask;
   }
 
   public void setUserID(String userID) {
@@ -47,5 +53,23 @@ public class StateEntity {
 
   public String getGitName() {
     return gitName;
+  }
+
+  public void setPointByTask(Integer pointByTask) {
+    this.pointByTask = pointByTask;
+  }
+
+  public void setKarma(Integer karma) {
+    this.karma = karma;
+  }
+
+
+
+  public Integer getPointByTask() {
+    return pointByTask;
+  }
+
+  public Integer getKarma() {
+    return karma;
   }
 }
