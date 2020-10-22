@@ -11,6 +11,9 @@ public class StateEntity {
     private String userID;
     private String gitName;
     private byte[] stateMachine;
+    private String firstAnswer;
+    private String secondAnswer;
+    private String thirdAnswer;
 
     public StateEntity() {
     }
@@ -35,6 +38,18 @@ public class StateEntity {
         this.stateMachine = stateMachine;
     }
 
+    public void setFirstAnswer(String firstAnswer) {
+        this.firstAnswer = firstAnswer;
+    }
+
+    public void setSecondAnswer(String secondAnswer) {
+        this.secondAnswer = secondAnswer;
+    }
+
+    public void setThirdAnswer(String thirdAnswer) {
+        this.thirdAnswer = thirdAnswer;
+    }
+
     public String getUserID() {
         return userID;
     }
@@ -45,5 +60,17 @@ public class StateEntity {
 
     public String getGitName() {
         return gitName;
+    }
+
+    public String getFirstAnswer() {
+        return firstAnswer;
+    }
+
+    public String getSecondAnswer() {
+        return secondAnswer;
+    }
+
+    public String getThirdAnswer() {
+        return thirdAnswer;
     }
 }

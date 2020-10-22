@@ -39,6 +39,9 @@ public class AddGitNameAction implements Action<State, Event> {
     StateEntity stateEntity = stateMachineRepository.findByUserID(user).get();
     stateEntity.setGitName(nickname);
     stateMachineRepository.save(stateEntity);
+    String firstAnswer = stateEntity.getFirstAnswer();
+    String secondAnswer = stateEntity.getSecondAnswer();
+    String thirdAnswer = stateEntity.getThirdAnswer();
     GHUser userGitLogin = new GHUser();
     try {
       userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
@@ -51,10 +54,19 @@ public class AddGitNameAction implements Action<State, Event> {
     }
     slackService.sendPrivateMessage(slackService.getUserById(user), congratsAvailableNick);
     slackService.sendMessageToConversation(channel,
-          generalInformationAboutUserToChannel(user, userGitLogin));
+          generalInformationAboutUserToChannel(user, userGitLogin)
+              + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
   }
 
   private String generalInformationAboutUserToChannel(String slackName, GHUser user) {
     return slackService.getUserById(slackName) + " - " + user.getLogin();
+  }
+
+  private String sendUserAnswersToChannel(String firstAnswer, String secondAnswer,
+                                          String thirdAnswer){
+    return "Answer on questions : \n"
+        + "1. " + firstAnswer + ";\n"
+        + "2. " + secondAnswer + ";\n"
+        + "3. " + thirdAnswer + ".";
   }
 }
