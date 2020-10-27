@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import org.springframework.stereotype.Component;
@@ -60,7 +59,7 @@ public class PublishWeekStatsService {
         .forEach(entry -> {
           entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
           messageBuilder.append("\n");
-          messageBuilder.append(changeTypeName(entry.getKey())).append(emojiGen(entry.getKey()));
+          messageBuilder.append(getTypeTitleBold(entry.getKey())).append(emojiGen(entry.getKey()));
           messageBuilder.append(":  ");
           messageBuilder.append(entry.getValue().size());
         });
@@ -100,18 +99,8 @@ public class PublishWeekStatsService {
     }
   }
 
-  private String changeTypeName(Event type) {
-    switch (type) {
-      case COMMENT:
-        return "*Commit*";
-      case COMMIT:
-        return "*Comment*";
-      case PULL_REQUEST_CLOSED:
-        return "*Pull Request created*";
-      case PULL_REQUEST_CREATED:
-        return "*Pull Request closed*";
-      default:
-        return "";
-    }
+  private String getTypeTitleBold(Event type) {
+    String typeTitleBold = "*" + type.getTitle() + "*";
+    return typeTitleBold;
   }
 }

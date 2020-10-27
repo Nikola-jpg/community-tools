@@ -44,9 +44,9 @@ class PublishWeekStatsServiceTest {
     String message = "[{\"type\": \"header\",\t\"text\": "
             + "{\"type\": \"plain_text\",\"text\": \"Statistic:\"}},"
             + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"\n"
-            + "*Commit*:loudspeaker::  3\n"
-            + "*Pull Request closed*:mailbox_with_mail::  2\n"
-            + "*Pull Request created*:moneybag::  1\"\t}]},"
+            + "*Comment*:loudspeaker::  3\n"
+            + "*Pull Request created*:mailbox_with_mail::  2\n"
+            + "*Pull Request closed*:moneybag::  1\"\t}]},"
             + "{\"type\": \"header\",\"text\": {\"type\": \"plain_text\",\"text\": \"Activity:\"}},"
             + "{\"type\": \"context\",\n"
             + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*roman*: "
@@ -78,10 +78,10 @@ class PublishWeekStatsServiceTest {
     String message = "[{\"type\": \"header\",\t\"text\": "
             + "{\"type\": \"plain_text\",\"text\": \"Statistic:\"}},"
             + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"\n"
-            + "*Commit*:loudspeaker::  4\n"
-            + "*Pull Request closed*:mailbox_with_mail::  3\n"
-            + "*Comment*:rolled_up_newspaper::  2\n"
-            + "*Pull Request created*:moneybag::  1\"\t}]},"
+            + "*Comment*:loudspeaker::  4\n"
+            + "*Pull Request created*:mailbox_with_mail::  3\n"
+            + "*Commit*:rolled_up_newspaper::  2\n"
+            + "*Pull Request closed*:moneybag::  1\"\t}]},"
             + "{\"type\": \"header\",\"text\": {\"type\": \"plain_text\",\"text\": \"Activity:\"}},"
             + "{\"type\": \"context\",\n"
             + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*roman*:"
@@ -91,6 +91,8 @@ class PublishWeekStatsServiceTest {
             + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*Ilona*:"
             + " :loudspeaker::mailbox_with_mail::rolled_up_newspaper:"
             + ":rolled_up_newspaper:\"}]}]";
+
+
     List<EventData> events = Arrays.asList(
         new EventData(new Date(), "roman", Event.PULL_REQUEST_CLOSED),
         new EventData(new Date(), "roman", Event.PULL_REQUEST_CREATED),
@@ -121,19 +123,22 @@ class PublishWeekStatsServiceTest {
     String message = "[{\"type\": \"header\",\t\"text\": "
             + "{\"type\": \"plain_text\",\"text\": \"Statistic:\"}},"
             + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"\n"
-            + "*Commit*:loudspeaker::  4\n"
-            + "*Pull Request closed*:mailbox_with_mail::  3\n"
-            + "*Comment*:rolled_up_newspaper::  3\n"
-            + "*Pull Request created*:moneybag::  1\"\t}]},"
+            + "*Comment*:loudspeaker::  4\n"
+            + "*Commit*:rolled_up_newspaper::  3\n"
+            + "*Pull Request created*:mailbox_with_mail::  3\n"
+            + "*Pull Request closed*:moneybag::  1\"\t}]},"
             + "{\"type\": \"header\",\"text\": {\"type\": \"plain_text\",\"text\": \"Activity:\"}},"
             + "{\"type\": \"context\",\n"
             + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*aleksandr-zatsarnui*:"
-            + " :loudspeaker::loudspeaker::loudspeaker::mailbox_with_mail:"
-            + ":mailbox_with_mail::rolled_up_newspaper::moneybag:\"}]},"
+            + " :loudspeaker::loudspeaker::loudspeaker::rolled_up_newspaper:"
+            + ":mailbox_with_mail::mailbox_with_mail::moneybag:\"}]},"
             + "{\"type\": \"context\",\n"
             + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*NikitaBatalskiy*:"
-            + " :loudspeaker::mailbox_with_mail::rolled_up_newspaper:"
-            + ":rolled_up_newspaper:\"}]}]";
+            + " :loudspeaker::rolled_up_newspaper:"
+            + ":rolled_up_newspaper::mailbox_with_mail:\"}]}]";
+
+
+
     List<EventData> events = Arrays.asList(
             new EventData(new Date(), "aleksandr-zatsarnui", Event.PULL_REQUEST_CLOSED),
             new EventData(new Date(), "aleksandr-zatsarnui", Event.PULL_REQUEST_CREATED),
