@@ -6,7 +6,7 @@ import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.community.tools.model.StateEntity;
+import com.community.tools.model.User;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import com.github.seratch.jslack.app_backend.events.EventsDispatcher;
 import com.github.seratch.jslack.app_backend.events.handler.MessageHandler;
@@ -14,7 +14,6 @@ import com.github.seratch.jslack.app_backend.events.handler.TeamJoinHandler;
 import com.github.seratch.jslack.app_backend.events.payload.MessagePayload;
 import com.github.seratch.jslack.app_backend.events.payload.TeamJoinPayload;
 import com.github.seratch.jslack.app_backend.events.servlet.SlackEventsApiServlet;
-import com.google.gson.JsonParseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,7 +60,7 @@ public class SlackHandlerService {
 
       try {
         String user = teamJoinPayload.getEvent().getUser().getId();
-        StateEntity stateEntity = new StateEntity();
+        User stateEntity = new User();
         stateEntity.setUserID(user);
         stateMachineRepository.save(stateEntity);
 
@@ -81,7 +80,7 @@ public class SlackHandlerService {
 
   private void resetUser(String id) throws Exception {
     String user = slackService.getUserById(id);
-    StateEntity stateEntity = new StateEntity();
+    User stateEntity = new User();
     stateEntity.setUserID(id);
     stateMachineRepository.save(stateEntity);
 
@@ -97,7 +96,7 @@ public class SlackHandlerService {
   private MessageHandler messageHandler = new MessageHandler() {
     @Override
     public void handle(MessagePayload teamJoinPayload) {
-      StateEntity stateEntity;
+      User stateEntity;
       if (!teamJoinPayload.getEvent().getUser().equals(idOfSlackBot)) {
         try {
           if (teamJoinPayload.getEvent().getText().equals("reset") && testModeSwitcher) {
@@ -111,21 +110,21 @@ public class SlackHandlerService {
           switch (machine.getState().getId()) {
             case FIRST_QUESTION:
               stateEntity = stateMachineRepository.findByUserID(user).get();
-              stateEntity.setFirstAnswer(teamJoinPayload.getEvent().getText());
+              stateEntity.setAnswerToFirstQuestion(teamJoinPayload.getEvent().getText());
               stateMachineRepository.save(stateEntity);
               machine.sendEvent(QUESTION_SECOND);
               stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
             case SECOND_QUESTION:
               stateEntity = stateMachineRepository.findByUserID(user).get();
-              stateEntity.setSecondAnswer(teamJoinPayload.getEvent().getText());
+              stateEntity.setAnswerToSecondQuestion(teamJoinPayload.getEvent().getText());
               stateMachineRepository.save(stateEntity);
               machine.sendEvent(QUESTION_THIRD);
               stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
             case THIRD_QUESTION:
               stateEntity = stateMachineRepository.findByUserID(user).get();
-              stateEntity.setThirdAnswer(teamJoinPayload.getEvent().getText());
+              stateEntity.setAnswerToThirdQuestion(teamJoinPayload.getEvent().getText());
               stateMachineRepository.save(stateEntity);
               machine.sendEvent(AGREE_LICENSE);
               stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
