@@ -110,21 +110,21 @@ public class SlackHandlerService {
           switch (machine.getState().getId()) {
             case FIRST_QUESTION:
               stateEntity = stateMachineRepository.findByUserID(user).get();
-              stateEntity.setAnswerToFirstQuestion(teamJoinPayload.getEvent().getText());
+              stateEntity.setFirstAnswerAboutRules(teamJoinPayload.getEvent().getText());
               stateMachineRepository.save(stateEntity);
               machine.sendEvent(QUESTION_SECOND);
               stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
             case SECOND_QUESTION:
               stateEntity = stateMachineRepository.findByUserID(user).get();
-              stateEntity.setAnswerToSecondQuestion(teamJoinPayload.getEvent().getText());
+              stateEntity.setSecondAnswerAboutRules(teamJoinPayload.getEvent().getText());
               stateMachineRepository.save(stateEntity);
               machine.sendEvent(QUESTION_THIRD);
               stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
             case THIRD_QUESTION:
               stateEntity = stateMachineRepository.findByUserID(user).get();
-              stateEntity.setAnswerToThirdQuestion(teamJoinPayload.getEvent().getText());
+              stateEntity.setThirdAnswerAboutRules(teamJoinPayload.getEvent().getText());
               stateMachineRepository.save(stateEntity);
               machine.sendEvent(AGREE_LICENSE);
               stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());

@@ -39,9 +39,9 @@ public class AddGitNameAction implements Action<State, Event> {
     User stateEntity = stateMachineRepository.findByUserID(user).get();
     stateEntity.setGitName(nickname);
     stateMachineRepository.save(stateEntity);
-    String firstAnswer = stateEntity.getAnswerToFirstQuestion();
-    String secondAnswer = stateEntity.getAnswerToSecondQuestion();
-    String thirdAnswer = stateEntity.getAnswerToThirdQuestion();
+    String firstAnswer = stateEntity.getFirstAnswerAboutRules();
+    String secondAnswer = stateEntity.getSecondAnswerAboutRules();
+    String thirdAnswer = stateEntity.getThirdAnswerAboutRules();
     GHUser userGitLogin = new GHUser();
     try {
       userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
