@@ -7,7 +7,7 @@ import com.community.tools.service.slack.SlackHandlerService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.community.tools.model.StateEntity;
+import com.community.tools.model.User;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,7 +96,7 @@ public class AddGitNameActionTest {
     Set<GHTeam> mockSet = new HashSet<>();
     mockSet.add(team);
 
-    StateEntity entity = new StateEntity();
+    User entity = new User();
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
@@ -135,7 +135,7 @@ public class AddGitNameActionTest {
     Set<GHTeam> mockSet = new HashSet<>();
     mockSet.add(team);
 
-    StateEntity entity = new StateEntity();
+    User entity = new User();
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);

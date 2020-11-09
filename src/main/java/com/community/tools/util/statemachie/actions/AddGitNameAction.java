@@ -5,7 +5,7 @@ import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.community.tools.model.StateEntity;
+import com.community.tools.model.User;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import java.io.IOException;
 
@@ -36,7 +36,7 @@ public class AddGitNameAction implements Action<State, Event> {
     String user = context.getExtendedState().getVariables().get("id").toString();
     String nickname = context.getExtendedState().getVariables().get("gitNick").toString();
 
-    StateEntity stateEntity = stateMachineRepository.findByUserID(user).get();
+    User stateEntity = stateMachineRepository.findByUserID(user).get();
     stateEntity.setGitName(nickname);
     stateMachineRepository.save(stateEntity);
     GHUser userGitLogin = new GHUser();
