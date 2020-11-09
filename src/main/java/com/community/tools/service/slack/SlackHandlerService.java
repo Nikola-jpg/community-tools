@@ -6,7 +6,7 @@ import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.community.tools.model.StateEntity;
+import com.community.tools.model.User;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import com.github.seratch.jslack.app_backend.events.EventsDispatcher;
 import com.github.seratch.jslack.app_backend.events.handler.MessageHandler;
@@ -57,9 +57,9 @@ public class SlackHandlerService {
 
       try {
         String user = teamJoinPayload.getEvent().getUser().getId();
-        StateEntity stateEntity = new StateEntity();
-        stateEntity.setUserID(user);
-        stateMachineRepository.save(stateEntity);
+        User userEntity = new User();
+        userEntity.setUserID(user);
+        stateMachineRepository.save(userEntity);
 
         stateMachineService.persistMachineForNewUser(user);
         slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser().getRealName(),
@@ -76,9 +76,9 @@ public class SlackHandlerService {
 
   private void resetUser(String id) throws Exception {
     String user = slackService.getUserById(id);
-    StateEntity stateEntity = new StateEntity();
-    stateEntity.setUserID(id);
-    stateMachineRepository.save(stateEntity);
+    User userEntity = new User();
+    userEntity.setUserID(id);
+    stateMachineRepository.save(userEntity);
 
     stateMachineService.persistMachineForNewUser(id);
     slackService.sendPrivateMessage(user,

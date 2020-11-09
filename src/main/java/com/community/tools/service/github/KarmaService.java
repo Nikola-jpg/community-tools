@@ -1,14 +1,10 @@
 package com.community.tools.service.github;
 
-import com.community.tools.model.StateEntity;
+import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
-import org.kohsuke.github.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.util.*;
 
 @Service
 public class KarmaService {
@@ -16,7 +12,7 @@ public class KarmaService {
   @Autowired
   private GitHubConnectService service;
   @Autowired
-  private StateEntity stateEntity;
+  private User user;
   @Autowired
   private StateMachineRepository stateMachineRepository;
   @Autowired
@@ -26,14 +22,14 @@ public class KarmaService {
     if (stateMachineRepository.findByGitName(traineeReviewer).isPresent()
         && !mentorsRepository.findByGitNick(traineeReviewer).isPresent()){
 
-      stateEntity = stateMachineRepository.findByGitName(traineeReviewer).get();
-      int numberOfKarma = stateEntity.getKarma();
+      user = stateMachineRepository.findByGitName(traineeReviewer).get();
+      int numberOfKarma = user.getKarma();
       if (numberOfKarma == 0) {
-        stateEntity.setKarma(1);
+        user.setKarma(1);
       } else {
-        stateEntity.setKarma(numberOfKarma + 1);
+        user.setKarma(numberOfKarma + 1);
       }
-      stateMachineRepository.save(stateEntity);
+      stateMachineRepository.save(user);
     }
   }
 }
