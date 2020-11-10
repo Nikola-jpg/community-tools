@@ -10,6 +10,7 @@ import com.google.gson.JsonParseException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
@@ -25,11 +26,9 @@ public class PointsTaskService {
   @Value("${abilityReviewMessage}")
   private String abilityReviewMessage;
 
-  @Value("${tasksForUsers}")
-  private String[] tasksForUsers;
 
-  @Value("${tasksForUsers}")
-  private String[] pointsForTask;
+  @Value("#{${pointsForTask}}")
+  private Map<String, Integer> pointsForTask;
 
   @Autowired
   private SlackService slackService;
@@ -44,9 +43,9 @@ public class PointsTaskService {
   StateMachineRepository stateMachineRepository;
 
 
-
   /**
    * This method adds points to the trainee, when menntor labeled pull as "done".
+   If pull has wrong name, add 0 points
    * @param mentor GitNick of person, who add label "done" to  pull request
    * @param creator GitNick of person, who pull request
    * @param pullName Pull request title
@@ -56,8 +55,11 @@ public class PointsTaskService {
     if (mentorsRepository.findByGitNick(mentor).isPresent()) {
       StateEntity stateEntity = stateMachineRepository.findByGitName(creator)
               .orElseThrow(EntityNotFoundException::new);
-
-      int points = checkPoints(pullName);
+      String finalPullName = pullName.toLowerCase();;
+      int points = pointsForTask.entrySet().stream()
+              .filter(entry -> finalPullName.contains(entry.getKey()))
+              .map(Map.Entry::getValue).findFirst().orElse(0);
+      System.out.println(pullName + " " + points);
       int newUserPoints = stateEntity.getPointByTask() + points;
       if (countService.getCountedCompletedTasks().get(creator).size() == 3) {
         sendAbilityReviewMess(stateEntity.getUserID());
@@ -66,26 +68,6 @@ public class PointsTaskService {
       stateEntity.setPointByTask(newUserPoints);
       stateMachineRepository.save(stateEntity);
     }
-  }
-
-  /**
-   * This method compares the name of the pull request with the name of the task and assigns points.
-   * @param pullName Title of pull request
-   * @return Number of points for task. If pull has wrong name, returns 0
-   */
-  public int checkPoints(String pullName) {
-    List<String> tasksList = Arrays.stream(tasksForUsers)
-            .map(String::trim).collect(Collectors.toList());
-    pullName = pullName.toLowerCase();
-    int number = tasksList.stream().filter(pullName::contains)
-            .map(tasksList::indexOf).findFirst().orElse(-1);
-
-    if (number == -1) {
-      return 0;
-    } else {
-      return Integer.parseInt(pointsForTask[number]);
-    }
-
   }
 
   /**

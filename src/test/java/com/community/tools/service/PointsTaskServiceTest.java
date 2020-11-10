@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -48,13 +53,14 @@ class PointsTaskServiceTest {
   @BeforeAll
   public void initMocks() {
     MockitoAnnotations.initMocks(this);
+    ExpressionParser parser = new SpelExpressionParser();
+    EvaluationContext context = new StandardEvaluationContext();
+    Map pointsForTask = (Map) parser.parseExpression("{'checkstyle':1, 'primitives':2,"
+            + " 'boxing':2, 'valueref':3, 'equals/hashcode':3, 'patform':3,\n"
+            + "  'bytecode':2, 'gc':4, 'exceptions':4, 'classpath':3, 'generics':5,"
+            + " 'inner/classes':5, 'override/overload':4, 'strings':5}").getValue(context);
     ReflectionTestUtils.setField(pointsTaskService, "abilityReviewMessage", "Ability message");
-    ReflectionTestUtils.setField(pointsTaskService, "tasksForUsers",
-            ("checkstyle, primitives, boxing, valueref, equals/hashcode,"
-            + " patform, bytecode, gc, exceptions, classpath, generics,"
-            + " inner/classes, override/overload, strings").split(","));
-    ReflectionTestUtils.setField(pointsTaskService, "pointsForTask", ("1,2,2,3,3,"
-            + "3,2,4,4,3,5,5,4,5").split(","));
+    ReflectionTestUtils.setField(pointsTaskService, "pointsForTask", (pointsForTask));
   }
 
 
@@ -82,7 +88,6 @@ class PointsTaskServiceTest {
 
     pointsTaskService.addPointForCompletedTask("test", "marvintik", " valueref_test ");
     assertEquals(8, stateEntity.getPointByTask());
-    assertEquals(3, pointsTaskService.checkPoints("valueref_test"));
   }
 
   @Test
