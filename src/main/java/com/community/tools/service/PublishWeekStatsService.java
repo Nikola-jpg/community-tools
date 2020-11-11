@@ -94,17 +94,18 @@ public class PublishWeekStatsService {
    */
   @Scheduled(cron = "0 0 0 * * MON")
   public void publishLeaderboard() throws IOException, SlackApiException {
-    StringBuilder sb = new StringBuilder();
     String url = getAddress();
-    sb.append("{\"blocks\": [{\"type\": \"section\", \"text\": ");
-    sb.append("{\"type\": \"mrkdwn\",\"text\": \"Рейтинг этой недели доступен по ссылке: \"},");
-    sb.append("\"accessory\": {\"type\": \"button\",\t\"text\": ");
-    sb.append("{\"type\": \"plain_text\",\"text\": \":loudspeaker:\",\"emoji\": true},");
-    sb.append("\"value\": \"click_me_123\", \"url\": \"");
-    sb.append(url);
-    sb.append("\", \"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"");
-    sb.append(url + "best/\",\"alt_text\": \"inspiration\"}]}");
-    slackService.sendBlockMessageToConversation("general", sb.toString());
+    String img = url + "img/";
+    String message = String.format("{\"blocks\": [{\"type\": \"section\", \"text\": "
+            + "{\"type\": \"mrkdwn\",\"text\": \"Рейтинг этой недели доступен по ссылке: \"},"
+            + "\"accessory\": {\"type\": \"button\",\t\"text\": "
+            + "{\"type\": \"plain_text\",\"text\": \":loudspeaker:\",\"emoji\": true},"
+            + "\"value\": \"click_me_123\", \"url\": \"%s"
+            + "\", \"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"%s"
+            + "\",\"alt_text\": \"inspiration\"}]}", url, img);
+
+
+    slackService.sendBlockMessageToConversation("general", message);
   }
 
   private String emojiGen(Event type) {

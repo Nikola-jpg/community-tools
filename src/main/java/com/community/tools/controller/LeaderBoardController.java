@@ -1,8 +1,8 @@
 package com.community.tools.controller;
 
-import static com.community.tools.util.CreateImageWithLeaderBoard.createImage;
 import static com.community.tools.util.GetServerAddress.getAddress;
 
+import com.community.tools.service.CreateImageWithLeaderBoardService;
 import com.community.tools.util.statemachie.jpa.StateEntity;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
@@ -30,6 +30,9 @@ public class LeaderBoardController {
   @Autowired
   StateMachineRepository stateMachineRepository;
 
+  @Autowired
+  CreateImageWithLeaderBoardService createImageService;
+
   /**
    * This method return webpage with table of trainee's rating.
    * @param model Model
@@ -49,10 +52,10 @@ public class LeaderBoardController {
    * @throws EntityNotFoundException EntityNotFoundException
    * @throws IOException IOException
    */
-  @RequestMapping(value = "/best", method = RequestMethod.GET)
+  @RequestMapping(value = "/img", method = RequestMethod.GET)
   public void getImage(HttpServletResponse response) throws EntityNotFoundException, IOException {
     String url = getAddress();
-    byte[] data = createImage(url);
+    byte[] data = createImageService.createImage(url);
     response.setContentType(MediaType.IMAGE_PNG_VALUE);
     response.getOutputStream().write(data);
     response.setContentLength(data.length);

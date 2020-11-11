@@ -1,4 +1,4 @@
-package com.community.tools.util;
+package com.community.tools.service;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -11,10 +11,13 @@ import javax.imageio.ImageIO;
 import javax.swing.JEditorPane;
 
 import lombok.SneakyThrows;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-public class CreateImageWithLeaderBoard {
-
-  private static StringBuilder sb = new StringBuilder();
+@Service
+public class CreateImageWithLeaderBoardService {
 
   /**
    * This method put html code into JEditorPane and print image.
@@ -22,9 +25,8 @@ public class CreateImageWithLeaderBoard {
    * @return byte array with image
    */
   @SneakyThrows
-  public static byte[] createImage(String url) {
-    getSourceCodeFromSite(url);
-    String html = sb.toString();
+  public byte[] createImage(String url) {
+    String html = getSourceCodeFromSite(url);
     int width = 550;
     int height = 225;
 
@@ -45,22 +47,12 @@ public class CreateImageWithLeaderBoard {
    * This method read the source code of html page and put it into StringBuilder.
    * @param url url with endpoint leaderboard
    */
-  public static void getSourceCodeFromSite(String url) {
+  public String getSourceCodeFromSite(String url) {
     String generateUrl = url + "better/";
-    String inputLine;
-    try {
-      URL data = new URL(generateUrl);
-
-      HttpURLConnection con = (HttpURLConnection) data.openConnection();
-      BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-      while ((inputLine = in.readLine()) != null) {
-        sb.append(inputLine);
-      }
-      in.close();
-      con.disconnect();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    RestTemplate restTemplate = new RestTemplate();
+    ResponseEntity<String> responseEntity =
+            restTemplate.exchange(generateUrl, HttpMethod.GET, null, String.class);
+    return responseEntity.getBody();
   }
 
 }

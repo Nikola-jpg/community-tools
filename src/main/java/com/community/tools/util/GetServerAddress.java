@@ -22,7 +22,6 @@ public class GetServerAddress {
       url.append(":").append(serverPort);
     }
     url.append(request.getContextPath()).append("/leaderboard/");
-    System.out.println(url);
     return url.toString();
   }
 }
