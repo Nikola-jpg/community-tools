@@ -1,5 +1,11 @@
 package com.community.tools.util.statemachie.actions;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubHookServlet;
 import com.community.tools.service.github.GitHubService;
@@ -9,10 +15,18 @@ import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import com.github.seratch.jslack.api.methods.SlackApiException;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.transaction.Transactional;
+import lombok.SneakyThrows;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kohsuke.github.GHFileNotFoundException;
 import org.kohsuke.github.GHUser;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +36,6 @@ import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.transaction.Transactional;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -60,6 +64,10 @@ public class HideGuardTest {
   @Mock
   private GHUser user;
 
+  /**
+   * This method init fields in the HideGuard.
+   * @throws Exception Exception
+   */
   @Before
   public void setUp() throws Exception {
     Field slackService = HideGuard.class.getDeclaredField("slackService");
@@ -72,7 +80,8 @@ public class HideGuardTest {
   }
 
   @Test
-  public void checkingIfThereIsALoginInTheGithubAndReturnTrue() throws IOException, SlackApiException {
+  public void checkingIfThereIsALoginInTheGithubAndReturnTrue()
+          throws IOException, SlackApiException {
     Map<Object, Object> mockData = new HashMap<>();
     mockData.put("id", "U0191K2V20K");
     mockData.put("gitNick", "likeRewca");
@@ -82,7 +91,7 @@ public class HideGuardTest {
 
     when(slackSer.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
     when(slackSer.sendPrivateMessage("Горб Юра",
-        "Okay! Let me check your nick, " + mockData.get("gitNick"))).thenReturn("");
+            "Okay! Let me check your nick, " + mockData.get("gitNick"))).thenReturn("");
 
     when(gitHubService.getUserByLoginInGitHub("likeRewca")).thenReturn(user);
     when(user.getLogin()).thenReturn("likeRewca");
@@ -91,11 +100,13 @@ public class HideGuardTest {
 
     verify(stateContext, times(2)).getExtendedState();
     verify(slackSer, times(1)).getUserById("U0191K2V20K");
-    verify(slackSer, times(1)).
-        sendPrivateMessage("Горб Юра", "Okay! Let me check your nick, " + mockData.get("gitNick"));
+    verify(slackSer, times(1))
+            .sendPrivateMessage("Горб Юра", "Okay! Let me check your nick, "
+                    + mockData.get("gitNick"));
     verify(gitHubService, times(1)).getUserByLoginInGitHub("likeRewca");
   }
 
+  @SneakyThrows
   @Test
   public void checkWhenThereIsNotLoginInTheGithub() throws IOException {
     Map<Object, Object> mockData = new HashMap<>();
@@ -107,21 +118,22 @@ public class HideGuardTest {
 
     when(slackSer.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
     when(slackSer.sendPrivateMessage("Горб Юра",
-        "Okay! Let me check your nick, " + mockData.get("gitNick"))).thenReturn("");
+            "Okay! Let me check your nick, " + mockData.get("gitNick"))).thenReturn("");
 
     when(gitHubService.getUserByLoginInGitHub("likeRewca")).thenThrow(IOException.class);
 
     when(slackSer.sendPrivateMessage("Горб Юра",
-        "Sry but looks like you are not registered on Github :worried:")).thenReturn("");
+            "Sry but looks like you are not registered on Github :worried:")).thenReturn("");
 
     assertFalse(hideGuard.evaluate(stateContext));
 
     verify(stateContext, times(2)).getExtendedState();
     verify(slackSer, times(2)).getUserById("U0191K2V20K");
-    verify(slackSer, times(1)).
-        sendPrivateMessage("Горб Юра", "Okay! Let me check your nick, " + mockData.get("gitNick"));
+    verify(slackSer, times(1))
+            .sendPrivateMessage("Горб Юра", "Okay! Let me check your nick, "
+                    + mockData.get("gitNick"));
     verify(slackSer, times(1)).sendPrivateMessage("Горб Юра",
-        "Sry but looks like you are not registered on Github :worried:");
+            "Sry but looks like you are not registered on Github :worried:");
     verify(gitHubService, times(1)).getUserByLoginInGitHub("likeRewca");
   }
 }

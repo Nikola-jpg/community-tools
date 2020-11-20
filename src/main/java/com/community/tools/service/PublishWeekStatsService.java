@@ -1,10 +1,13 @@
 package com.community.tools.service;
 
-import com.community.tools.service.github.GitHubService;
-import com.community.tools.service.slack.SlackService;
+import static com.community.tools.util.GetServerAddress.getAddress;
+
 import com.community.tools.model.Event;
 import com.community.tools.model.EventData;
+import com.community.tools.service.github.GitHubService;
+import com.community.tools.service.slack.SlackService;
 import com.github.seratch.jslack.api.methods.SlackApiException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,10 +19,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,12 +30,16 @@ public class PublishWeekStatsService {
 
   private final GitHubService ghEventService;
   private final SlackService slackService;
-  @Value("${generalInformationChannel}")
-  private String channel;
 
+  /**
+   * Publish statistics of Events for last week. Statistic sends every Monday.
+   *
+   * @throws SlackApiException SlackApiException
+   * @throws IOException       IOException
+   */
   @Scheduled(cron = "0 0 0 * * MON")
   public void exportStat()
-      throws SlackApiException, IOException {
+          throws SlackApiException, IOException {
     Date endDate = new Date();
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.DATE, -7);
@@ -44,9 +50,11 @@ public class PublishWeekStatsService {
 
     Map<String, List<EventData>> sortedMapGroupByActors = new HashMap<>();
     events.stream().filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
-        .forEach(ed -> sortedMapGroupByActors.put(ed.getActorLogin(), new ArrayList<>()));
+            .forEach(ed -> sortedMapGroupByActors.put(ed.getActorLogin(), new ArrayList<>()));
 
-    messageBuilder.append(":construction: ТИПЫ :construction:");
+    messageBuilder.append("[{\"type\": \"header\",\t\"text\": {\"type\":"
+            + " \"plain_text\",\"text\": \"Statistic:\"}},"
+            + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"");
     events.stream()
         .collect(Collectors.groupingBy(EventData::getType))
         .entrySet().stream()
@@ -56,12 +64,12 @@ public class PublishWeekStatsService {
         .forEach(entry -> {
           entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
           messageBuilder.append("\n");
-          messageBuilder.append(entry.getKey()).append(emojiGen(entry.getKey()));
-          messageBuilder.append(": ");
+          messageBuilder.append(getTypeTitleBold(entry.getKey())).append(emojiGen(entry.getKey()));
+          messageBuilder.append(":  ");
           messageBuilder.append(entry.getValue().size());
         });
-    messageBuilder.append("\n ----------------------------------------");
-    messageBuilder.append("\n").append(":construction: АКТИВНОСТЬ :construction:\n");
+    messageBuilder.append("\"\t}]},{\"type\": \"header\",\"text\": "
+            + "{\"type\": \"plain_text\",\"text\": \"Activity:\"}}");
     sortedMapGroupByActors.entrySet().stream()
         .sorted(Comparator
             .comparingInt((Entry<String, List<EventData>> entry) -> entry.getValue().size())
@@ -69,20 +77,43 @@ public class PublishWeekStatsService {
         .forEach(name -> {
           StringBuilder authorsActivMessage = new StringBuilder();
           name.getValue()
-              .forEach(eventData -> authorsActivMessage.append(emojiGen(eventData.getType())));
-
+                  .forEach(eventData -> authorsActivMessage.append(emojiGen(eventData.getType())));
+          messageBuilder.append(",{\"type\": \"context\",\n"
+                  + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*");
           messageBuilder.append(name.getKey());
-          messageBuilder.append(": ");
+          messageBuilder.append("*: ");
           messageBuilder.append(authorsActivMessage);
-          messageBuilder.append("\n");
+          messageBuilder.append("\"}]}");
         });
-    slackService.sendMessageToConversation(channel, messageBuilder.toString());
+    messageBuilder.append("]");
+    slackService.sendBlockMessageToConversation("general", messageBuilder.toString());
+  }
+
+  /**
+   * Publish message with link to trainee`s leaderboard and image (first 5 record of rating).
+   * @throws IOException IOException
+   * @throws SlackApiException SlackApiException
+   */
+  @Scheduled(cron = "0 0 0 * * MON")
+  public void publishLeaderboard() throws IOException, SlackApiException {
+    String url = getAddress();
+    String img = url + "img/";
+    String message = String.format("{\"blocks\": [{\"type\": \"section\", \"text\": "
+            + "{\"type\": \"mrkdwn\",\"text\": \"Рейтинг этой недели доступен по ссылке: \"},"
+            + "\"accessory\": {\"type\": \"button\",\t\"text\": "
+            + "{\"type\": \"plain_text\",\"text\": \":loudspeaker:\",\"emoji\": true},"
+            + "\"value\": \"click_me_123\", \"url\": \"%s"
+            + "\", \"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"%s"
+            + "\",\"alt_text\": \"inspiration\"}]}", url, img);
+
+
+    slackService.sendBlockMessageToConversation("general", message);
   }
 
   private String emojiGen(Event type) {
     switch (type) {
       case COMMENT:
-        return ":loudspeaker: ";
+        return ":loudspeaker:";
       case COMMIT:
         return ":rolled_up_newspaper:";
       case PULL_REQUEST_CLOSED:
@@ -92,5 +123,10 @@ public class PublishWeekStatsService {
       default:
         return "";
     }
+  }
+
+  private String getTypeTitleBold(Event type) {
+    String typeTitleBold = "*" + type.getTitle() + "*";
+    return typeTitleBold;
   }
 }

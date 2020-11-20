@@ -7,7 +7,14 @@ import java.io.IOException;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
-import org.kohsuke.github.*;
+
+import org.kohsuke.github.GHIssueComment;
+import org.kohsuke.github.GHIssueState;
+import org.kohsuke.github.GHPullRequest;
+import org.kohsuke.github.GHReaction;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.PagedIterable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +31,11 @@ public class KarmaService {
   @Autowired
   private MentorsRepository mentorsRepository;
 
+  /**
+   * This method changes karma of trainee after reaction.
+   * @param traineeReviewer Github login of trainee
+   * @param amountOfKarma amount of karma
+   */
   public void changeUserKarma(String traineeReviewer, int amountOfKarma) {
     if (stateMachineRepository.findByGitName(traineeReviewer).isPresent()
         && !mentorsRepository.findByGitNick(traineeReviewer).isPresent()) {
@@ -39,6 +51,10 @@ public class KarmaService {
     }
   }
 
+  /**
+   * This method will change karma, if comment is approved.
+   * @param numberOfPull number of pull request
+   */
   public void changeKarmaBasedOnReaction(int numberOfPull) {
     try {
       GHRepository repository = service.getGitHubRepository();
@@ -49,12 +65,12 @@ public class KarmaService {
       PagedIterable<GHIssueComment> comments = currentPr.listComments();
       boolean approvedComment = comments.asList()
           .stream().anyMatch(c -> c.getBody().toLowerCase().equals("approved"));
-        if (approvedComment) {
-          GHIssueComment comment = comments.asList().stream()
+      if (approvedComment) {
+        GHIssueComment comment = comments.asList().stream()
               .filter(c -> c.getBody().toLowerCase().equals("approved"))
               .findFirst().get();
-          karmaForTypeOfReaction(comment, actorPullRequest);
-        }
+        karmaForTypeOfReaction(comment, actorPullRequest);
+      }
 
     } catch (IOException e) {
       log.info("Some happen with connection to Gh", e);
@@ -82,7 +98,7 @@ public class KarmaService {
           changeUserKarma(actorOfComment, 2);
         }
       } else if (typeOfReaction.equals("-1")
-        && mentorsRepository.findByGitNick(actorOfReaction).isPresent()) {
+          && mentorsRepository.findByGitNick(actorOfReaction).isPresent()) {
         changeUserKarma(actorOfComment, -1);
       }
     }

@@ -1,10 +1,33 @@
 package com.community.tools.util.statemachie;
 
-import static com.community.tools.util.statemachie.Event.*;
-import static com.community.tools.util.statemachie.State.*;
+import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
+import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
+import static com.community.tools.util.statemachie.Event.CHANGE_TASK;
+import static com.community.tools.util.statemachie.Event.FIRST_AGREE_MESS;
+import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.Event.GET_THE_NEW_TASK;
+import static com.community.tools.util.statemachie.Event.LAST_TASK;
+import static com.community.tools.util.statemachie.Event.SECOND_AGREE_MESS;
+import static com.community.tools.util.statemachie.State.ADDED_GIT;
+import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
+import static com.community.tools.util.statemachie.State.CHECK_FOR_NEW_TASK;
+import static com.community.tools.util.statemachie.State.CONGRATS_LAST_TASK;
+import static com.community.tools.util.statemachie.State.FIRST_LICENSE_MESS;
+import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.State.NEW_USER;
+import static com.community.tools.util.statemachie.State.SECOND_LICENSE_MESS;
 
-import com.community.tools.util.statemachie.actions.*;
-
+import com.community.tools.util.statemachie.actions.AddGitNameAction;
+import com.community.tools.util.statemachie.actions.AgreeLicenseAction;
+import com.community.tools.util.statemachie.actions.ChangeTaskAction;
+import com.community.tools.util.statemachie.actions.CheckForNewTaskAction;
+import com.community.tools.util.statemachie.actions.ErrorAction;
+import com.community.tools.util.statemachie.actions.FirstAgreeLicenseAction;
+import com.community.tools.util.statemachie.actions.GetTheFirstTaskAction;
+import com.community.tools.util.statemachie.actions.HideGuard;
+import com.community.tools.util.statemachie.actions.LastTaskAction;
+import com.community.tools.util.statemachie.actions.LastTaskGuard;
+import com.community.tools.util.statemachie.actions.SecondAgreeLicenseAction;
 import java.util.EnumSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -68,23 +91,9 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
         .and()
         .withExternal()
         .source(AGREED_LICENSE)
-        .target(CHECK_LOGIN)
-        .event(LOGIN_CONFIRMATION)
-        .guard(hideGuard())
-        .action(verificationLoginAction(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(CHECK_LOGIN)
-        .target(AGREED_LICENSE)
-        .event(DID_NOT_PASS_VERIFICATION_GIT_LOGIN)
-        .action(didntPassVerificationGitLogin(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(CHECK_LOGIN)
         .target(ADDED_GIT)
         .event(ADD_GIT_NAME)
+        .guard(hideGuard())
         .action(addGitNameAction(), errorAction())
 
         .and()
@@ -116,12 +125,6 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
         .guard(lastTaskGuard())
         .action(lastTaskAction(), errorAction());
   }
-
-  @Bean
-  public Action <State, Event> didntPassVerificationGitLogin(){ return new DidNotPassVerificationGitLogin(); }
-
-  @Bean
-  public Action<State, Event> verificationLoginAction() { return new VerificationLoginAction(); }
 
   @Bean
   public Action<State, Event> firstAgreeLicenseAction() {

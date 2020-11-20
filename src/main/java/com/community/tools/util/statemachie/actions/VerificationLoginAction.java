@@ -5,14 +5,14 @@ import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import org.kohsuke.github.GHFileNotFoundException;
+
+import java.io.IOException;
+
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
-
-import java.io.IOException;
 
 public class VerificationLoginAction implements Action<State, Event> {
 

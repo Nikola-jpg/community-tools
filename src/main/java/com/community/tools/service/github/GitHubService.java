@@ -17,7 +17,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import lombok.RequiredArgsConstructor;
-import org.kohsuke.github.*;
+import org.kohsuke.github.GHIssueState;
+import org.kohsuke.github.GHPullRequest;
+import org.kohsuke.github.GHPullRequestCommitDetail;
+import org.kohsuke.github.GHPullRequestReviewComment;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GHUser;
+import org.kohsuke.github.PagedIterable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +33,11 @@ public class GitHubService {
   @Autowired
   private final GitHubConnectService service;
 
+  /**
+   * Get GitHub pull requests according to state.
+   * @param statePullRequest state of pull. T - open, F - closed
+   * @return Map of GH login trainee as a key, title of pull as value
+   */
   public Map<String, String> getPullRequests(boolean statePullRequest) {
     Map<String, String> listUsers = new HashMap<>();
     try {
@@ -49,6 +60,12 @@ public class GitHubService {
     return listUsers;
   }
 
+  /**
+   * Get all events by the date interval.
+   * @param startDate startDate
+   * @param endDate endDate
+   * @return list of EventData by the date interval
+   */
   public List<EventData> getEvents(Date startDate, Date endDate) {
     try {
       GHRepository repository = service.getGitHubRepository();
@@ -100,6 +117,10 @@ public class GitHubService {
     return service.getGitHubConnection().getUser(gitHubLogin);
   }
 
+  /**
+   * Get all GitHub Collaborators.
+   * @return Set of GH Users
+   */
   public Set<GHUser> getGitHubAllUsers() {
     try {
       GHRepository repository = service.getGitHubRepository();
