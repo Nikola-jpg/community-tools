@@ -8,10 +8,7 @@ import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.google.gson.JsonParseException;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -26,6 +23,8 @@ public class PointsTaskService {
   @Value("${abilityReviewMessage}")
   private String abilityReviewMessage;
 
+  @Value("${zeroPointsMessagee}")
+  private String zeroPointsMessage;
 
   @Value("#{${pointsForTask}}")
   private Map<String, Integer> pointsForTask;
@@ -41,6 +40,8 @@ public class PointsTaskService {
 
   @Autowired
   StateMachineRepository stateMachineRepository;
+
+  final int NUMBER_PULLS_ABILITY_REVIEW = 3;
 
 
   /**
@@ -59,9 +60,11 @@ public class PointsTaskService {
       int points = pointsForTask.entrySet().stream()
               .filter(entry -> finalPullName.contains(entry.getKey()))
               .map(Map.Entry::getValue).findFirst().orElse(0);
-      System.out.println(pullName + " " + points);
+      if (points == 0) {
+        sendMessageWhichDescribesZeroPoints(stateEntity.getUserID());
+      }
       int newUserPoints = stateEntity.getPointByTask() + points;
-      if (countService.getCountedCompletedTasks().get(creator).size() == 3) {
+      if (countService.getCountedCompletedTasks().get(creator).size() == NUMBER_PULLS_ABILITY_REVIEW) {
         sendAbilityReviewMess(stateEntity.getUserID());
       }
 
@@ -77,8 +80,18 @@ public class PointsTaskService {
   public void sendAbilityReviewMess(String id) {
     try {
       slackService.sendBlocksMessage(slackService.getUserById(id), abilityReviewMessage);
-    } catch (JsonParseException e) {
-      e.getMessage();
+    } catch (IOException | SlackApiException | JsonParseException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * This method send AbilityReview message to the user, if user misnamed pull request.
+   * @param id Slack User Id
+   */
+  public void sendMessageWhichDescribesZeroPoints(String id) {
+    try {
+      slackService.sendPrivateMessage(slackService.getUserById(id), zeroPointsMessage);
     } catch (IOException | SlackApiException e) {
       throw new RuntimeException(e);
     }

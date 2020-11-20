@@ -72,10 +72,10 @@ public class GitHubHookServlet extends HttpServlet {
         connect.setUsername(username);
         connect.setPassword(password);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
-        jdbcTemplate.update(
-                "INSERT INTO public.\"GitHookData\" (time, jsonb_data) VALUES ('"
-                        + new Date() + "','"
-                        + json.toString().replace("'", "''") + "'::jsonb);");
+        String sql = "INSERT INTO public.\"GitHookData\" (time, jsonb_data) VALUES (? , ?)";
+        Date date = new Date();
+        String jsonb = json.toString().replace("'", "''") + "'::jsonb);";
+        jdbcTemplate.update(sql, date, jsonb);
         boolean actionExist = false;
         try {
           json.get("action");
