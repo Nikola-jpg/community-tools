@@ -6,8 +6,8 @@ import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 
-import com.github.seratch.jslack.api.methods.SlackApiException;
 import java.io.IOException;
+
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +34,7 @@ public class VerificationLoginAction implements Action<State, Event> {
       userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
       slackService.sendPrivateMessage(slackService.getUserById(user),
               askAboutProfile + "\n" + userGitLogin.getHtmlUrl().toString());
-    } catch (IOException | SlackApiException e) {
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
 

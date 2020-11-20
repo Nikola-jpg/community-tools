@@ -64,7 +64,8 @@ public class SlackHandlerService {
                 welcome);
         slackService
 
-            .sendBlocksMessage(teamJoinPayload.getEvent().getUser().getRealName(), agreeMessage);
+                .sendBlocksMessage(teamJoinPayload.getEvent().getUser().getRealName(),
+                        agreeMessage);
       } catch (JsonParseException e) {
         e.getMessage();
       } catch (Exception e) {
@@ -90,7 +91,7 @@ public class SlackHandlerService {
   private MessageHandler messageHandler = new MessageHandler() {
     @Override
     public void handle(MessagePayload teamJoinPayload) {
-      
+
       if (!teamJoinPayload.getEvent().getUser().equals(idOfSlackBot)) {
         try {
           if (teamJoinPayload.getEvent().getText().equals("reset") && testModeSwitcher) {
@@ -114,7 +115,7 @@ public class SlackHandlerService {
               break;
             case AGREED_LICENSE:
               machine.getExtendedState().getVariables()
-                  .put("gitNick", teamJoinPayload.getEvent().getText());
+                      .put("gitNick", teamJoinPayload.getEvent().getText());
               machine.sendEvent(Event.LOGIN_CONFIRMATION);
               stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;

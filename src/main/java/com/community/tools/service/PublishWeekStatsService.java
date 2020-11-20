@@ -31,8 +31,6 @@ public class PublishWeekStatsService {
 
   private final GitHubService ghEventService;
   private final SlackService slackService;
-  @Value("${generalInformationChannel}")
-  private String channel;
 
   /**
    * Publish statistics of Events for last week. Statistic sends every Monday.

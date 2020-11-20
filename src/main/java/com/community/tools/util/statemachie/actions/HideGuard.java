@@ -6,12 +6,12 @@ import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 
 import java.io.IOException;
+
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.guard.Guard;
-
 
 public class HideGuard implements Guard<State, Event> {
 

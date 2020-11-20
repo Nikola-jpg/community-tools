@@ -16,8 +16,6 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-
-
 public class PointsTaskService {
 
   @Value("${abilityReviewMessage}")
@@ -93,10 +91,6 @@ public class PointsTaskService {
    */
   public void sendMessageWhichDescribesZeroPoints(String id, String pullName) {
     String messageDescribesZero = zeroPointsMessage.replace("pull_name", pullName);
-    try {
-      slackService.sendPrivateMessage(slackService.getUserById(id), messageDescribesZero);
-    } catch (IOException | SlackApiException e) {
-      throw new RuntimeException(e);
-    }
+    slackService.sendPrivateMessage(slackService.getUserById(id), messageDescribesZero);
   }
 }
