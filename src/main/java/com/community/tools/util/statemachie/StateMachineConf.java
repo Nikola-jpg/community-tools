@@ -50,80 +50,80 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
 
   @Override
   public void configure(final StateMachineStateConfigurer<State, Event> states)
-      throws Exception {
+          throws Exception {
     states.withStates().initial(NEW_USER).states(EnumSet.allOf(State.class));
   }
 
   @Override
   public void configure(
-      final StateMachineConfigurationConfigurer<State, Event> config)
-      throws Exception {
+          final StateMachineConfigurationConfigurer<State, Event> config)
+          throws Exception {
     config
-        .withConfiguration()
-        .autoStartup(true)
-        .listener(new StateMachineApplicationListeer());
+            .withConfiguration()
+            .autoStartup(true)
+            .listener(new StateMachineApplicationListeer());
   }
 
   @Override
   public void configure(final StateMachineTransitionConfigurer<State, Event> transitions)
-      throws Exception {
+          throws Exception {
     transitions
-        .withExternal()
-        .source(NEW_USER)
-        .target(FIRST_LICENSE_MESS)
-        .event(FIRST_AGREE_MESS)
-        .action(firstAgreeLicenseAction(), errorAction())
+            .withExternal()
+            .source(NEW_USER)
+            .target(FIRST_LICENSE_MESS)
+            .event(FIRST_AGREE_MESS)
+            .action(firstAgreeLicenseAction(), errorAction())
 
-        .and()
-        .withExternal()
-        .source(FIRST_LICENSE_MESS)
-        .target(SECOND_LICENSE_MESS)
-        .event(SECOND_AGREE_MESS)
-        .action(secondAgreeLicenseAction(), errorAction())
+            .and()
+            .withExternal()
+            .source(FIRST_LICENSE_MESS)
+            .target(SECOND_LICENSE_MESS)
+            .event(SECOND_AGREE_MESS)
+            .action(secondAgreeLicenseAction(), errorAction())
 
-        .and()
-        .withExternal()
-        .source(SECOND_LICENSE_MESS)
-        .target(AGREED_LICENSE)
-        .event(AGREE_LICENSE)
-        .action(agreeLicenseAction(), errorAction())
+            .and()
+            .withExternal()
+            .source(SECOND_LICENSE_MESS)
+            .target(AGREED_LICENSE)
+            .event(AGREE_LICENSE)
+            .action(agreeLicenseAction(), errorAction())
 
-        .and()
-        .withExternal()
-        .source(AGREED_LICENSE)
-        .target(ADDED_GIT)
-        .event(ADD_GIT_NAME)
-        .guard(hideGuard())
-        .action(addGitNameAction(), errorAction())
+            .and()
+            .withExternal()
+            .source(AGREED_LICENSE)
+            .target(ADDED_GIT)
+            .event(ADD_GIT_NAME)
+            .guard(hideGuard())
+            .action(addGitNameAction(), errorAction())
 
-        .and()
-        .withExternal()
-        .source(ADDED_GIT)
-        .target(GOT_THE_FIRST_TASK)
-        .event(GET_THE_FIRST_TASK)
-        .action(getTheFirstTaskAction(), errorAction())
+            .and()
+            .withExternal()
+            .source(ADDED_GIT)
+            .target(GOT_THE_FIRST_TASK)
+            .event(GET_THE_FIRST_TASK)
+            .action(getTheFirstTaskAction(), errorAction())
 
-        .and()
-        .withExternal()
-        .source(GOT_THE_FIRST_TASK)
-        .target(CHECK_FOR_NEW_TASK)
-        .event(GET_THE_NEW_TASK)
-        .action(checkForNewTaskAction(), errorAction())
+            .and()
+            .withExternal()
+            .source(GOT_THE_FIRST_TASK)
+            .target(CHECK_FOR_NEW_TASK)
+            .event(GET_THE_NEW_TASK)
+            .action(checkForNewTaskAction(), errorAction())
 
-        .and()
-        .withExternal()
-        .source(CHECK_FOR_NEW_TASK)
-        .target(GOT_THE_FIRST_TASK)
-        .event(CHANGE_TASK)
-        .action(changeTaskAction(), errorAction())
+            .and()
+            .withExternal()
+            .source(CHECK_FOR_NEW_TASK)
+            .target(GOT_THE_FIRST_TASK)
+            .event(CHANGE_TASK)
+            .action(changeTaskAction(), errorAction())
 
-        .and()
-        .withExternal()
-        .source(CHECK_FOR_NEW_TASK)
-        .target(CONGRATS_LAST_TASK)
-        .event(LAST_TASK)
-        .guard(lastTaskGuard())
-        .action(lastTaskAction(), errorAction());
+            .and()
+            .withExternal()
+            .source(CHECK_FOR_NEW_TASK)
+            .target(CONGRATS_LAST_TASK)
+            .event(LAST_TASK)
+            .guard(lastTaskGuard())
+            .action(lastTaskAction(), errorAction());
   }
 
   @Bean

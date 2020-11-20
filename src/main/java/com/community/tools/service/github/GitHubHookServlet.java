@@ -74,7 +74,6 @@ public class GitHubHookServlet extends HttpServlet {
         connect.setUsername(username);
         connect.setPassword(password);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
-
         String sql = "INSERT INTO public.\"GitHookData\" (time, jsonb_data) VALUES (? , ?)";
         Date date = new Date();
         String jsonb = json.toString().replace("'", "''") + "'::jsonb);";
@@ -113,8 +112,8 @@ public class GitHubHookServlet extends HttpServlet {
         addMentorService.sendNotifyWithMentor(user, url);
       } else {
         service
-                .sendMessageToConversation(channel, "User "
-                        + user + " create a pull request \n url: " + url);
+            .sendMessageToConversation(channel, "User " + user 
+              + " created a pull request \n url: " + url);
 
       }
     }
@@ -128,6 +127,7 @@ public class GitHubHookServlet extends HttpServlet {
     }
     return false;
   }
+
 
   private void addMentorIfEventIsReview(JSONObject json) {
     if (json.get("action").equals("submitted") || checkComment(json)) {
@@ -149,16 +149,16 @@ public class GitHubHookServlet extends HttpServlet {
     }
   }
 
-  private void addPointIfPullLabeledDone(JSONObject json) {
-    if (json.get("action").toString().equals(labeledStr)
-            && json.getJSONObject("label").getString("name").equals("done")) {
-      List<Object> list = json.getJSONObject("pull_request").getJSONArray("labels").toList();
-      String sender = json.getJSONObject("sender").getString("login");
-      String creator = json.getJSONObject("pull_request").getJSONObject("user").getString("login");
-      String pullName = json.getJSONObject("pull_request").getString("title");
-      pointsTaskService.addPointForCompletedTask(sender, creator, pullName);
-    }
-  }
+      private void addPointIfPullLabeledDone(JSONObject json) {
+        if (json.get("action").toString().equals(labeledStr)
+                && json.getJSONObject("label").getString("name").equals("done")) {
+          List<Object> list = json.getJSONObject("pull_request").getJSONArray("labels").toList();
+          String sender = json.getJSONObject("sender").getString("login");
+          String creator = json.getJSONObject("pull_request").getJSONObject("user").getString("login");
+          String pullName = json.getJSONObject("pull_request").getString("title");
+          pointsTaskService.addPointForCompletedTask(sender, creator, pullName);
+        }
+      }
 
   private void addKarmaForCommentApproved(JSONObject json) {
     boolean checkCommentApproved = false;
@@ -166,11 +166,11 @@ public class GitHubHookServlet extends HttpServlet {
     if (json.get("action").equals("created") && hasIssueAndComment(json)) {
       traineeReviewer = json.getJSONObject("comment").getJSONObject("user").getString("login");
       checkCommentApproved = json.getJSONObject("comment")
-              .getString("body").toLowerCase().equals("approved");
+          .getString("body").toLowerCase().equals("approved");
     } else if (json.get("action").equals("submitted")) {
       traineeReviewer = json.getJSONObject("review").getJSONObject("user").getString("login");
       checkCommentApproved = json.getJSONObject("review")
-              .getString("body").toLowerCase().equals("approved");
+          .getString("body").toLowerCase().equals("approved");
     }
     if (checkCommentApproved) {
       karmaService.changeUserKarma(traineeReviewer, 1);
@@ -179,7 +179,7 @@ public class GitHubHookServlet extends HttpServlet {
 
   private void checkReactionToChangeKarma(JSONObject json) {
     if (json.get("action").equals("label")
-            && json.getJSONObject("label").getString("name").equals("done")) {
+        && json.getJSONObject("label").getString("name").equals("done")) {
       int numberOfPullRequest = Integer.parseInt(json.getString("number").trim());
       karmaService.changeKarmaBasedOnReaction(numberOfPullRequest);
     }
@@ -194,9 +194,15 @@ public class GitHubHookServlet extends HttpServlet {
   }
 
   private boolean checkComment(JSONObject json) {
-    return json.has("comment");
+    boolean checkComment = false;
+    try {
+      json.getJSONObject("comment");
+      checkComment = true;
+    } catch (JSONException ignored) {
+      ignored.getMessage();
+    }
+    return checkComment;
   }
-
 
   private void giveNewTaskIfPrOpened(JSONObject json) {
     if (json.get("action").toString().equals(opened)) {

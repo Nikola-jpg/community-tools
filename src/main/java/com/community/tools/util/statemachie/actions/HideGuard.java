@@ -7,6 +7,7 @@ import com.community.tools.util.statemachie.State;
 
 import java.io.IOException;
 
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -25,6 +26,7 @@ public class HideGuard implements Guard<State, Event> {
   @Autowired
   private GitHubService gitHubService;
 
+  @SneakyThrows
   @Override
   public boolean evaluate(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();

@@ -38,9 +38,9 @@ public class AddGitNameAction implements Action<State, Event> {
     String user = context.getExtendedState().getVariables().get("id").toString();
     String nickname = context.getExtendedState().getVariables().get("gitNick").toString();
 
-    User stateEntity = stateMachineRepository.findByUserID(user).get();
-    stateEntity.setGitName(nickname);
-    stateMachineRepository.save(stateEntity);
+    User userEntity = stateMachineRepository.findByUserID(user).get();
+    userEntity.setGitName(nickname);
+    stateMachineRepository.save(userEntity);
     GHUser userGitLogin = new GHUser();
     try {
       userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StateMachineRepository extends JpaRepository<User, Long> {
+
   Optional<User> findByUserID(String userID);
 
   Optional<User> findByGitName(String gitName);

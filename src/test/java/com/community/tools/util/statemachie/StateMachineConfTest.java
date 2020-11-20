@@ -8,9 +8,6 @@ import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
 import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
 import static com.community.tools.util.statemachie.State.NEW_USER;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

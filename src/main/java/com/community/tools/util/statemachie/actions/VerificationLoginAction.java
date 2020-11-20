@@ -32,10 +32,11 @@ public class VerificationLoginAction implements Action<State, Event> {
     GHUser userGitLogin = new GHUser();
     try {
       userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
+      slackService.sendPrivateMessage(slackService.getUserById(user),
+              askAboutProfile + "\n" + userGitLogin.getHtmlUrl().toString());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    slackService.sendPrivateMessage(slackService.getUserById(user),
-        askAboutProfile + "\n" + userGitLogin.getHtmlUrl().toString());
+
   }
 }

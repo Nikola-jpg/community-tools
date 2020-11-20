@@ -1,6 +1,7 @@
 package com.community.tools.util.statemachie;
 
 import java.util.logging.Logger;
+
 import org.springframework.messaging.Message;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.StateMachine;
@@ -15,6 +16,7 @@ public class StateMachineApplicationListeer implements
   public void stateChanged(org.springframework.statemachine.state.State from,
                            org.springframework.statemachine.state.State to) {
   }
+
 
   @Override
   public void stateEntered(org.springframework.statemachine.state.State state) {

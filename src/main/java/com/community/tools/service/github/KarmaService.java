@@ -3,11 +3,11 @@ package com.community.tools.service.github;
 import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+
 import java.io.IOException;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
-
 import org.kohsuke.github.GHIssueComment;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHPullRequest;
@@ -32,13 +32,14 @@ public class KarmaService {
   private MentorsRepository mentorsRepository;
 
   /**
-   * This method changes karma of trainee after reaction.
+   * This method will increase karma, if comment is approved.
+   *
    * @param traineeReviewer Github login of trainee
-   * @param amountOfKarma amount of karma
+   * @param amountOfKarma   amount of karma
    */
   public void changeUserKarma(String traineeReviewer, int amountOfKarma) {
     if (stateMachineRepository.findByGitName(traineeReviewer).isPresent()
-        && !mentorsRepository.findByGitNick(traineeReviewer).isPresent()) {
+            && !mentorsRepository.findByGitNick(traineeReviewer).isPresent()) {
 
       user = stateMachineRepository.findByGitName(traineeReviewer).get();
       int numberOfKarma = user.getKarma();
@@ -53,6 +54,7 @@ public class KarmaService {
 
   /**
    * This method will change karma, if comment is approved.
+   *
    * @param numberOfPull number of pull request
    */
   public void changeKarmaBasedOnReaction(int numberOfPull) {
@@ -60,15 +62,15 @@ public class KarmaService {
       GHRepository repository = service.getGitHubRepository();
       List<GHPullRequest> pullRequests = repository.getPullRequests(GHIssueState.ALL);
       GHPullRequest currentPr = pullRequests.stream()
-          .filter(pr -> pr.getNumber() == numberOfPull).findFirst().get();
+              .filter(pr -> pr.getNumber() == numberOfPull).findFirst().get();
       String actorPullRequest = currentPr.getUser().getLogin();
       PagedIterable<GHIssueComment> comments = currentPr.listComments();
       boolean approvedComment = comments.asList()
-          .stream().anyMatch(c -> c.getBody().toLowerCase().equals("approved"));
+              .stream().anyMatch(c -> c.getBody().toLowerCase().equals("approved"));
       if (approvedComment) {
         GHIssueComment comment = comments.asList().stream()
-              .filter(c -> c.getBody().toLowerCase().equals("approved"))
-              .findFirst().get();
+                .filter(c -> c.getBody().toLowerCase().equals("approved"))
+                .findFirst().get();
         karmaForTypeOfReaction(comment, actorPullRequest);
       }
 
@@ -98,7 +100,7 @@ public class KarmaService {
           changeUserKarma(actorOfComment, 2);
         }
       } else if (typeOfReaction.equals("-1")
-          && mentorsRepository.findByGitNick(actorOfReaction).isPresent()) {
+              && mentorsRepository.findByGitNick(actorOfReaction).isPresent()) {
         changeUserKarma(actorOfComment, -1);
       }
     }

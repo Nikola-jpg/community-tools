@@ -74,9 +74,9 @@ public class StateMachineService {
         machine.sendEvent(GET_THE_FIRST_TASK);
         persistMachine(machine, userId);
 
-        User stateEntity = stateMachineRepository.findByUserID(userId).get();
-        stateEntity.setGitName(nickName);
-        stateMachineRepository.save(stateEntity);
+        User userEntity = stateMachineRepository.findByUserID(userId).get();
+        userEntity.setGitName(nickName);
+        stateMachineRepository.save(userEntity);
 
       } else {
         slackService.sendPrivateMessage(user, failedCheckNickName);
