@@ -4,6 +4,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.Data;
+
+@Data
 @Entity
 @Table(name = "state_entity")
 public class StateEntity {
@@ -11,8 +14,8 @@ public class StateEntity {
   private String userID;
   private String gitName;
   private byte[] stateMachine;
-
   private Integer pointByTask = 0;
+  private Integer karma = 0;
 
   public StateEntity() {
   }
@@ -27,35 +30,8 @@ public class StateEntity {
     this.userID = userID;
   }
 
-  public void setUserID(String userID) {
-    this.userID = userID;
+  public Integer getTotalPoints() {
+    return this.karma + this.pointByTask;
   }
 
-  public void setGitName(String gitName) {
-    this.gitName = gitName;
-  }
-
-  public void setStateMachine(byte[] stateMachine) {
-    this.stateMachine = stateMachine;
-  }
-
-  public String getUserID() {
-    return userID;
-  }
-
-  public byte[] getStateMachine() {
-    return stateMachine;
-  }
-
-  public String getGitName() {
-    return gitName;
-  }
-
-  public void setPointByTask(Integer pointByTask) {
-    this.pointByTask = pointByTask;
-  }
-
-  public Integer getPointByTask() {
-    return pointByTask;
-  }
 }
