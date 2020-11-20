@@ -7,11 +7,11 @@ import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
 import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
 import static com.community.tools.util.statemachie.State.NEW_USER;
 
+import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.jpa.StateEntity;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,9 +74,9 @@ public class StateMachineService {
         machine.sendEvent(GET_THE_FIRST_TASK);
         persistMachine(machine, userId);
 
-        StateEntity stateEntity = stateMachineRepository.findByUserID(userId).get();
-        stateEntity.setGitName(nickName);
-        stateMachineRepository.save(stateEntity);
+        User userEntity = stateMachineRepository.findByUserID(userId).get();
+        userEntity.setGitName(nickName);
+        stateMachineRepository.save(userEntity);
 
       } else {
         slackService.sendPrivateMessage(user, failedCheckNickName);
@@ -141,11 +141,11 @@ public class StateMachineService {
    * @return StateMachine
    */
   public StateMachine<State, Event> restoreMachineByNick(String nick) {
-    StateEntity stateEntity = stateMachineRepository.findByGitName(nick).get();
+    User user = stateMachineRepository.findByGitName(nick).get();
     StateMachine<State, Event> machine = factory.getStateMachine();
     machine.start();
     try {
-      persister.restore(machine, stateEntity.getUserID());
+      persister.restore(machine, user.getUserID());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

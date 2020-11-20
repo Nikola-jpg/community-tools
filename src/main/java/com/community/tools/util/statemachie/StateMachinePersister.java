@@ -1,6 +1,6 @@
 package com.community.tools.util.statemachie;
 
-import com.community.tools.util.statemachie.jpa.StateEntity;
+import com.community.tools.model.User;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
@@ -30,24 +30,24 @@ public class StateMachinePersister implements
 
   @Override
   public void write(StateMachineContext<State, Event> context, String userID) {
-    StateEntity stateEntity = null;
+    User user = null;
     try {
-      stateEntity = stateMachineRepository.findByUserID(userID).get();
+      user = stateMachineRepository.findByUserID(userID).get();
     } catch (NoSuchElementException e) {
-      stateEntity = new StateEntity();
-      stateEntity.setUserID(userID);
+      user = new User();
+      user.setUserID(userID);
     }
 
     byte[] data = serialize(context);
-    stateEntity.setStateMachine(data);
-    stateMachineRepository.save(stateEntity);
+    user.setStateMachine(data);
+    stateMachineRepository.save(user);
   }
 
   @Override
   public StateMachineContext<State, Event> read(String s) {
 
-    StateEntity stateEntity = stateMachineRepository.findByUserID(s).get();
-    byte[] arr = stateEntity.getStateMachine();
+    User user = stateMachineRepository.findByUserID(s).get();
+    byte[] arr = user.getStateMachine();
 
     return deserialize(arr);
   }

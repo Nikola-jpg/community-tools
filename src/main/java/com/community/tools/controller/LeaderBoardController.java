@@ -2,14 +2,13 @@ package com.community.tools.controller;
 
 import static com.community.tools.util.GetServerAddress.getAddress;
 
+import com.community.tools.model.User;
 import com.community.tools.service.CreateImageWithLeaderBoardService;
-import com.community.tools.util.statemachie.jpa.StateEntity;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
@@ -40,8 +39,8 @@ public class LeaderBoardController {
    */
   @GetMapping("/")
   public String getLeaderboard(Model model) {
-    List<StateEntity> list = stateMachineRepository.findAll();
-    list.sort(Comparator.comparing(StateEntity::getTotalPoints).reversed());
+    List<User> list = stateMachineRepository.findAll();
+    list.sort(Comparator.comparing(User::getTotalPoints).reversed());
     model.addAttribute("entities", list);
     return "leaderboard";
   }

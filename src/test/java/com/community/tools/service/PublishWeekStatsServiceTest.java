@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Value;
 
 class PublishWeekStatsServiceTest {
 
@@ -69,6 +70,7 @@ class PublishWeekStatsServiceTest {
     assertDoesNotThrow(() -> {
       taskTestService.exportStat();
       Mockito.verify(slackService).sendBlockMessageToConversation(anyString(), eq(message));
+
     });
   }
 
@@ -124,18 +126,18 @@ class PublishWeekStatsServiceTest {
             + "{\"type\": \"plain_text\",\"text\": \"Statistic:\"}},"
             + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"\n"
             + "*Comment*:loudspeaker::  4\n"
-            + "*Commit*:rolled_up_newspaper::  3\n"
             + "*Pull Request created*:mailbox_with_mail::  3\n"
+            + "*Commit*:rolled_up_newspaper::  3\n"
             + "*Pull Request closed*:moneybag::  1\"\t}]},"
             + "{\"type\": \"header\",\"text\": {\"type\": \"plain_text\",\"text\": \"Activity:\"}},"
             + "{\"type\": \"context\",\n"
             + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*aleksandr-zatsarnui*:"
-            + " :loudspeaker::loudspeaker::loudspeaker::rolled_up_newspaper:"
-            + ":mailbox_with_mail::mailbox_with_mail::moneybag:\"}]},"
+            + " :loudspeaker::loudspeaker::loudspeaker::mailbox_with_mail:"
+            + ":mailbox_with_mail::rolled_up_newspaper::moneybag:\"}]},"
             + "{\"type\": \"context\",\n"
             + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*NikitaBatalskiy*:"
-            + " :loudspeaker::rolled_up_newspaper:"
-            + ":rolled_up_newspaper::mailbox_with_mail:\"}]}]";
+            + " :loudspeaker::mailbox_with_mail::rolled_up_newspaper:"
+            + ":rolled_up_newspaper:\"}]}]";
 
 
 

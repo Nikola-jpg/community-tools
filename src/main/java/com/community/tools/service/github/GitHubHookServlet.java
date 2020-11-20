@@ -12,7 +12,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,6 +40,8 @@ public class GitHubHookServlet extends HttpServlet {
   private String password;
   @Value("${GITHUB_SECRET_TOKEN}")
   private String secret;
+  @Value("${generalInformationChannel}")
+  private String channel;
   @Autowired
   private SlackService service;
   @Autowired
@@ -50,6 +51,8 @@ public class GitHubHookServlet extends HttpServlet {
   @Autowired
   private StateMachineService stateMachineService;
   @Autowired
+
+  private KarmaService karmaService;
   private PointsTaskService pointsTaskService;
 
   @Override
@@ -72,6 +75,7 @@ public class GitHubHookServlet extends HttpServlet {
         connect.setUsername(username);
         connect.setPassword(password);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
+
         String sql = "INSERT INTO public.\"GitHookData\" (time, jsonb_data) VALUES (? , ?)";
         Date date = new Date();
         String jsonb = json.toString().replace("'", "''") + "'::jsonb);";
@@ -88,6 +92,7 @@ public class GitHubHookServlet extends HttpServlet {
           sendNotificationMessageAboutPR(json);
           giveNewTaskIfPrOpened(json);
           addMentorIfEventIsReview(json);
+          addKarmaForCommentApproved(json);
           addPointIfPullLabeledDone(json);
         }
       }
@@ -108,9 +113,8 @@ public class GitHubHookServlet extends HttpServlet {
         addMentorService.sendNotifyWithMentor(user, url);
       } else {
         service
-                .sendMessageToConversation("test_3", "User "
-                        + user + " create a pull request \n url: " + url);
-
+            .sendMessageToConversation(channel,
+                    "User " + user + " created a pull request \n url: " + url);
       }
     }
   }
@@ -119,10 +123,12 @@ public class GitHubHookServlet extends HttpServlet {
     if (json.get("action").toString().equals(labeledStr)) {
       List<Object> list = json.getJSONObject("pull_request").getJSONArray("labels").toList();
       return list.stream().map(o -> (HashMap) o)
-              .anyMatch(e -> e.get("name").equals("ready for review"));
+          .anyMatch(e -> e.get("name").equals("ready for review"));
+
     }
     return false;
   }
+
 
   private void addPointIfPullLabeledDone(JSONObject json) {
     if (json.get("action").toString().equals(labeledStr)
@@ -136,7 +142,7 @@ public class GitHubHookServlet extends HttpServlet {
   }
 
   private void addMentorIfEventIsReview(JSONObject json) {
-    if (json.get("action").equals("submitted") || checkComment(json)) {
+    if (json.get("action").equals("submitted") || hasComment(json)) {
       String mentor;
       String creator;
       try {
@@ -153,6 +159,35 @@ public class GitHubHookServlet extends HttpServlet {
 
       addMentorService.addMentor(mentor, creator);
     }
+  }
+
+  private void addKarmaForCommentApproved(JSONObject json) {
+    boolean checkCommentApproved = false;
+    String traineeReviewer = "";
+    if (json.get("action").equals("created") && hasIssueAndComment(json)) {
+      traineeReviewer = json.getJSONObject("comment").getJSONObject("user").getString("login");
+      checkCommentApproved = json.getJSONObject("comment")
+          .getString("body").toLowerCase().equals("approved");
+    } else if (json.get("action").equals("submitted")) {
+      traineeReviewer = json.getJSONObject("review").getJSONObject("user").getString("login");
+      checkCommentApproved = json.getJSONObject("review")
+          .getString("body").toLowerCase().equals("approved");
+    }
+    if (checkCommentApproved) {
+      karmaService.increaseKarmaForCommentApproved(traineeReviewer);
+    }
+  }
+
+  private boolean hasIssueAndComment(JSONObject json) {
+    boolean checkIssue = false;
+    if (hasComment(json)) {
+      checkIssue = json.has("issue");
+    }
+    return checkIssue;
+  }
+
+  private boolean hasComment(JSONObject json) {
+    return json.has("comment");
   }
 
   private boolean checkComment(JSONObject json) {

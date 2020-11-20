@@ -9,7 +9,6 @@ import static org.kohsuke.github.GHIssueState.CLOSED;
 
 import com.community.tools.model.EventData;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,12 +24,13 @@ import org.kohsuke.github.GHPullRequestReviewComment;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHUser;
 import org.kohsuke.github.PagedIterable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 public class GitHubService {
-
+  @Autowired
   private final GitHubConnectService service;
 
   /**
@@ -111,6 +111,10 @@ public class GitHubService {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public GHUser getUserByLoginInGitHub(String gitHubLogin) throws IOException {
+    return service.getGitHubConnection().getUser(gitHubLogin);
   }
 
   /**

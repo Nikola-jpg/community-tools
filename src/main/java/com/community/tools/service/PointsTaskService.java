@@ -1,8 +1,8 @@
 package com.community.tools.service;
 
+import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
 import com.community.tools.service.slack.SlackService;
-import com.community.tools.util.statemachie.jpa.StateEntity;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.google.gson.JsonParseException;
@@ -55,7 +55,7 @@ public class PointsTaskService {
   @SneakyThrows
   public void addPointForCompletedTask(String mentor, String creator, String pullName) {
     if (mentorsRepository.findByGitNick(mentor).isPresent()) {
-      StateEntity stateEntity = stateMachineRepository.findByGitName(creator)
+      User stateEntity = stateMachineRepository.findByGitName(creator)
               .orElseThrow(EntityNotFoundException::new);
       String finalPullName = pullName.toLowerCase();;
       int points = pointsForTask.entrySet().stream()

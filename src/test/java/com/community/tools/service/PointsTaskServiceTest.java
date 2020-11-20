@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.community.tools.service.github.jpa.Mentors;
+import com.community.tools.model.Mentors;
+import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
 import com.community.tools.service.slack.SlackService;
-import com.community.tools.util.statemachie.jpa.StateEntity;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.util.ArrayList;
@@ -77,7 +77,7 @@ class PointsTaskServiceTest {
 
     Mentors mentors = mock(Mentors.class);
     when(mentors.getGitNick()).thenReturn("test");
-    StateEntity stateEntity =  new StateEntity();
+    User stateEntity =  new User();
     stateEntity.setUserID("Olena Haladzhii");
     stateEntity.setPointByTask(5);
     stateEntity.setGitName("marvintik");

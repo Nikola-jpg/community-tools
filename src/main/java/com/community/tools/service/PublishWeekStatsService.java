@@ -20,8 +20,9 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -30,6 +31,8 @@ public class PublishWeekStatsService {
 
   private final GitHubService ghEventService;
   private final SlackService slackService;
+  @Value("${generalInformationChannel}")
+  private String channel;
 
   /**
    * Publish statistics of Events for last week. Statistic sends every Monday.
