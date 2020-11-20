@@ -6,6 +6,10 @@ import static com.community.tools.util.statemachie.State.*;
 import com.community.tools.util.statemachie.actions.*;
 
 import java.util.EnumSet;
+
+import com.community.tools.util.statemachie.actions.questions.FirstQuestionAction;
+import com.community.tools.util.statemachie.actions.questions.SecondQuestionAction;
+import com.community.tools.util.statemachie.actions.questions.ThirdQuestionAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,21 +50,35 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
       throws Exception {
     transitions
         .withExternal()
-        .source(NEW_USER)
-        .target(FIRST_LICENSE_MESS)
-        .event(FIRST_AGREE_MESS)
-        .action(firstAgreeLicenseAction(), errorAction())
+        .source(GREETING_MESSAGE)
+        .target(FIRST_QUESTION)
+        .event(QUESTION_FIRST)
+        .action(firstQuestionAction(), errorAction())
 
         .and()
         .withExternal()
-        .source(FIRST_LICENSE_MESS)
-        .target(SECOND_LICENSE_MESS)
-        .event(SECOND_AGREE_MESS)
-        .action(secondAgreeLicenseAction(), errorAction())
+        .source(FIRST_QUESTION)
+        .target(SECOND_QUESTION)
+        .event(QUESTION_SECOND)
+        .action(secondQuestionAction(), errorAction())
 
         .and()
         .withExternal()
-        .source(SECOND_LICENSE_MESS)
+        .source(SECOND_QUESTION)
+        .target(THIRD_QUESTION)
+        .event(QUESTION_THIRD)
+        .action(thirdQuestionAction(), errorAction())
+
+        .and()
+        .withExternal()
+        .source(THIRD_QUESTION)
+        .target(INFORMATION_CHANNELS)
+        .event(CHANNELS_INFORMATION)
+        .action(informationChannelsAction(), errorAction())
+
+        .and()
+        .withExternal()
+        .source(INFORMATION_CHANNELS)
         .target(AGREED_LICENSE)
         .event(AGREE_LICENSE)
         .action(agreeLicenseAction(), errorAction())
@@ -124,13 +142,23 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
   public Action<State, Event> verificationLoginAction() { return new VerificationLoginAction(); }
 
   @Bean
-  public Action<State, Event> firstAgreeLicenseAction() {
-    return new FirstAgreeLicenseAction();
+  public Action<State, Event> firstQuestionAction() {
+    return new FirstQuestionAction();
   }
 
   @Bean
-  public Action<State, Event> secondAgreeLicenseAction() {
-    return new SecondAgreeLicenseAction();
+  public Action<State, Event> secondQuestionAction() {
+    return new SecondQuestionAction();
+  }
+
+  @Bean
+  public Action<State, Event> thirdQuestionAction() {
+    return new ThirdQuestionAction();
+  }
+
+  @Bean
+  Action<State, Event> informationChannelsAction() {
+    return new ChannelInformationAction();
   }
 
   @Bean

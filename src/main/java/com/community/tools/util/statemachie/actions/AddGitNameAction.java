@@ -5,7 +5,7 @@ import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.community.tools.model.StateEntity;
+import com.community.tools.model.User;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import java.io.IOException;
 
@@ -36,9 +36,12 @@ public class AddGitNameAction implements Action<State, Event> {
     String user = context.getExtendedState().getVariables().get("id").toString();
     String nickname = context.getExtendedState().getVariables().get("gitNick").toString();
 
-    StateEntity stateEntity = stateMachineRepository.findByUserID(user).get();
+    User stateEntity = stateMachineRepository.findByUserID(user).get();
     stateEntity.setGitName(nickname);
     stateMachineRepository.save(stateEntity);
+    String firstAnswer = stateEntity.getFirstAnswerAboutRules();
+    String secondAnswer = stateEntity.getSecondAnswerAboutRules();
+    String thirdAnswer = stateEntity.getThirdAnswerAboutRules();
     GHUser userGitLogin = new GHUser();
     try {
       userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
@@ -51,10 +54,19 @@ public class AddGitNameAction implements Action<State, Event> {
     }
     slackService.sendPrivateMessage(slackService.getUserById(user), congratsAvailableNick);
     slackService.sendMessageToConversation(channel,
-          generalInformationAboutUserToChannel(user, userGitLogin));
+          generalInformationAboutUserToChannel(user, userGitLogin)
+              + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
   }
 
   private String generalInformationAboutUserToChannel(String slackName, GHUser user) {
     return slackService.getUserById(slackName) + " - " + user.getLogin();
+  }
+
+  private String sendUserAnswersToChannel(String firstAnswer, String secondAnswer,
+                                          String thirdAnswer){
+    return "Answer on questions : \n"
+        + "1. " + firstAnswer + ";\n"
+        + "2. " + secondAnswer + ";\n"
+        + "3. " + thirdAnswer + ".";
   }
 }
