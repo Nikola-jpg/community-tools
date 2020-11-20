@@ -16,4 +16,8 @@ public class User {
   private byte[] stateMachine;
   private int karma = 0;
   private Integer pointByTask = 0;
+
+  public Integer getTotalPoints() {
+    return this.karma + this.pointByTask;
+  }
 }

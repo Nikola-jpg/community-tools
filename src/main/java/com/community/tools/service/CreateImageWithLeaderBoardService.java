@@ -1,6 +1,6 @@
 package com.community.tools.service;
 
-import com.community.tools.util.statemachie.jpa.StateEntity;
+import com.community.tools.model.User;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -56,9 +56,9 @@ public class CreateImageWithLeaderBoardService {
    */
   public String getLeaderboardTemplate() {
     final Context ctx = new Context();
-    List<StateEntity> list = stateMachineRepository.findAll();
-    list.sort(Comparator.comparing(StateEntity::getTotalPoints).reversed());
-    List<StateEntity> listFirst = list.stream().limit(5).collect(Collectors.toList());
+    List<User> list = stateMachineRepository.findAll();
+    list.sort(Comparator.comparing(User::getTotalPoints).reversed());
+    List<User> listFirst = list.stream().limit(5).collect(Collectors.toList());
     ctx.setVariable("entities", listFirst);
     final String htmlContent = this.templateEngine.process("leaderboard.html", ctx);
     return  htmlContent;
