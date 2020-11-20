@@ -47,7 +47,7 @@ public class LeaderBoardController {
   }
 
   /**
-   * This vmethod return image with table, which contains first 5 trainees of leaderboard.
+   * This method return image with table, which contains first 5 trainees of leaderboard.
    * @param response HttpServletResponse
    * @throws EntityNotFoundException EntityNotFoundException
    * @throws IOException IOException
@@ -61,18 +61,5 @@ public class LeaderBoardController {
     response.setContentLength(data.length);
   }
 
-  /**
-   * Tjis vmethod return webpage with table, which contains first 5 trainees of leaderboard.
-   * @param model Model
-   * @return webpage with template "leaderboard"
-   */
-  @GetMapping("/better")
-  public String getLeaderboardFirstFive(Model model) {
-    List<StateEntity> list = stateMachineRepository.findAll();
-    list.sort(Comparator.comparing(StateEntity::getTotalPoints).reversed());
-    List<StateEntity> listFirst = list.stream().limit(5).collect(Collectors.toList());
-    model.addAttribute("entities", listFirst);
-    return "leaderboard";
-  }
 
 }

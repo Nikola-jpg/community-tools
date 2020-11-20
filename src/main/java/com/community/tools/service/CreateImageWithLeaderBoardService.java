@@ -1,23 +1,30 @@
 package com.community.tools.service;
 
+import com.community.tools.util.statemachie.jpa.StateEntity;
+import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.swing.JEditorPane;
 
 import lombok.SneakyThrows;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 @Service
 public class CreateImageWithLeaderBoardService {
+
+  @Autowired
+  StateMachineRepository stateMachineRepository;
+
+  @Autowired
+  TemplateEngine templateEngine;
 
   /**
    * This method put html code into JEditorPane and print image.
@@ -26,7 +33,7 @@ public class CreateImageWithLeaderBoardService {
    */
   @SneakyThrows
   public byte[] createImage(String url) {
-    String html = getSourceCodeFromSite(url);
+    String html = getLeaderboardTemplate();
     int width = 550;
     int height = 225;
 
@@ -44,15 +51,17 @@ public class CreateImageWithLeaderBoardService {
   }
 
   /**
-   * This method read the source code of html page and put it into StringBuilder.
-   * @param url url with endpoint leaderboard
+   * This method return html-content with table, which contains first 5 trainees of leaderboard.
+   * @return HtmlContent with leaderboard image
    */
-  public String getSourceCodeFromSite(String url) {
-    String generateUrl = url + "better/";
-    RestTemplate restTemplate = new RestTemplate();
-    ResponseEntity<String> responseEntity =
-            restTemplate.exchange(generateUrl, HttpMethod.GET, null, String.class);
-    return responseEntity.getBody();
+  public String getLeaderboardTemplate() {
+    final Context ctx = new Context();
+    List<StateEntity> list = stateMachineRepository.findAll();
+    list.sort(Comparator.comparing(StateEntity::getTotalPoints).reversed());
+    List<StateEntity> listFirst = list.stream().limit(5).collect(Collectors.toList());
+    ctx.setVariable("entities", listFirst);
+    final String htmlContent = this.templateEngine.process("leaderboard.html", ctx);
+    return  htmlContent;
   }
 
 }
