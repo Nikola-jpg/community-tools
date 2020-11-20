@@ -1,14 +1,15 @@
 package com.community.tools.util.statemachie.actions;
 
+import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.community.tools.model.User;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import java.io.IOException;
 
+import lombok.SneakyThrows;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,7 @@ public class AddGitNameAction implements Action<State, Event> {
   @Autowired
   private GitHubService gitHubService;
 
+  @SneakyThrows
   @Override
   public void execute(final StateContext<State, Event> context) {
     String user = context.getExtendedState().getVariables().get("id").toString();

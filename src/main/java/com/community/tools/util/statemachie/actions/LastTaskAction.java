@@ -19,7 +19,11 @@ public class LastTaskAction implements Action<State, Event> {
   @Override
   public void execute(final StateContext<State, Event> context) {
     String user = context.getExtendedState().getVariables().get("id").toString();
-    slackService.sendPrivateMessage(slackService.getUserById(user),lastTask );
+    try {
+      slackService.sendPrivateMessage(slackService.getUserById(user),lastTask);
+    } catch (IOException | SlackApiException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }

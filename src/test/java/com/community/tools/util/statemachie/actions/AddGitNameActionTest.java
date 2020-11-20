@@ -1,5 +1,13 @@
 package com.community.tools.util.statemachie.actions;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubHookServlet;
 import com.community.tools.service.github.GitHubService;
@@ -7,8 +15,20 @@ import com.community.tools.service.slack.SlackHandlerService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.community.tools.model.User;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.transaction.Transactional;
+import lombok.SneakyThrows;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +37,7 @@ import org.kohsuke.github.GHTeam;
 import org.kohsuke.github.GHUser;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -26,14 +47,6 @@ import org.springframework.statemachine.StateMachine;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.transaction.Transactional;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.*;
-
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -69,6 +82,10 @@ public class AddGitNameActionTest {
   @Mock
   private GHRepository ghRepository;
 
+  /**
+   * This method init fields in the AddGitNameAction.
+   * @throws Exception Exception
+   */
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
@@ -111,7 +128,7 @@ public class AddGitNameActionTest {
 
     when(slackSer.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
     when(slackSer.sendPrivateMessage("Горб Юра",
-        "Hurray! Your nick is available. Nice to meet you :smile:")).thenReturn("");
+            "Hurray! Your nick is available. Nice to meet you :smile:")).thenReturn("");
     when(slackSer.sendMessageToConversation(anyString(), anyString())).thenReturn("");
 
     addGitNameAction.execute(stateContext);
@@ -120,12 +137,13 @@ public class AddGitNameActionTest {
     verify(gitHubConnectService, times(1)).getGitHubRepository();
     verify(slackSer, times(2)).getUserById("U0191K2V20K");
     verify(slackSer, times(1))
-        .sendPrivateMessage("Горб Юра",
-            "Hurray! Your nick is available. Nice to meet you :smile:");
+            .sendPrivateMessage("Горб Юра",
+                    "Hurray! Your nick is available. Nice to meet you :smile:");
     verify(slackSer, times(1)).sendMessageToConversation(anyString(), anyString());
   }
 
 
+  @SneakyThrows
   @Test
   public void shouldGetExceptionWhenAddingToRole() throws IOException {
     Map<Object, Object> mockData = new HashMap<>();
@@ -150,7 +168,8 @@ public class AddGitNameActionTest {
 
     when(slackSer.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
     when(slackSer.sendPrivateMessage("Горб Юра",
-        "Something went wrong when adding to role. You need to contact the admin!")).thenReturn("");
+            "Something went wrong when adding to role. You need to contact the admin!"))
+            .thenReturn("");
 
     addGitNameAction.execute(stateContext);
 
@@ -159,11 +178,11 @@ public class AddGitNameActionTest {
     verify(gitHubConnectService, times(1)).getGitHubRepository();
     verify(slackSer, times(3)).getUserById("U0191K2V20K");
     verify(slackSer, times(1))
-        .sendPrivateMessage("Горб Юра",
-            "Hurray! Your nick is available. Nice to meet you :smile:");
+            .sendPrivateMessage("Горб Юра",
+                    "Hurray! Your nick is available. Nice to meet you :smile:");
     verify(slackSer, times(1))
-        .sendPrivateMessage("Горб Юра",
-            "Something went wrong when adding to role. You need to contact the admin!");
+            .sendPrivateMessage("Горб Юра",
+                    "Something went wrong when adding to role. You need to contact the admin!");
     verify(slackSer, times(1)).sendMessageToConversation(anyString(), anyString());
   }
 }

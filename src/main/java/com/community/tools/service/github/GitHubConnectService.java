@@ -15,6 +15,10 @@ public class GitHubConnectService {
   @Value("${github.repository}")
   private String nameRepository;
 
+  /**
+   * Get GitHub connection.
+   * @return GitHub
+   */
   public GitHub getGitHubConnection() {
     GitHub gitHub;
     try {
@@ -25,6 +29,10 @@ public class GitHubConnectService {
     return gitHub;
   }
 
+  /**
+   * Get GitHub repository.
+   * @return GHRepository
+   */
   public GHRepository getGitHubRepository() {
     GHRepository repository;
     try {

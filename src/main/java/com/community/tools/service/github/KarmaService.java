@@ -18,9 +18,13 @@ public class KarmaService {
   @Autowired
   private MentorsRepository mentorsRepository;
 
+  /**
+   * This method will increase karma, if comment is approved.
+   * @param traineeReviewer GitHub nick of trainee
+   */
   public void increaseKarmaForCommentApproved(String traineeReviewer) {
     if (stateMachineRepository.findByGitName(traineeReviewer).isPresent()
-        && !mentorsRepository.findByGitNick(traineeReviewer).isPresent()){
+        && !mentorsRepository.findByGitNick(traineeReviewer).isPresent()) {
 
       user = stateMachineRepository.findByGitName(traineeReviewer).get();
       int numberOfKarma = user.getKarma();
