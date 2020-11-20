@@ -45,7 +45,7 @@ public class SlackService {
 
       ChatPostMessageResponse postResponse =
               slack.methods(token).chatPostMessage(
-                      req -> req.channel(user.getId()).asUser(true)
+                  req -> req.channel(user.getId()).asUser(true)
                               .text(messageText));
       return postResponse.getTs();
     } catch (IOException | SlackApiException exception) {
@@ -72,7 +72,7 @@ public class SlackService {
 
     ChatPostMessageResponse postResponse =
             slack.methods(token).chatPostMessage(
-                    req -> req.channel(user.getId()).asUser(true)
+                req -> req.channel(user.getId()).asUser(true)
                             .blocksAsString(messageText));
 
     return postResponse.getTs();
@@ -97,7 +97,7 @@ public class SlackService {
 
     ChatPostMessageResponse postResponse =
             slack.methods(token).chatPostMessage(
-                    req -> req.channel(user.getId()).asUser(true)
+                req -> req.channel(user.getId()).asUser(true)
                             .attachmentsAsString(messageText));
 
     return postResponse.getTs();
@@ -124,16 +124,17 @@ public class SlackService {
             .findFirst().get();
     ChatPostMessageResponse postResponse =
             slack.methods(token).chatPostMessage(
-                    req -> req.channel(channel.getId()).asUser(true).text(messageText));
+                req -> req.channel(channel.getId()).asUser(true).text(messageText));
     return postResponse.getTs();
   }
 
   /**
    * Send attachment message with blocks of Text to the channel.
+   *
    * @param channelName Name of channel
    * @param messageText Blocks of message
    * @return timestamp of message
-   * @throws IOException IOException
+   * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
   public String sendBlockMessageToConversation(String channelName, String messageText)
@@ -148,7 +149,7 @@ public class SlackService {
             .findFirst().get();
     ChatPostMessageResponse postResponse =
             slack.methods(token).chatPostMessage(
-                    req -> req.channel(channel.getId()).asUser(true).blocksAsString(messageText));
+                req -> req.channel(channel.getId()).asUser(true).blocksAsString(messageText));
     return postResponse.getTs();
   }
 
@@ -175,7 +176,7 @@ public class SlackService {
 
     ChatPostMessageResponse postResponse =
             slack.methods(token).chatPostMessage(
-                    req -> req.channel(channel.getId()).asUser(true).text(messageText));
+                req -> req.channel(channel.getId()).asUser(true).text(messageText));
 
     return postResponse.getTs();
   }
