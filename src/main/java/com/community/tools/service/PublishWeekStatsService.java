@@ -52,39 +52,41 @@ public class PublishWeekStatsService {
     events.stream().filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
             .forEach(ed -> sortedMapGroupByActors.put(ed.getActorLogin(), new ArrayList<>()));
 
-    messageBuilder.append(":construction: ТИПЫ :construction:");
+    messageBuilder.append("[{\"type\": \"header\",\t\"text\": {\"type\":"
+            + " \"plain_text\",\"text\": \"Statistic:\"}},"
+            + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"");
     events.stream()
-            .collect(Collectors.groupingBy(EventData::getType))
-            .entrySet().stream()
-            .sorted(Comparator
-                    .comparingInt((Entry<Event, List<EventData>> entry) -> entry.getValue().size())
-                    .reversed())
-            .forEach(entry -> {
-              entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
-              messageBuilder.append("\n");
-              messageBuilder.append(entry.getKey()).append(emojiGen(entry.getKey()));
-              messageBuilder.append(": ");
-              messageBuilder.append(entry.getValue().size());
-            });
-    messageBuilder.append("\n ----------------------------------------");
-    messageBuilder.append("\n").append(":construction: АКТИВНОСТЬ :construction:\n");
+        .collect(Collectors.groupingBy(EventData::getType))
+        .entrySet().stream()
+        .sorted(Comparator
+            .comparingInt((Entry<Event, List<EventData>> entry) -> entry.getValue().size())
+            .reversed())
+        .forEach(entry -> {
+          entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
+          messageBuilder.append("\n");
+          messageBuilder.append(getTypeTitleBold(entry.getKey())).append(emojiGen(entry.getKey()));
+          messageBuilder.append(":  ");
+          messageBuilder.append(entry.getValue().size());
+        });
+    messageBuilder.append("\"\t}]},{\"type\": \"header\",\"text\": "
+            + "{\"type\": \"plain_text\",\"text\": \"Activity:\"}}");
     sortedMapGroupByActors.entrySet().stream()
-            .sorted(Comparator
-                    .comparingInt((Entry<String, List<EventData>> entry) -> entry.getValue().size())
-                    .reversed())
-            .forEach(name -> {
-              StringBuilder authorsActivMessage = new StringBuilder();
-              name.getValue()
-                      .forEach(eventData -> authorsActivMessage
-                              .append(emojiGen(eventData.getType())));
-
-              messageBuilder.append(name.getKey());
-              messageBuilder.append(": ");
-              messageBuilder.append(authorsActivMessage);
-              messageBuilder.append("\n");
-            });
-
-    slackService.sendMessageToConversation("test_3", messageBuilder.toString());
+        .sorted(Comparator
+            .comparingInt((Entry<String, List<EventData>> entry) -> entry.getValue().size())
+            .reversed())
+        .forEach(name -> {
+          StringBuilder authorsActivMessage = new StringBuilder();
+          name.getValue()
+                  .forEach(eventData -> authorsActivMessage.append(emojiGen(eventData.getType())));
+          messageBuilder.append(",{\"type\": \"context\",\n"
+                  + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*");
+          messageBuilder.append(name.getKey());
+          messageBuilder.append("*: ");
+          messageBuilder.append(authorsActivMessage);
+          messageBuilder.append("\"}]}");
+        });
+    messageBuilder.append("]");
+    slackService.sendBlockMessageToConversation("general", messageBuilder.toString());
   }
 
   /**
@@ -111,7 +113,7 @@ public class PublishWeekStatsService {
   private String emojiGen(Event type) {
     switch (type) {
       case COMMENT:
-        return ":loudspeaker: ";
+        return ":loudspeaker:";
       case COMMIT:
         return ":rolled_up_newspaper:";
       case PULL_REQUEST_CLOSED:
@@ -121,5 +123,10 @@ public class PublishWeekStatsService {
       default:
         return "";
     }
+  }
+
+  private String getTypeTitleBold(Event type) {
+    String typeTitleBold = "*" + type.getTitle() + "*";
+    return typeTitleBold;
   }
 }

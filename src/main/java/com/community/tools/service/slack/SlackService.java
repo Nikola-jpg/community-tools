@@ -128,11 +128,10 @@ public class SlackService {
 
   /**
    * Send attachment message with blocks of Text to the channel.
-   *
    * @param channelName Name of channel
    * @param messageText Blocks of message
    * @return timestamp of message
-   * @throws IOException       IOException
+   * @throws IOException IOException
    * @throws SlackApiException SlackApiException
    */
   public String sendBlockMessageToConversation(String channelName, String messageText)
@@ -147,7 +146,7 @@ public class SlackService {
             .findFirst().get();
     ChatPostMessageResponse postResponse =
             slack.methods(token).chatPostMessage(
-              req -> req.channel(channel.getId()).asUser(true).blocksAsString(messageText));
+                req -> req.channel(channel.getId()).asUser(true).blocksAsString(messageText));
     return postResponse.getTs();
   }
 
