@@ -17,6 +17,8 @@ public class StateEntity {
   private Integer pointByTask = 0;
   private Integer karma = 0;
 
+  private Integer pointByTask = 0;
+
   public StateEntity() {
   }
 
