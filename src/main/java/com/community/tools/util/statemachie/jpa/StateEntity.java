@@ -12,6 +12,8 @@ public class StateEntity {
   private String gitName;
   private byte[] stateMachine;
 
+  private Integer pointByTask = 0;
+
   public StateEntity() {
   }
 
@@ -47,5 +49,13 @@ public class StateEntity {
 
   public String getGitName() {
     return gitName;
+  }
+
+  public void setPointByTask(Integer pointByTask) {
+    this.pointByTask = pointByTask;
+  }
+
+  public Integer getPointByTask() {
+    return pointByTask;
   }
 }
