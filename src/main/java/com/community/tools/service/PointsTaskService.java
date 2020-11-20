@@ -41,7 +41,8 @@ public class PointsTaskService {
   @Autowired
   StateMachineRepository stateMachineRepository;
 
-  final int NUMBER_PULLS_ABILITY_REVIEW = 3;
+  final int numberPullsAbilityReview = 3;
+
 
 
   /**
@@ -61,10 +62,11 @@ public class PointsTaskService {
               .filter(entry -> finalPullName.contains(entry.getKey()))
               .map(Map.Entry::getValue).findFirst().orElse(0);
       if (points == 0) {
-        sendMessageWhichDescribesZeroPoints(stateEntity.getUserID());
+        sendMessageWhichDescribesZeroPoints(stateEntity.getUserID(), pullName);
       }
       int newUserPoints = stateEntity.getPointByTask() + points;
-      if (countService.getCountedCompletedTasks().get(creator).size() == NUMBER_PULLS_ABILITY_REVIEW) {
+      if (countService.getCountedCompletedTasks().get(creator).size()
+              == numberPullsAbilityReview) {
         sendAbilityReviewMess(stateEntity.getUserID());
       }
 
@@ -89,9 +91,10 @@ public class PointsTaskService {
    * This method send AbilityReview message to the user, if user misnamed pull request.
    * @param id Slack User Id
    */
-  public void sendMessageWhichDescribesZeroPoints(String id) {
+  public void sendMessageWhichDescribesZeroPoints(String id, String pullName) {
+    String messageDescribesZero = zeroPointsMessage.replace("pull_name", pullName);
     try {
-      slackService.sendPrivateMessage(slackService.getUserById(id), zeroPointsMessage);
+      slackService.sendPrivateMessage(slackService.getUserById(id), messageDescribesZero);
     } catch (IOException | SlackApiException e) {
       throw new RuntimeException(e);
     }
