@@ -32,6 +32,9 @@ public class PublishWeekStatsService {
   private final GitHubService ghEventService;
   private final SlackService slackService;
 
+  @Value("${generalInformationChannel}")
+  private String channel;
+
   /**
    * Publish statistics of Events for last week. Statistic sends every Monday.
    *
@@ -87,7 +90,7 @@ public class PublishWeekStatsService {
           messageBuilder.append("\"}]}");
         });
     messageBuilder.append("]");
-    slackService.sendBlockMessageToConversation("general", messageBuilder.toString());
+    slackService.sendBlockMessageToConversation(channel, messageBuilder.toString());
   }
 
   /**
@@ -108,7 +111,7 @@ public class PublishWeekStatsService {
             + "\",\"alt_text\": \"inspiration\"}]}", url, img);
 
 
-    slackService.sendBlockMessageToConversation("general", message);
+    slackService.sendBlockMessageToConversation(channel, message);
   }
 
   private String emojiGen(Event type) {

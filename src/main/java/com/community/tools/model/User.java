@@ -16,6 +16,9 @@ public class User {
   private byte[] stateMachine;
   private int karma = 0;
   private Integer pointByTask = 0;
+  private String firstAnswerAboutRules;
+  private String secondAnswerAboutRules;
+  private String thirdAnswerAboutRules;
 
   public Integer getTotalPoints() {
     return this.karma + this.pointByTask;

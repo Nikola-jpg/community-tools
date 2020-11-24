@@ -33,7 +33,6 @@ public class StateMachineService {
   @Value("${checkNickName}")
   private String checkNickName;
 
-
   @Value("${failedCheckNickName}")
   private String failedCheckNickName;
   @Value("${doNotUnderstandWhatTodo}")
@@ -64,19 +63,19 @@ public class StateMachineService {
 
     if (machine.getState().getId() == AGREED_LICENSE) {
       slackService.sendPrivateMessage(user,
-          checkNickName + nickName);
+              checkNickName + nickName);
 
       boolean nicknameMatch = gitHubService.getGitHubAllUsers().stream()
-          .anyMatch(e -> e.getLogin().equals(nickName));
+              .anyMatch(e -> e.getLogin().equals(nickName));
       if (nicknameMatch) {
 
         machine.sendEvent(ADD_GIT_NAME);
         machine.sendEvent(GET_THE_FIRST_TASK);
         persistMachine(machine, userId);
 
-        User userEntity = stateMachineRepository.findByUserID(userId).get();
-        userEntity.setGitName(nickName);
-        stateMachineRepository.save(userEntity);
+        User stateEntity = stateMachineRepository.findByUserID(userId).get();
+        stateEntity.setGitName(nickName);
+        stateMachineRepository.save(stateEntity);
 
       } else {
         slackService.sendPrivateMessage(user, failedCheckNickName);

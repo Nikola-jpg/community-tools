@@ -25,8 +25,6 @@ public class KarmaService {
   @Autowired
   private GitHubConnectService service;
   @Autowired
-  private User user;
-  @Autowired
   private StateMachineRepository stateMachineRepository;
   @Autowired
   private MentorsRepository mentorsRepository;
@@ -41,7 +39,7 @@ public class KarmaService {
     if (stateMachineRepository.findByGitName(traineeReviewer).isPresent()
             && !mentorsRepository.findByGitNick(traineeReviewer).isPresent()) {
 
-      user = stateMachineRepository.findByGitName(traineeReviewer).get();
+      User user = stateMachineRepository.findByGitName(traineeReviewer).get();
       int numberOfKarma = user.getKarma();
       if (numberOfKarma == 0) {
         user.setKarma(1);

@@ -2,6 +2,8 @@ package com.community.tools.service.slack;
 
 import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
 import static com.community.tools.util.statemachie.Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
+import static com.community.tools.util.statemachie.Event.QUESTION_SECOND;
+import static com.community.tools.util.statemachie.Event.QUESTION_THIRD;
 
 import com.community.tools.model.User;
 import com.community.tools.service.StateMachineService;
@@ -15,7 +17,7 @@ import com.github.seratch.jslack.app_backend.events.handler.TeamJoinHandler;
 import com.github.seratch.jslack.app_backend.events.payload.MessagePayload;
 import com.github.seratch.jslack.app_backend.events.payload.TeamJoinPayload;
 import com.github.seratch.jslack.app_backend.events.servlet.SlackEventsApiServlet;
-import com.google.gson.JsonParseException;
+
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,15 +32,18 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class SlackHandlerService {
-
   @Value("${notThatMessage}")
   private String notThatMessage;
   @Value("${welcome}")
   private String welcome;
+  @Value("${messageBeforeLink}")
+  private String messageBeforeLink;
+  @Value("${urlWithRulesReadMe}")
+  private String urlWithRulesReadMe;
+  @Value("${messageAfterLink}")
+  private String messageAfterLink;
   @Value("${idOfSlackBot}")
   private String idOfSlackBot;
-  @Value("${agreeMessage}")
-  private String agreeMessage;
   @Value("${usersAgreeMessage}")
   private String usersAgreeMessage;
   @Value("${testModeSwitcher}")
@@ -55,19 +60,17 @@ public class SlackHandlerService {
 
       try {
         String user = teamJoinPayload.getEvent().getUser().getId();
-        User userEntity = new User();
-        userEntity.setUserID(user);
-        stateMachineRepository.save(userEntity);
+        User stateEntity = new User();
+        stateEntity.setUserID(user);
+        stateMachineRepository.save(stateEntity);
 
         stateMachineService.persistMachineForNewUser(user);
         slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser().getRealName(),
                 welcome);
         slackService
-
                 .sendBlocksMessage(teamJoinPayload.getEvent().getUser().getRealName(),
-                        agreeMessage);
-      } catch (JsonParseException e) {
-        e.getMessage();
+                        messageBeforeLink + "\n" + urlWithRulesReadMe
+                                + "\n" + messageAfterLink);
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
@@ -76,22 +79,25 @@ public class SlackHandlerService {
 
 
   private void resetUser(String id) throws Exception {
-    User userEntity = new User();
-    userEntity.setUserID(id);
-    stateMachineRepository.save(userEntity);
+
+    User stateEntity = new User();
+    stateEntity.setUserID(id);
+    stateMachineRepository.save(stateEntity);
     stateMachineService.persistMachineForNewUser(id);
 
     String user = slackService.getUserById(id);
     slackService.sendPrivateMessage(user,
             welcome);
     slackService
-            .sendBlocksMessage(user, agreeMessage);
+            .sendBlocksMessage(user,
+                    messageBeforeLink + "\n" + urlWithRulesReadMe
+                            + "\n" + messageAfterLink);
   }
 
   private MessageHandler messageHandler = new MessageHandler() {
     @Override
     public void handle(MessagePayload teamJoinPayload) {
-
+      User stateEntity;
       if (!teamJoinPayload.getEvent().getUser().equals(idOfSlackBot)) {
         try {
           if (teamJoinPayload.getEvent().getText().equals("reset") && testModeSwitcher) {
@@ -99,19 +105,30 @@ public class SlackHandlerService {
           }
           StateMachine<State, Event> machine = stateMachineService
                   .restoreMachine(teamJoinPayload.getEvent().getUser());
+
+          String user = machine.getExtendedState().getVariables().get("id").toString();
+
           switch (machine.getState().getId()) {
-            case CHECK_LOGIN:
-              if (teamJoinPayload.getEvent().getText().equals("yes")) {
-                machine.sendEvent(Event.ADD_GIT_NAME);
-                machine.sendEvent(Event.GET_THE_FIRST_TASK);
-                stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-              } else if (teamJoinPayload.getEvent().getText().equals("no")) {
-                machine.sendEvent(DID_NOT_PASS_VERIFICATION_GIT_LOGIN);
-                stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-              } else {
-                slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(),
-                        notThatMessage);
-              }
+            case FIRST_QUESTION:
+              stateEntity = stateMachineRepository.findByUserID(user).get();
+              stateEntity.setFirstAnswerAboutRules(teamJoinPayload.getEvent().getText());
+              stateMachineRepository.save(stateEntity);
+              machine.sendEvent(QUESTION_SECOND);
+              stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
+              break;
+            case SECOND_QUESTION:
+              stateEntity = stateMachineRepository.findByUserID(user).get();
+              stateEntity.setSecondAnswerAboutRules(teamJoinPayload.getEvent().getText());
+              stateMachineRepository.save(stateEntity);
+              machine.sendEvent(QUESTION_THIRD);
+              stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
+              break;
+            case THIRD_QUESTION:
+              stateEntity = stateMachineRepository.findByUserID(user).get();
+              stateEntity.setThirdAnswerAboutRules(teamJoinPayload.getEvent().getText());
+              stateMachineRepository.save(stateEntity);
+              machine.sendEvent(AGREE_LICENSE);
+              stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
             case AGREED_LICENSE:
               machine.getExtendedState().getVariables()
@@ -119,28 +136,13 @@ public class SlackHandlerService {
               machine.sendEvent(Event.LOGIN_CONFIRMATION);
               stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
-            case NEW_USER:
-              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)) {
-                machine.sendEvent(Event.FIRST_AGREE_MESS);
+            case CHECK_LOGIN:
+              if (teamJoinPayload.getEvent().getText().equals("yes")) {
+                machine.sendEvent(Event.ADD_GIT_NAME);
+                machine.sendEvent(Event.GET_THE_FIRST_TASK);
                 stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-              } else {
-
-                slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(),
-                        notThatMessage);
-              }
-              break;
-            case FIRST_LICENSE_MESS:
-              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)) {
-                machine.sendEvent(Event.SECOND_AGREE_MESS);
-                stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-              } else {
-                slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(),
-                        notThatMessage);
-              }
-              break;
-            case SECOND_LICENSE_MESS:
-              if (teamJoinPayload.getEvent().getText().equals(usersAgreeMessage)) {
-                machine.sendEvent(AGREE_LICENSE);
+              } else if (teamJoinPayload.getEvent().getText().equals("no")) {
+                machine.sendEvent(DID_NOT_PASS_VERIFICATION_GIT_LOGIN);
                 stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               } else {
                 slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(),
