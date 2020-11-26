@@ -2,11 +2,8 @@ package com.community.tools;
 
 import static com.community.tools.util.ReadPropertyFromFile.readPropertiesFromFile;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Properties;
-import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -31,7 +28,6 @@ public class Application {
    * Add some property from file. Cyrillic text convert to Unicode. As example, file "property.txt".
    * @return Properties
    */
-  @SneakyThrows
   private static Properties props() {
     HashMap<String,String> prop = readPropertiesFromFile("property.txt");
     Properties properties = new Properties();
