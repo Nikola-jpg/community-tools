@@ -14,13 +14,19 @@ public class User {
   private String userID;
   private String gitName;
   private byte[] stateMachine;
-  private int karma = 0;
+  private Integer karma = 0;
   private Integer pointByTask = 0;
   private String firstAnswerAboutRules;
   private String secondAnswerAboutRules;
   private String thirdAnswerAboutRules;
 
   public Integer getTotalPoints() {
+    if (this.karma == null) {
+      setKarma(0);
+    }
+    if (this.pointByTask == null) {
+      setPointByTask(0);
+    }
     return this.karma + this.pointByTask;
   }
 }

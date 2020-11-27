@@ -31,7 +31,7 @@
             <tr th:each="entity, rowStat: ${entities}"
                 th:style="${rowStat.odd} ? 'color: gray' : 'color: blue;'">
                 <td th:text="${rowStat.count}"></td>
-                <td th:text="${entity.userID}"></td>
+                <td th:text="${entity.gitName}"></td>
                 <td th:text="${entity.pointByTask}"></td>
                 <td th:text="${entity.karma}"></td>
                 <td th:text="${entity.getTotalPoints()}"></td>
