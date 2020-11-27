@@ -20,6 +20,10 @@ public class User {
   private String secondAnswerAboutRules;
   private String thirdAnswerAboutRules;
 
+  /**
+   * This method summ karma and pointsBy task. If fields null, return 0.
+    * @return Total points
+   */
   public Integer getTotalPoints() {
     if (this.karma == null) {
       setKarma(0);
