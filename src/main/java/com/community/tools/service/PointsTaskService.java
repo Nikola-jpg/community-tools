@@ -50,12 +50,11 @@ public class PointsTaskService {
    * @param creator GitNick of person, who pull request
    * @param pullName Pull request title
    */
-  @SneakyThrows
   public void addPointForCompletedTask(String mentor, String creator, String pullName) {
     if (mentorsRepository.findByGitNick(mentor).isPresent()) {
       User stateEntity = stateMachineRepository.findByGitName(creator)
               .orElseThrow(EntityNotFoundException::new);
-      String finalPullName = pullName.toLowerCase();;
+      String finalPullName = pullName.toLowerCase();
       int points = pointsForTask.entrySet().stream()
               .filter(entry -> finalPullName.contains(entry.getKey()))
               .map(Map.Entry::getValue).findFirst().orElse(0);
@@ -63,9 +62,13 @@ public class PointsTaskService {
         sendMessageWhichDescribesZeroPoints(stateEntity.getUserID(), pullName);
       }
       int newUserPoints = stateEntity.getPointByTask() + points;
-      if (countService.getCountedCompletedTasks().get(creator).size()
-              == numberPullsAbilityReview) {
-        sendAbilityReviewMess(stateEntity.getUserID());
+      try {
+        if (countService.getCountedCompletedTasks().get(creator).size()
+                == numberPullsAbilityReview) {
+          sendAbilityReviewMess(stateEntity.getUserID());
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
       }
 
       stateEntity.setPointByTask(newUserPoints);

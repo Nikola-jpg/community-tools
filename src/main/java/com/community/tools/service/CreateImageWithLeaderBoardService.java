@@ -2,6 +2,8 @@ package com.community.tools.service;
 
 import com.community.tools.model.User;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -42,6 +44,7 @@ public class CreateImageWithLeaderBoardService {
 
     JEditorPane jep = new JEditorPane("text/html", html);
     jep.setSize(width, height);
+    jep.setBackground(Color.WHITE);
     jep.print(graphics);
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream();

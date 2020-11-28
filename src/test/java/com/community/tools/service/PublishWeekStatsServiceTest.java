@@ -4,14 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
 
 import com.community.tools.model.Event;
 import com.community.tools.model.EventData;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;

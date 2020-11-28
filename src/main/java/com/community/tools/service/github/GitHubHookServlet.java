@@ -53,6 +53,7 @@ public class GitHubHookServlet extends HttpServlet {
   private StateMachineService stateMachineService;
   @Autowired
   private KarmaService karmaService;
+  @Autowired
   private PointsTaskService pointsTaskService;
 
   @Override

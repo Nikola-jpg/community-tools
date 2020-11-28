@@ -87,6 +87,7 @@ class PointsTaskServiceTest {
     when(countService.getCountedCompletedTasks()).thenReturn(result);
 
     pointsTaskService.addPointForCompletedTask("test", "marvintik", " valueref_test ");
+    pointsTaskService.addPointForCompletedTask("rest", "marvintik", " valueref_test ");
     assertEquals(8, stateEntity.getPointByTask());
   }
 
