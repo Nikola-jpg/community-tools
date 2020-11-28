@@ -34,8 +34,8 @@ public class CreateImageWithLeaderBoardService {
   @SneakyThrows
   public byte[] createImage(String url) {
     String html = getLeaderboardTemplate();
-    int width = 550;
-    int height = 225;
+    int width = 700;
+    int height = 350;
 
     BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     Graphics graphics = image.createGraphics();

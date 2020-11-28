@@ -9,6 +9,7 @@ import com.github.seratch.jslack.api.methods.SlackApiException;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +19,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.stereotype.Service;
-import springfox.documentation.spring.web.json.Json;
 
 @Service
 public class GitHubHookServlet extends HttpServlet {
@@ -76,8 +77,10 @@ public class GitHubHookServlet extends HttpServlet {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
         String sql = "INSERT INTO public.\"GitHookData\" (time, jsonb_data) VALUES (? , ?)";
         Date date = new Date();
-        String jsonb = json.toString().replace("'", "''") + "'::jsonb);";
-        jdbcTemplate.update(sql, date, jsonb);
+        PGobject out = new PGobject();
+        out.setType("json");
+        out.setValue(json.toString());
+        jdbcTemplate.update(sql, date, out);
         boolean actionExist = false;
         try {
           json.get("action");
@@ -95,7 +98,7 @@ public class GitHubHookServlet extends HttpServlet {
           addPointIfPullLabeledDone(json);
         }
       }
-    } catch (NoSuchAlgorithmException | InvalidKeyException | SlackApiException e) {
+    } catch (NoSuchAlgorithmException | InvalidKeyException | SlackApiException | SQLException e) {
       throw new RuntimeException(e);
     }
 
