@@ -83,11 +83,7 @@ public class PointsTaskService {
    * @param id Slack User Id
    */
   public void sendAbilityReviewMess(String id) {
-    try {
-      slackService.sendBlocksMessage(slackService.getUserById(id), abilityReviewMessage);
-    } catch (IOException | SlackApiException | JsonParseException e) {
-      throw new RuntimeException(e);
-    }
+    slackService.sendBlocksMessage(slackService.getUserById(id), abilityReviewMessage);
   }
 
   /**

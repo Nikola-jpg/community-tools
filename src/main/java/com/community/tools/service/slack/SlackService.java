@@ -62,20 +62,20 @@ public class SlackService {
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
-  public String sendBlocksMessage(String username, String messageText)
-          throws IOException, SlackApiException {
+  public String sendBlocksMessage(String username, String messageText) {
     Slack slack = Slack.getInstance();
 
-    User user = slack.methods(token).usersList(req -> req).getMembers().stream()
-            .filter(u -> u.getProfile().getDisplayName().equals(username))
-            .findFirst().get();
-
-    ChatPostMessageResponse postResponse =
-            slack.methods(token).chatPostMessage(
-                req -> req.channel(user.getId()).asUser(true)
-                            .blocksAsString(messageText));
-
-    return postResponse.getTs();
+    try {
+      User user = slack.methods(token).usersList(req -> req).getMembers().stream()
+              .filter(u -> u.getProfile().getDisplayName().equals(username))
+              .findFirst().get();
+      ChatPostMessageResponse postResponse = slack.methods(token).chatPostMessage(
+          req -> req.channel(user.getId()).asUser(true)
+                      .blocksAsString(messageText));
+      return postResponse.getTs();
+    } catch (IOException | SlackApiException exception) {
+      throw new RuntimeException(exception);
+    }
   }
 
   /**

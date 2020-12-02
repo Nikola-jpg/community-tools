@@ -22,10 +22,6 @@ public class AgreeLicenseAction implements Action<State, Event> {
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    try {
-      slackService.sendBlocksMessage(slackService.getUserById(user), addGitName);
-    } catch (IOException | SlackApiException e) {
-      throw new RuntimeException(e);
-    }
+    slackService.sendBlocksMessage(slackService.getUserById(user), addGitName);
   }
 }

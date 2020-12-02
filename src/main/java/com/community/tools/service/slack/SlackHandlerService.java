@@ -36,12 +36,8 @@ public class SlackHandlerService {
   private String notThatMessage;
   @Value("${welcome}")
   private String welcome;
-  @Value("${messageBeforeLink}")
-  private String messageBeforeLink;
-  @Value("${urlWithRulesReadMe}")
-  private String urlWithRulesReadMe;
-  @Value("${messageAfterLink}")
-  private String messageAfterLink;
+  @Value("${messageAboutRules}")
+  private String messageAboutRules;
   @Value("${idOfSlackBot}")
   private String idOfSlackBot;
   @Value("${usersAgreeMessage}")
@@ -69,8 +65,7 @@ public class SlackHandlerService {
                 welcome);
         slackService
                 .sendBlocksMessage(teamJoinPayload.getEvent().getUser().getRealName(),
-                        messageBeforeLink + "\n" + urlWithRulesReadMe
-                                + "\n" + messageAfterLink);
+                        messageAboutRules);
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
@@ -90,8 +85,7 @@ public class SlackHandlerService {
             welcome);
     slackService
             .sendBlocksMessage(user,
-                    messageBeforeLink + "\n" + urlWithRulesReadMe
-                            + "\n" + messageAfterLink);
+                    messageAboutRules);
   }
 
   private MessageHandler messageHandler = new MessageHandler() {

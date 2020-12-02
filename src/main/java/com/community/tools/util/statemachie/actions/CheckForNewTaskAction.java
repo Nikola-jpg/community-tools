@@ -27,10 +27,6 @@ public class CheckForNewTaskAction implements Action<State, Event> {
           "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Here is your next <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/"
               + tasksList.get(i) + "|TASK>.\"}}]";
     String user = context.getExtendedState().getVariables().get("id").toString();
-    try {
-      slackService.sendBlocksMessage(slackService.getUserById(user), taskMessage);
-    } catch (IOException | SlackApiException e) {
-      throw new RuntimeException(e);
-    }
+    slackService.sendBlocksMessage(slackService.getUserById(user), taskMessage);
   }
 }

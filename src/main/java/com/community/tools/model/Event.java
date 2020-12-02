@@ -1,10 +1,10 @@
 package com.community.tools.model;
 
 public enum Event {
-  PULL_REQUEST_CREATED("Pull Request created"),
-  PULL_REQUEST_CLOSED("Pull Request closed"),
   COMMIT("Commit"),
-  COMMENT("Comment");
+  COMMENT("Comment"),
+  PULL_REQUEST_CREATED("Pull Request created"),
+  PULL_REQUEST_CLOSED("Pull Request closed");
 
   private final String title;
 

@@ -25,12 +25,6 @@ public class User {
     * @return Total points
    */
   public Integer getTotalPoints() {
-    if (this.karma == null) {
-      setKarma(0);
-    }
-    if (this.pointByTask == null) {
-      setPointByTask(0);
-    }
     return this.karma + this.pointByTask;
   }
 }
