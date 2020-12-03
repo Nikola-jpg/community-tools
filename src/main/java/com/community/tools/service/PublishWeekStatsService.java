@@ -35,6 +35,10 @@ public class PublishWeekStatsService {
   @Value("${generalInformationChannel}")
   private String channel;
 
+  @Value("${urlServer}")
+  private String urlServer;
+
+
   /**
    * Publish statistics of Events for last week. Statistic sends every Monday.
    *
@@ -98,18 +102,17 @@ public class PublishWeekStatsService {
    * @throws IOException IOException
    * @throws SlackApiException SlackApiException
    */
-  @Scheduled(cron = "0 0 0 * * MON")
+  @Scheduled(cron = "0 10 0 * * MON")
   public void publishLeaderboard() throws IOException, SlackApiException {
-    String url = getAddress();
+    String url = urlServer + "leaderboard/";
     String img = url + "img/";
-    String message = String.format("{\"blocks\": [{\"type\": \"section\", \"text\": "
+    String message = String.format("[{\"type\": \"section\", \"text\": "
             + "{\"type\": \"mrkdwn\",\"text\": \"Рейтинг этой недели доступен по ссылке: \"},"
             + "\"accessory\": {\"type\": \"button\",\t\"text\": "
             + "{\"type\": \"plain_text\",\"text\": \":loudspeaker:\",\"emoji\": true},"
             + "\"value\": \"click_me_123\", \"url\": \"%s"
             + "\", \"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"%s"
-            + "\",\"alt_text\": \"inspiration\"}]}", url, img);
-
+            + "\",\"alt_text\": \"inspiration\"}]", url, img);
 
     slackService.sendBlockMessageToConversation(channel, message);
   }

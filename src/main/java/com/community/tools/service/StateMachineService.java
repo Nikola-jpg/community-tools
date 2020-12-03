@@ -1,8 +1,6 @@
 package com.community.tools.service;
 
-import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
-import static com.community.tools.util.statemachie.Event.FIRST_AGREE_MESS;
-import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.Event.*;
 import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
 import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
 import static com.community.tools.util.statemachie.State.NEW_USER;
@@ -99,7 +97,7 @@ public class StateMachineService {
     switch (action) {
       case "AGREE_LICENSE":
         if (machine.getState().getId() == NEW_USER) {
-          machine.sendEvent(FIRST_AGREE_MESS);
+          machine.sendEvent(QUESTION_FIRST);
           persistMachine(machine, userId);
         } else {
           slackService.sendBlocksMessage(user, notThatMessage);

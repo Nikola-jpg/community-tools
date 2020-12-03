@@ -1,10 +1,5 @@
 package com.community.tools.service.slack;
 
-import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
-import static com.community.tools.util.statemachie.Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
-import static com.community.tools.util.statemachie.Event.QUESTION_SECOND;
-import static com.community.tools.util.statemachie.Event.QUESTION_THIRD;
-
 import com.community.tools.model.User;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.util.statemachie.Event;
@@ -28,6 +23,8 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Component;
+
+import static com.community.tools.util.statemachie.Event.*;
 
 @RequiredArgsConstructor
 @Component
@@ -73,7 +70,7 @@ public class SlackHandlerService {
   };
 
 
-  private void resetUser(String id) throws Exception {
+  public void resetUser(String id) throws Exception {
 
     User stateEntity = new User();
     stateEntity.setUserID(id);
@@ -103,6 +100,10 @@ public class SlackHandlerService {
           String user = machine.getExtendedState().getVariables().get("id").toString();
 
           switch (machine.getState().getId()) {
+            case NEW_USER:
+                machine.sendEvent(Event.QUESTION_FIRST);
+                stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
+              break;
             case FIRST_QUESTION:
               stateEntity = stateMachineRepository.findByUserID(user).get();
               stateEntity.setFirstAnswerAboutRules(teamJoinPayload.getEvent().getText());
