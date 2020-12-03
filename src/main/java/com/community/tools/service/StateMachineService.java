@@ -1,6 +1,8 @@
 package com.community.tools.service;
 
-import static com.community.tools.util.statemachie.Event.*;
+import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
+import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.Event.QUESTION_FIRST;
 import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
 import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
 import static com.community.tools.util.statemachie.State.NEW_USER;

@@ -1,7 +1,5 @@
 package com.community.tools.service;
 
-import static com.community.tools.util.GetServerAddress.getAddress;
-
 import com.community.tools.model.Event;
 import com.community.tools.model.EventData;
 import com.community.tools.service.github.GitHubService;
