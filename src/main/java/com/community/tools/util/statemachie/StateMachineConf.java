@@ -81,7 +81,7 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
           throws Exception {
     transitions
             .withExternal()
-            .source(GREETING_MESSAGE)
+            .source(NEW_USER)
             .target(FIRST_QUESTION)
             .event(QUESTION_FIRST)
             .action(firstQuestionAction(), errorAction())
