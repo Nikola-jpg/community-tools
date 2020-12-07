@@ -29,9 +29,8 @@ public class VerificationLoginAction implements Action<State, Event> {
   public void execute(StateContext<State, Event> context) {
     String user = context.getExtendedState().getVariables().get("id").toString();
     String nickname = context.getExtendedState().getVariables().get("gitNick").toString();
-    GHUser userGitLogin = new GHUser();
     try {
-      userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
+      GHUser userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
       slackService.sendPrivateMessage(slackService.getUserById(user),
               askAboutProfile + "\n" + userGitLogin.getHtmlUrl().toString());
     } catch (IOException e) {

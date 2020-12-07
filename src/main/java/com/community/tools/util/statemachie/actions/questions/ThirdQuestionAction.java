@@ -18,6 +18,6 @@ public class ThirdQuestionAction implements Action<State, Event> {
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    slackService.sendBlocksMessage(user, thirdQuestion);
+    slackService.sendBlocksMessage(slackService.getUserById(user), thirdQuestion);
   }
 }

@@ -21,6 +21,6 @@ public class ChannelInformationAction implements Action<State, Event> {
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    slackService.sendBlocksMessage(user, messageAboutSeveralInfoChannel);
+    slackService.sendBlocksMessage(slackService.getUserById(user), messageAboutSeveralInfoChannel);
   }
 }

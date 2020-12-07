@@ -19,7 +19,6 @@ import static com.community.tools.util.statemachie.State.CHECK_LOGIN;
 import static com.community.tools.util.statemachie.State.CONGRATS_LAST_TASK;
 import static com.community.tools.util.statemachie.State.FIRST_QUESTION;
 import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.State.GREETING_MESSAGE;
 import static com.community.tools.util.statemachie.State.INFORMATION_CHANNELS;
 import static com.community.tools.util.statemachie.State.NEW_USER;
 import static com.community.tools.util.statemachie.State.SECOND_QUESTION;
