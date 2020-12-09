@@ -1,6 +1,6 @@
 package com.community.tools.service.slack;
 
-import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
+import static com.community.tools.util.statemachie.Event.CHANNELS_INFORMATION;
 import static com.community.tools.util.statemachie.Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
 import static com.community.tools.util.statemachie.Event.QUESTION_SECOND;
 import static com.community.tools.util.statemachie.Event.QUESTION_THIRD;
@@ -29,7 +29,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Component;
 
-
 @RequiredArgsConstructor
 @Component
 public class SlackHandlerService {
@@ -43,6 +42,8 @@ public class SlackHandlerService {
   private String idOfSlackBot;
   @Value("${usersAgreeMessage}")
   private String usersAgreeMessage;
+  @Value("${defaultMessage}")
+  private String defaultMessage;
   @Value("${testModeSwitcher}")
   private Boolean testModeSwitcher;
 
@@ -109,8 +110,13 @@ public class SlackHandlerService {
 
           switch (machine.getState().getId()) {
             case NEW_USER:
+              if (teamJoinPayload.getEvent().getText().equals("ready")) {
                 machine.sendEvent(Event.QUESTION_FIRST);
                 stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
+              } else {
+                slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(),
+                        notThatMessage);
+              }
               break;
             case FIRST_QUESTION:
               stateEntity = stateMachineRepository.findByUserID(user).get();
@@ -130,7 +136,8 @@ public class SlackHandlerService {
               stateEntity = stateMachineRepository.findByUserID(user).get();
               stateEntity.setThirdAnswerAboutRules(teamJoinPayload.getEvent().getText());
               stateMachineRepository.save(stateEntity);
-              machine.sendEvent(AGREE_LICENSE);
+              machine.sendEvent(CHANNELS_INFORMATION);
+              machine.sendEvent(Event.AGREE_LICENSE);
               stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
             case AGREED_LICENSE:
@@ -153,6 +160,7 @@ public class SlackHandlerService {
               }
               break;
             default:
+              slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(), defaultMessage);
               break;
           }
         } catch (Exception e) {

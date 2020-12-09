@@ -36,6 +36,10 @@ public class PublishWeekStatsService {
   @Value("${urlServer}")
   private String urlServer;
 
+  @Value("${noActivityMessage}")
+  private String noActivityMessage;
+
+
 
   /**
    * Publish statistics of Events for last week. Statistic sends every Monday.
@@ -53,46 +57,52 @@ public class PublishWeekStatsService {
 
     List<EventData> events = ghEventService.getEvents(startDate, endDate);
     StringBuilder messageBuilder = new StringBuilder();
+    if (events.size() == 0) {
+      slackService.sendMessageToConversation(channel, noActivityMessage);
+      System.out.println(events);
+    } else {
+      Map<String, List<EventData>> sortedMapGroupByActors = new HashMap<>();
+      events.stream().filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
+              .forEach(ed -> sortedMapGroupByActors.put(ed.getActorLogin(), new ArrayList<>()));
 
-    Map<String, List<EventData>> sortedMapGroupByActors = new HashMap<>();
-    events.stream().filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
-            .forEach(ed -> sortedMapGroupByActors.put(ed.getActorLogin(), new ArrayList<>()));
-
-    messageBuilder.append("[{\"type\": \"header\",\t\"text\": {\"type\":"
-            + " \"plain_text\",\"text\": \"Statistic:\"}},"
-            + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"");
-    events.stream()
-        .collect(Collectors.groupingBy(EventData::getType))
-        .entrySet().stream()
-        .sorted(Comparator
-            .comparingInt((Entry<Event, List<EventData>> entry) -> entry.getValue().size())
-            .reversed())
-        .forEach(entry -> {
-          entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
-          messageBuilder.append("\n");
-          messageBuilder.append(getTypeTitleBold(entry.getKey())).append(emojiGen(entry.getKey()));
-          messageBuilder.append(":  ");
-          messageBuilder.append(entry.getValue().size());
-        });
-    messageBuilder.append("\"\t}]},{\"type\": \"header\",\"text\": "
-            + "{\"type\": \"plain_text\",\"text\": \"Activity:\"}}");
-    sortedMapGroupByActors.entrySet().stream()
-        .sorted(Comparator
-            .comparingInt((Entry<String, List<EventData>> entry) -> entry.getValue().size())
-            .reversed())
-        .forEach(name -> {
-          StringBuilder authorsActivMessage = new StringBuilder();
-          name.getValue()
-                  .forEach(eventData -> authorsActivMessage.append(emojiGen(eventData.getType())));
-          messageBuilder.append(",{\"type\": \"context\",\n"
-                  + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*");
-          messageBuilder.append(name.getKey());
-          messageBuilder.append("*: ");
-          messageBuilder.append(authorsActivMessage);
-          messageBuilder.append("\"}]}");
-        });
-    messageBuilder.append("]");
-    slackService.sendBlockMessageToConversation(channel, messageBuilder.toString());
+      messageBuilder.append("[{\"type\": \"header\",\t\"text\": {\"type\":"
+              + " \"plain_text\",\"text\": \"Statistic:\"}},"
+              + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"");
+      events.stream()
+              .collect(Collectors.groupingBy(EventData::getType))
+              .entrySet().stream()
+              .sorted(Comparator
+                      .comparingInt((Entry<Event, List<EventData>> entry)
+                          -> entry.getValue().size()).reversed())
+              .forEach(entry -> {
+                entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
+                messageBuilder.append("\n");
+                messageBuilder.append(getTypeTitleBold(entry.getKey()))
+                        .append(emojiGen(entry.getKey()));
+                messageBuilder.append(":  ");
+                messageBuilder.append(entry.getValue().size());
+              });
+      messageBuilder.append("\"\t}]},{\"type\": \"header\",\"text\": "
+              + "{\"type\": \"plain_text\",\"text\": \"Activity:\"}}");
+      sortedMapGroupByActors.entrySet().stream()
+              .sorted(Comparator
+                      .comparingInt((Entry<String, List<EventData>> entry)
+                          -> entry.getValue().size()).reversed())
+              .forEach(name -> {
+                StringBuilder authorsActivMessage = new StringBuilder();
+                name.getValue()
+                        .forEach(eventData -> authorsActivMessage
+                                .append(emojiGen(eventData.getType())));
+                messageBuilder.append(",{\"type\": \"context\",\n"
+                        + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*");
+                messageBuilder.append(name.getKey());
+                messageBuilder.append("*: ");
+                messageBuilder.append(authorsActivMessage);
+                messageBuilder.append("\"}]}");
+              });
+      messageBuilder.append("]");
+      slackService.sendBlockMessageToConversation(channel, messageBuilder.toString());
+    }
   }
 
   /**
