@@ -8,6 +8,8 @@ import com.community.tools.model.Mentors;
 import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
 import com.community.tools.service.slack.SlackService;
+import com.community.tools.util.statemachie.Event;
+import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.util.ArrayList;
@@ -26,10 +28,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.statemachine.ExtendedState;
+import org.springframework.statemachine.StateMachine;
+import org.springframework.statemachine.config.StateMachineFactory;
+import org.springframework.statemachine.support.AbstractStateMachine;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -42,13 +49,18 @@ class PointsTaskServiceTest {
   private SlackService slackService;
 
   @Mock
-  private CountingCompletedTasksService countService;
+  StateMachineService stateMachineService;
 
   @Mock
   MentorsRepository mentorsRepository;
 
   @Mock
   StateMachineRepository stateMachineRepository;
+
+  @Mock
+  StateMachine<State, Event> machine;
+  @Mock
+  private ExtendedState extendedState;
 
   @BeforeAll
   public void initMocks() {
@@ -67,13 +79,6 @@ class PointsTaskServiceTest {
   @SneakyThrows
   @Test
   public void addPointForCompletedTaskTest() {
-    List<String> pulls = new ArrayList<String>();
-    pulls.add("checkstyle");
-    pulls.add("primitives");
-    pulls.add("boxing");
-
-    HashMap<String, List<String>> result = new HashMap<>();
-    result.put("marvintik", pulls);
 
     Mentors mentors = mock(Mentors.class);
     when(mentors.getGitNick()).thenReturn("test");
@@ -81,10 +86,14 @@ class PointsTaskServiceTest {
     stateEntity.setUserID("Olena Haladzhii");
     stateEntity.setPointByTask(5);
     stateEntity.setGitName("marvintik");
-
+    when(stateMachineService.restoreMachineByNick("marvintik")).thenReturn(machine);
+    Map<Object, Object> mockData = new HashMap<>();
+    mockData.put("taskDone", 4);
+    when(machine.getExtendedState()).thenReturn(extendedState);
+    when(extendedState.getVariables()).thenReturn(mockData);
     when(mentorsRepository.findByGitNick("test")).thenReturn(Optional.of(mentors));
     when(stateMachineRepository.findByGitName("marvintik")).thenReturn(Optional.of(stateEntity));
-    when(countService.getCountedCompletedTasks()).thenReturn(result);
+
 
     pointsTaskService.addPointForCompletedTask("test", "marvintik", " valueref_test ");
     pointsTaskService.addPointForCompletedTask("rest", "marvintik", " valueref_test ");

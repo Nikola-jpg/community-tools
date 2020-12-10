@@ -52,4 +52,28 @@ public class CountingCompletedTasksService {
 
     return mapUsers;
   }
+
+  /**
+   * Counting completed task by GitHub nickname, e.g closed pull request with label "done".
+   * @return Map with key - User login and Value - title of Pull request
+   * @throws IOException IOException
+   */
+  public List<GHPullRequest> getCountedCompletedTasksByNickname(String nickname)
+          throws IOException {
+
+
+    List<GHPullRequest> pullRequestList = service.getGitHubRepository()
+            .getPullRequests(GHIssueState.CLOSED)
+            .stream()
+            .filter(pr -> {
+                      try {
+                        return pr.getUser().getLogin().equals(nickname);
+                      } catch (IOException e) {
+                        throw new RuntimeException(e);
+                      }
+                    }
+            ).collect(Collectors.toList());
+
+    return pullRequestList;
+  }
 }

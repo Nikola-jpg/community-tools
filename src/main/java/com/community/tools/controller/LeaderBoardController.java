@@ -3,7 +3,7 @@ package com.community.tools.controller;
 import static com.community.tools.util.GetServerAddress.getAddress;
 
 import com.community.tools.model.User;
-import com.community.tools.service.CreateImageWithLeaderBoardService;
+import com.community.tools.service.LeaderBoardService;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.io.IOException;
@@ -30,7 +30,8 @@ public class LeaderBoardController {
   StateMachineRepository stateMachineRepository;
 
   @Autowired
-  CreateImageWithLeaderBoardService createImageService;
+  LeaderBoardService leaderBoardService;
+
 
   /**
    * This method return webpage with table of trainee's rating.
@@ -39,7 +40,7 @@ public class LeaderBoardController {
    */
   @GetMapping("/")
   public String getLeaderboard(Model model) {
-    List<User> list = stateMachineRepository.findAll();
+    List<User> list = leaderBoardService.addSlackNameToUser();
     list.sort(Comparator.comparing(User::getTotalPoints).reversed());
     model.addAttribute("entities", list);
     return "leaderboard";
@@ -54,7 +55,7 @@ public class LeaderBoardController {
   @RequestMapping(value = "/img", method = RequestMethod.GET)
   public void getImage(HttpServletResponse response) throws EntityNotFoundException, IOException {
     String url = getAddress();
-    byte[] data = createImageService.createImage(url);
+    byte[] data = leaderBoardService.createImage(url);
     response.setContentType(MediaType.IMAGE_PNG_VALUE);
     response.getOutputStream().write(data);
     response.setContentLength(data.length);

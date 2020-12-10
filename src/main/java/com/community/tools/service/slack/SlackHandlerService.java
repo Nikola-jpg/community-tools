@@ -114,7 +114,8 @@ public class SlackHandlerService {
                 machine.sendEvent(Event.QUESTION_FIRST);
                 stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               } else {
-                slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(),
+                slackService.sendPrivateMessage(
+                        slackService.getUserById(teamJoinPayload.getEvent().getUser()),
                         notThatMessage);
               }
               break;
@@ -155,12 +156,19 @@ public class SlackHandlerService {
                 machine.sendEvent(DID_NOT_PASS_VERIFICATION_GIT_LOGIN);
                 stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               } else {
-                slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(),
+                slackService.sendPrivateMessage(
+                        slackService.getUserById(teamJoinPayload.getEvent().getUser()),
                         notThatMessage);
               }
               break;
+            case ADDED_GIT:
+              machine.sendEvent(Event.GET_THE_FIRST_TASK);
+              stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
+              break;
             default:
-              slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser(), defaultMessage);
+              slackService.sendPrivateMessage(
+                      slackService.getUserById(teamJoinPayload.getEvent().getUser()),
+                      defaultMessage);
               break;
           }
         } catch (Exception e) {

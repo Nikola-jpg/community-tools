@@ -3,6 +3,8 @@ package com.community.tools.service;
 import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
 import com.community.tools.service.slack.SlackService;
+import com.community.tools.util.statemachie.Event;
+import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.google.gson.JsonParseException;
@@ -15,6 +17,7 @@ import javax.persistence.EntityNotFoundException;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,7 +36,7 @@ public class PointsTaskService {
   private SlackService slackService;
 
   @Autowired
-  private CountingCompletedTasksService countService;
+  StateMachineService stateMachineService;
 
   @Autowired
   MentorsRepository mentorsRepository;
@@ -56,6 +59,13 @@ public class PointsTaskService {
     if (mentorsRepository.findByGitNick(mentor).isPresent()) {
       User stateEntity = stateMachineRepository.findByGitName(creator)
               .orElseThrow(EntityNotFoundException::new);
+      StateMachine<State, Event> machine = stateMachineService
+              .restoreMachineByNick(creator);
+      int taskDone = (int) machine.getExtendedState()
+              .getVariables().getOrDefault("taskDone", 0);
+      taskDone++;
+      machine.getExtendedState().getVariables()
+              .put("taskDone", (taskDone));
       String finalPullName = pullName.toLowerCase();
       int points = pointsForTask.entrySet().stream()
               .filter(entry -> finalPullName.contains(entry.getKey()))
@@ -64,13 +74,8 @@ public class PointsTaskService {
         sendMessageWhichDescribesZeroPoints(stateEntity.getUserID(), pullName);
       }
       int newUserPoints = stateEntity.getPointByTask() + points;
-      try {
-        if (countService.getCountedCompletedTasks().get(creator).size()
-                == numberPullsAbilityReview) {
-          sendAbilityReviewMess(stateEntity.getUserID());
-        }
-      } catch (IOException e) {
-        e.printStackTrace();
+      if (taskDone == numberPullsAbilityReview) {
+        sendAbilityReviewMess(stateEntity.getUserID());
       }
 
       stateEntity.setPointByTask(newUserPoints);

@@ -1,6 +1,7 @@
 package com.community.tools.service;
 
 import com.community.tools.model.User;
+import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.awt.Color;
@@ -9,6 +10,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.swing.JEditorPane;
@@ -20,13 +23,17 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 @Service
-public class CreateImageWithLeaderBoardService {
+public class LeaderBoardService {
 
   @Autowired
   StateMachineRepository stateMachineRepository;
 
   @Autowired
   TemplateEngine templateEngine;
+
+  @Autowired
+  SlackService slackService;
+
 
   /**
    * This method put html code into JEditorPane and print image.
@@ -59,12 +66,29 @@ public class CreateImageWithLeaderBoardService {
    */
   public String getLeaderboardTemplate() {
     final Context ctx = new Context();
-    List<User> list = stateMachineRepository.findAll();
+    List<User> list = addSlackNameToUser();
     list.sort(Comparator.comparing(User::getTotalPoints).reversed());
     List<User> listFirst = list.stream().limit(5).collect(Collectors.toList());
     ctx.setVariable("entities", listFirst);
     final String htmlContent = this.templateEngine.process("leaderboard.html", ctx);
     return  htmlContent;
+  }
+
+  /**
+   * This method load slack users and add slackName to the User model.
+   * @return List of Users.
+   */
+  public List<User> addSlackNameToUser() {
+    List<User> list = stateMachineRepository.findAll();
+    Set<com.github.seratch.jslack.api.model.User> slackUsers = slackService.getAllUsers();
+    Map<String, String> map = slackUsers.stream()
+            .filter(u -> u.getRealName() != null)
+            .collect(Collectors.toMap(user -> user.getId(), user -> user.getRealName()));
+    for (User user: list) {
+      String slackName = map.get(user.getUserID());
+      user.setSlackLogin(slackName);
+    }
+    return list;
   }
 
 }

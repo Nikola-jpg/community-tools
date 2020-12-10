@@ -29,47 +29,52 @@ import java.util.Set;
 import javax.transaction.Transactional;
 import lombok.SneakyThrows;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHTeam;
 import org.kohsuke.github.GHUser;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @Transactional
 @TestPropertySource(locations = "/application-test.properties")
 @Sql(value = "/test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AddGitNameActionTest {
 
-  @Autowired
+  @InjectMocks
   private AddGitNameAction addGitNameAction;
-  @MockBean
+  @Value("${congratsAvailableNick}")
+  private String congratsAvailableNick;
+  @Value("${generalInformationChannel}")
+  private String channel;
+  @Mock
   private StateMachineRepository repository;
-  @MockBean
+  @Mock
   private StateContext<State, Event> stateContext;
-  @MockBean
+  @Mock
   private GitHubConnectService gitHubConnectService;
-  @MockBean
+  @Mock
   private GitHubService gitHubService;
-  @MockBean
+  @Mock
   private SlackService slackSer;
-  @MockBean
+  @Mock
   private GitHubHookServlet gitHubHookServlet;
-  @MockBean
+  @Mock
   private SlackHandlerService slackHandlerService;
   @Mock
   private StateMachine<State, Event> machine;
@@ -86,7 +91,7 @@ public class AddGitNameActionTest {
    * This method init fields in the AddGitNameAction.
    * @throws Exception Exception
    */
-  @Before
+  @BeforeAll
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
 
@@ -102,6 +107,9 @@ public class AddGitNameActionTest {
     slackService.setAccessible(true);
     slackService.set(addGitNameAction, slackSer);
 
+    ReflectionTestUtils.setField(addGitNameAction, "congratsAvailableNick",
+            congratsAvailableNick);
+    ReflectionTestUtils.setField(addGitNameAction, "channel", channel);
   }
 
   @Test

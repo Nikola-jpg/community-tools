@@ -182,7 +182,7 @@ public class GitHubHookServlet extends HttpServlet {
   }
 
   private void checkReactionToChangeKarma(JSONObject json) {
-    if (json.get("action").equals("label")
+    if (json.get("action").equals(labeledStr)
             && json.getJSONObject("label").getString("name").equals("done")) {
       int numberOfPullRequest = Integer.parseInt(json.getString("number").trim());
       karmaService.changeKarmaBasedOnReaction(numberOfPullRequest);

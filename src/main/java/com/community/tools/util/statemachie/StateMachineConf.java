@@ -118,7 +118,6 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
             .source(AGREED_LICENSE)
             .target(CHECK_LOGIN)
             .event(LOGIN_CONFIRMATION)
-            .guard(hideGuard())
             .action(verificationLoginAction(), errorAction())
 
             .and()
