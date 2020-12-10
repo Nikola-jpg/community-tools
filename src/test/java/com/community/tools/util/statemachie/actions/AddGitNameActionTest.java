@@ -39,29 +39,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.StateMachine;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.util.ReflectionTestUtils;
 
-
-@SpringBootTest
-@Transactional
-@TestPropertySource(locations = "/application-test.properties")
-@Sql(value = "/test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AddGitNameActionTest {
 
   @InjectMocks
   private AddGitNameAction addGitNameAction;
-  @Value("${congratsAvailableNick}")
-  private String congratsAvailableNick;
-  @Value("${generalInformationChannel}")
-  private String channel;
   @Mock
   private StateMachineRepository repository;
   @Mock
@@ -108,8 +95,8 @@ public class AddGitNameActionTest {
     slackService.set(addGitNameAction, slackSer);
 
     ReflectionTestUtils.setField(addGitNameAction, "congratsAvailableNick",
-            congratsAvailableNick);
-    ReflectionTestUtils.setField(addGitNameAction, "channel", channel);
+            "Hurray! Your nick is available. Nice to meet you :smile:");
+    ReflectionTestUtils.setField(addGitNameAction, "channel", "test_3");
   }
 
   @Test
@@ -140,14 +127,14 @@ public class AddGitNameActionTest {
     when(slackSer.sendMessageToConversation(anyString(), anyString())).thenReturn("");
 
     addGitNameAction.execute(stateContext);
-    verify(stateContext, times(2)).getExtendedState();
-    verify(gitHubService, times(1)).getUserByLoginInGitHub("likeRewca");
-    verify(gitHubConnectService, times(1)).getGitHubRepository();
-    verify(slackSer, times(2)).getUserById("U0191K2V20K");
-    verify(slackSer, times(1))
+    verify(stateContext, times(4)).getExtendedState();
+    verify(gitHubService, times(2)).getUserByLoginInGitHub("likeRewca");
+    verify(gitHubConnectService, times(2)).getGitHubRepository();
+    verify(slackSer, times(5)).getUserById("U0191K2V20K");
+    verify(slackSer, times(2))
             .sendPrivateMessage("Горб Юра",
                     "Hurray! Your nick is available. Nice to meet you :smile:");
-    verify(slackSer, times(1)).sendMessageToConversation(anyString(), anyString());
+    verify(slackSer, times(2)).sendMessageToConversation(anyString(), anyString());
   }
 
 
@@ -180,7 +167,6 @@ public class AddGitNameActionTest {
             .thenReturn("");
 
     addGitNameAction.execute(stateContext);
-
     verify(stateContext, times(2)).getExtendedState();
     verify(gitHubService, times(1)).getUserByLoginInGitHub("likeRewca");
     verify(gitHubConnectService, times(1)).getGitHubRepository();
