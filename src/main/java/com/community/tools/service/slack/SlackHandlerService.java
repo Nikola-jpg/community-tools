@@ -19,6 +19,7 @@ import com.github.seratch.jslack.app_backend.events.payload.TeamJoinPayload;
 import com.github.seratch.jslack.app_backend.events.servlet.SlackEventsApiServlet;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -172,7 +173,8 @@ public class SlackHandlerService {
               break;
           }
         } catch (Exception e) {
-          throw new RuntimeException(e);
+          throw new RuntimeException("Impossible to answer request with id="
+                  + teamJoinPayload.getEvent().getUser(), e);
         }
       }
     }

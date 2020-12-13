@@ -94,9 +94,9 @@ public class GitHubHookServlet extends HttpServlet {
           sendNotificationMessageAboutPR(json);
           giveNewTaskIfPrOpened(json);
           addMentorIfEventIsReview(json);
+          addPointIfPullLabeledDone(json);
           addKarmaForCommentApproved(json);
           checkReactionToChangeKarma(json);
-          addPointIfPullLabeledDone(json);
         }
       }
     } catch (NoSuchAlgorithmException | InvalidKeyException | SlackApiException | SQLException e) {
@@ -184,7 +184,7 @@ public class GitHubHookServlet extends HttpServlet {
   private void checkReactionToChangeKarma(JSONObject json) {
     if (json.get("action").equals(labeledStr)
             && json.getJSONObject("label").getString("name").equals("done")) {
-      int numberOfPullRequest = Integer.parseInt(json.getString("number").trim());
+      int numberOfPullRequest = json.getInt("number");
       karmaService.changeKarmaBasedOnReaction(numberOfPullRequest);
     }
   }

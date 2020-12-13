@@ -59,6 +59,7 @@ public class PointsTaskService {
     if (mentorsRepository.findByGitNick(mentor).isPresent()) {
       User stateEntity = stateMachineRepository.findByGitName(creator)
               .orElseThrow(EntityNotFoundException::new);
+
       StateMachine<State, Event> machine = stateMachineService
               .restoreMachineByNick(creator);
       int taskDone = (int) machine.getExtendedState()
@@ -66,6 +67,8 @@ public class PointsTaskService {
       taskDone++;
       machine.getExtendedState().getVariables()
               .put("taskDone", (taskDone));
+      stateMachineService.persistMachine(machine, stateEntity.getUserID());
+
       String finalPullName = pullName.toLowerCase();
       int points = pointsForTask.entrySet().stream()
               .filter(entry -> finalPullName.contains(entry.getKey()))
