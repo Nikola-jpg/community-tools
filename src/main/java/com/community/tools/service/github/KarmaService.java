@@ -1,20 +1,24 @@
 package com.community.tools.service.github;
 
+import com.community.tools.model.GitHubComment;
 import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.kohsuke.github.GHIssueComment;
-import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHPullRequest;
+import org.kohsuke.github.GHPullRequestReviewComment;
 import org.kohsuke.github.GHReaction;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.PagedIterable;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,14 +42,8 @@ public class KarmaService {
   public void changeUserKarma(String traineeReviewer, int amountOfKarma) {
     if (stateMachineRepository.findByGitName(traineeReviewer).isPresent()
             && !mentorsRepository.findByGitNick(traineeReviewer).isPresent()) {
-
       User user = stateMachineRepository.findByGitName(traineeReviewer).get();
-      int numberOfKarma = user.getKarma();
-      if (numberOfKarma == 0) {
-        user.setKarma(1);
-      } else {
-        user.setKarma(numberOfKarma + amountOfKarma);
-      }
+      user.setKarma(user.getKarma() + amountOfKarma);
       stateMachineRepository.save(user);
     }
   }
@@ -58,36 +56,59 @@ public class KarmaService {
   public void changeKarmaBasedOnReaction(int numberOfPull) {
     try {
       GHRepository repository = service.getGitHubRepository();
-      List<GHPullRequest> pullRequests = repository.getPullRequests(GHIssueState.ALL);
-      GHPullRequest currentPr = pullRequests.stream()
-              .filter(pr -> pr.getNumber() == numberOfPull).findFirst().get();
+      GHPullRequest currentPr = repository.getPullRequest(numberOfPull);
       String actorPullRequest = currentPr.getUser().getLogin();
-      PagedIterable<GHIssueComment> comments = currentPr.listComments();
-      boolean approvedComment = comments.asList()
-              .stream().anyMatch(c -> c.getBody().toLowerCase().equals("approved"));
-      if (approvedComment) {
-        GHIssueComment comment = comments.asList().stream()
-                .filter(c -> c.getBody().toLowerCase().equals("approved"))
-                .findFirst().get();
-        karmaForTypeOfReaction(comment, actorPullRequest);
-      }
 
+      List<GitHubComment> comments = new ArrayList<>();
+      PagedIterable<GHIssueComment> commentsIssue = currentPr.listComments();
+      checkForIssueCommentsApproved(commentsIssue, comments);
+      PagedIterable<GHPullRequestReviewComment> commentsReview = currentPr.listReviewComments();
+      checkForReviewsCommentsApproved(commentsReview, comments);
+
+      comments.stream().sorted(Comparator.comparing(GitHubComment::getCreatedAt))
+              .collect(Collectors.groupingBy(GitHubComment::getAuthorComment))
+              .values().stream().map(c -> c.get(0))
+              .forEach(c -> karmaForReaction(c, actorPullRequest));
     } catch (IOException e) {
       log.info("Some happen with connection to Gh", e);
       throw new RuntimeException(e);
     }
   }
 
-  private void karmaForTypeOfReaction(GHIssueComment comment, String actorPullRequest) {
+  private void checkForIssueCommentsApproved(PagedIterable<GHIssueComment> commentsIssue,
+                                             List<GitHubComment> comments) throws IOException {
+    List<GHIssueComment> issueCommentList = commentsIssue.asList().stream()
+            .filter(c -> c.getBody().toLowerCase().equals("approved")).collect(Collectors.toList());
+
+    for (GHIssueComment issueComment: issueCommentList) {
+      GitHubComment comment = new GitHubComment();
+      comment.setAuthorComment(issueComment.getUser().getLogin());
+      comment.setCreatedAt(issueComment.getCreatedAt());
+      comment.setListOfReaction(issueComment.listReactions());
+      comments.add(comment);
+    }
+  }
+
+  private void checkForReviewsCommentsApproved(PagedIterable<GHPullRequestReviewComment> reviews,
+                                               List<GitHubComment> comments) throws IOException {
+    List<GHPullRequestReviewComment> reviewCommentsList = reviews.asList().stream()
+            .filter(c -> c.getBody().toLowerCase().equals("approved")).collect(Collectors.toList());
+
+    for (GHPullRequestReviewComment reviewComment: reviewCommentsList) {
+      GitHubComment comment = new GitHubComment();
+      comment.setAuthorComment(reviewComment.getUser().getLogin());
+      comment.setCreatedAt(reviewComment.getCreatedAt());
+      comment.setListOfReaction(reviewComment.listReactions());
+      comments.add(comment);
+    }
+  }
+
+  private void karmaForReaction(GitHubComment comment, String actorPullRequest) {
     String typeOfReaction;
     String actorOfReaction;
-    String actorOfComment;
-    try {
-      actorOfComment = comment.getUser().getLogin();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    PagedIterable<GHReaction> listOfReaction = comment.listReactions();
+    String actorOfComment = comment.getAuthorComment();
+
+    PagedIterable<GHReaction> listOfReaction = comment.getListOfReaction();
     for (GHReaction reaction : listOfReaction) {
       actorOfReaction = reaction.getUser().getLogin();
       typeOfReaction = reaction.getContent().getContent();

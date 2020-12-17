@@ -7,6 +7,7 @@ import com.community.tools.service.slack.SlackService;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -113,7 +114,8 @@ public class PublishWeekStatsService {
   @Scheduled(cron = "0 10 0 * * MON")
   public void publishLeaderboard() throws IOException, SlackApiException {
     String url = urlServer + "leaderboard/";
-    String img = url + "img/";
+    String date = LocalDate.now().toString();
+    String img = url + "img/" + date;
     String message = String.format("[{\"type\": \"section\", \"text\": "
             + "{\"type\": \"mrkdwn\",\"text\": \"Рейтинг этой недели доступен по ссылке: \"},"
             + "\"accessory\": {\"type\": \"button\",\t\"text\": "

@@ -95,7 +95,6 @@ public class GitHubHookServlet extends HttpServlet {
           giveNewTaskIfPrOpened(json);
           addMentorIfEventIsReview(json);
           addPointIfPullLabeledDone(json);
-          addKarmaForCommentApproved(json);
           checkReactionToChangeKarma(json);
         }
       }
@@ -173,8 +172,10 @@ public class GitHubHookServlet extends HttpServlet {
               .getString("body").toLowerCase().equals("approved");
     } else if (json.get("action").equals("submitted")) {
       traineeReviewer = json.getJSONObject("review").getJSONObject("user").getString("login");
-      checkCommentApproved = json.getJSONObject("review")
-              .getString("body").toLowerCase().equals("approved");
+      if (json.getJSONObject("review").getString("body") != null) {
+        checkCommentApproved = json.getJSONObject("review")
+                .getString("body").toLowerCase().equals("approved");
+      }
     }
     if (checkCommentApproved) {
       karmaService.changeUserKarma(traineeReviewer, 1);

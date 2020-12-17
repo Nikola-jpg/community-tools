@@ -52,7 +52,7 @@ public class LeaderBoardController {
    * @throws EntityNotFoundException EntityNotFoundException
    * @throws IOException IOException
    */
-  @RequestMapping(value = "/img", method = RequestMethod.GET)
+  @RequestMapping(value = "/img/{date}", method = RequestMethod.GET)
   public void getImage(HttpServletResponse response) throws EntityNotFoundException, IOException {
     String url = getAddress();
     byte[] data = leaderBoardService.createImage(url);
