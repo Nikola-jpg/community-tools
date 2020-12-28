@@ -67,7 +67,7 @@ public class KarmaService {
 
       comments.stream().sorted(Comparator.comparing(GitHubComment::getCreatedAt))
               .collect(Collectors.groupingBy(GitHubComment::getAuthorComment))
-              .values().stream().map(c -> c.get(0))
+              .values().stream().map(c -> c.get(0)).limit(3)
               .forEach(c -> karmaForReaction(c, actorPullRequest));
     } catch (IOException e) {
       log.info("Some happen with connection to Gh", e);
@@ -78,7 +78,8 @@ public class KarmaService {
   private void checkForIssueCommentsApproved(PagedIterable<GHIssueComment> commentsIssue,
                                              List<GitHubComment> comments) throws IOException {
     List<GHIssueComment> issueCommentList = commentsIssue.asList().stream()
-            .filter(c -> c.getBody().toLowerCase().equals("approved")).collect(Collectors.toList());
+            .filter(c -> c.getBody().toLowerCase().trim().equals("approved"))
+            .collect(Collectors.toList());
 
     for (GHIssueComment issueComment: issueCommentList) {
       GitHubComment comment = new GitHubComment();
@@ -92,7 +93,8 @@ public class KarmaService {
   private void checkForReviewsCommentsApproved(PagedIterable<GHPullRequestReviewComment> reviews,
                                                List<GitHubComment> comments) throws IOException {
     List<GHPullRequestReviewComment> reviewCommentsList = reviews.asList().stream()
-            .filter(c -> c.getBody().toLowerCase().equals("approved")).collect(Collectors.toList());
+            .filter(c -> c.getBody().toLowerCase().trim().equals("approved"))
+            .collect(Collectors.toList());
 
     for (GHPullRequestReviewComment reviewComment: reviewCommentsList) {
       GitHubComment comment = new GitHubComment();
