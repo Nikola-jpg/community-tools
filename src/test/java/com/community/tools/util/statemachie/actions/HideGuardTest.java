@@ -7,7 +7,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.community.tools.service.github.GitHubConnectService;
-import com.community.tools.service.github.GitHubHookServlet;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackHandlerService;
 import com.community.tools.service.slack.SlackService;
@@ -57,8 +56,6 @@ public class HideGuardTest {
   private GitHubService gitHubService;
   @MockBean
   private SlackService slackSer;
-  @MockBean
-  private GitHubHookServlet gitHubHookServlet;
   @Mock
   private ExtendedState extendedState;
   @Mock

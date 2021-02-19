@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubConnectService;
-import com.community.tools.service.github.GitHubHookServlet;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackHandlerService;
 import com.community.tools.service.slack.SlackService;
@@ -26,7 +25,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.transaction.Transactional;
 import lombok.SneakyThrows;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -59,8 +57,6 @@ public class AddGitNameActionTest {
   private GitHubService gitHubService;
   @Mock
   private SlackService slackSer;
-  @Mock
-  private GitHubHookServlet gitHubHookServlet;
   @Mock
   private SlackHandlerService slackHandlerService;
   @Mock

@@ -64,9 +64,8 @@ public class PointsTaskService {
               .restoreMachineByNick(creator);
       int taskDone = (int) machine.getExtendedState()
               .getVariables().getOrDefault("taskDone", 0);
-      taskDone++;
       machine.getExtendedState().getVariables()
-              .put("taskDone", (taskDone));
+              .put("taskDone", ++taskDone);
       stateMachineService.persistMachine(machine, stateEntity.getUserID());
 
       String finalPullName = pullName.toLowerCase();
