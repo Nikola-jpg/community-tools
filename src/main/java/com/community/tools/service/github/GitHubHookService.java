@@ -39,6 +39,7 @@ public class GitHubHookService {
 
   /**
    * Methid receive data from Github and check it.
+   *
    * @param json JSON with data from Github webhook
    */
   public void doActionsAfterReceiveHook(JSONObject json) {
@@ -67,7 +68,7 @@ public class GitHubHookService {
                   "User " + user
                           + " created a pull request \n url: " + url);
         } catch (IOException | SlackApiException e) {
-          e.printStackTrace();
+          throw new RuntimeException(e);
         }
 
       }
