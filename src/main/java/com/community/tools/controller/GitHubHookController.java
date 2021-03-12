@@ -9,7 +9,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,13 +47,9 @@ public class GitHubHookController {
               .checkSignature(header, json.toString())) {
         gitHookDataService.saveDataIntoDB(json);
         boolean actionExist = false;
-        try {
-          json.get("action");
+        if (json.has("action")) {
           actionExist = true;
-        } catch (JSONException e) {
-          e.printStackTrace();
         }
-
         if (actionExist) {
           gitHubHookService.doActionsAfterReceiveHook(json);
         }

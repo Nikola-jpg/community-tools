@@ -60,7 +60,7 @@ public class GitHubHookService {
         try {
           addMentorService.sendNotifyWithMentor(user, url);
         } catch (IOException | SlackApiException e) {
-          e.printStackTrace();
+          throw new RuntimeException(e);
         }
       } else {
         try {
@@ -122,12 +122,12 @@ public class GitHubHookService {
     if (json.get("action").equals("created") && hasIssueAndComment(json)) {
       traineeReviewer = json.getJSONObject("comment").getJSONObject("user").getString("login");
       checkCommentApproved = json.getJSONObject("comment")
-              .getString("body").toLowerCase().equals("approved");
+              .getString("body").equalsIgnoreCase("approved");
     } else if (json.get("action").equals("submitted")) {
       traineeReviewer = json.getJSONObject("review").getJSONObject("user").getString("login");
       if (json.getJSONObject("review").getString("body") != null) {
         checkCommentApproved = json.getJSONObject("review")
-                .getString("body").toLowerCase().equals("approved");
+                .getString("body").equalsIgnoreCase("approved");
       }
     }
     if (checkCommentApproved) {
@@ -156,8 +156,8 @@ public class GitHubHookService {
     try {
       json.getJSONObject("comment");
       checkComment = true;
-    } catch (JSONException ignored) {
-      ignored.getMessage();
+    } catch (JSONException e) {
+      e.printStackTrace();
     }
     return checkComment;
   }
