@@ -1,0 +1,63 @@
+package com.community.tools.controller;
+
+import com.community.tools.service.github.GitHookDataService;
+import com.community.tools.service.github.GitHubHookService;
+import com.community.tools.util.GithubAuthChecker;
+
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/gitHook")
+public class GitHubHookController {
+
+  @Value("${GITHUB_SECRET_TOKEN}")
+  private String secret;
+  @Autowired
+  private GitHubHookService gitHubHookService;
+  @Autowired
+  private GitHookDataService gitHookDataService;
+
+  /**
+   * Method receive webhook data from GitHub.
+   *
+   * @param json   JSONObject
+   * @param header "X-Hub-Signature" header
+   * @param resp   HttpServletResponse
+   * @throws IOException IOException
+   */
+  @PostMapping
+  public void getHookData(@RequestBody JSONObject json,
+                          @RequestHeader("X-Hub-Signature") String header,
+                          HttpServletResponse resp) throws IOException {
+
+    try {
+      if (new GithubAuthChecker(secret)
+              .checkSignature(header, json.toString())) {
+        gitHookDataService.saveDataIntoDB(json);
+        boolean actionExist = false;
+        if (json.has("action")) {
+          actionExist = true;
+        }
+        if (actionExist) {
+          gitHubHookService.doActionsAfterReceiveHook(json);
+        }
+      }
+    } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+      throw new RuntimeException(e);
+    }
+
+  }
+}
+

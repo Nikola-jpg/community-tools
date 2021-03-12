@@ -3,7 +3,6 @@ package com.community.tools.controller;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.model.EventData;
-import com.community.tools.service.CountingCompletedTasksService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class GitHubController {
   private final SlackService slackService;
   private final GitHubService gitHubService;
-  private final CountingCompletedTasksService completedTasksService;
 
   /**
    * Endpoint /hello.
@@ -60,14 +58,6 @@ public class GitHubController {
     List<Map<String, String>> list = new ArrayList<>();
     list.add(userPullRequest);
     return ok().body(list);
-  }
-
-  @ApiOperation(value = "Returns map 'username: [pull request title]'"
-          + " of closed pull requests with 'done' label")
-  @GetMapping(value = "/pull_request/сlosedReq", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Map<String, List<String>>> getPullRequests() throws IOException {
-    Map<String, List<String>> map = completedTasksService.getCountedCompletedTasks();
-    return ok().body(map);
   }
 
   /**

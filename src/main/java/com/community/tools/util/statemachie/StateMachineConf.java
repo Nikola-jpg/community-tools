@@ -72,7 +72,7 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
     config
             .withConfiguration()
             .autoStartup(true)
-            .listener(new StateMachineApplicationListeer());
+            .listener(new StateMachineApplicationListener());
   }
 
   @Override

@@ -3,44 +3,25 @@ package com.community.tools.service.github;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.slack.SlackService;
-import com.community.tools.util.GithubAuthChecker;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GitHubHookServlet extends HttpServlet {
+public class GitHubHookService {
 
   @Value("${git.check.label}")
   private String labeledStr;
   @Value("${git.check.new.req}")
   private String opened;
-  @Value("${spring.datasource.url}")
-  private String url;
-  @Value("${spring.datasource.username}")
-  private String username;
-  @Value("${spring.datasource.password}")
-  private String password;
-  @Value("${GITHUB_SECRET_TOKEN}")
-  private String secret;
   @Value("${generalInformationChannel}")
   private String channel;
   @Autowired
@@ -56,67 +37,39 @@ public class GitHubHookServlet extends HttpServlet {
   @Autowired
   private PointsTaskService pointsTaskService;
 
-  @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
-    StringBuilder builder = new StringBuilder();
-    String str = "";
-
-    while ((str = req.getReader().readLine()) != null) {
-      builder.append(str);
-    }
-    JSONObject json = new JSONObject(builder.toString());
-
-    try {
-      if (new GithubAuthChecker(secret)
-              .checkSignature(req.getHeader("X-Hub-Signature"), builder.toString())) {
-
-        SingleConnectionDataSource connect = new SingleConnectionDataSource();
-        connect.setUrl(url);
-        connect.setUsername(username);
-        connect.setPassword(password);
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
-        String sql = "INSERT INTO public.\"GitHookData\" (time, jsonb_data) VALUES (? , ?)";
-        Date date = new Date();
-        PGobject out = new PGobject();
-        out.setType("json");
-        out.setValue(json.toString());
-        jdbcTemplate.update(sql, date, out);
-        boolean actionExist = false;
-        try {
-          json.get("action");
-          actionExist = true;
-        } catch (JSONException ignored) {
-          ignored.getMessage();
-        }
-
-        if (actionExist) {
-          sendNotificationMessageAboutPR(json);
-          giveNewTaskIfPrOpened(json);
-          addMentorIfEventIsReview(json);
-          addPointIfPullLabeledDone(json);
-          checkReactionToChangeKarma(json);
-        }
-      }
-    } catch (NoSuchAlgorithmException | InvalidKeyException | SlackApiException | SQLException e) {
-      throw new RuntimeException(e);
-    }
-
+  /**
+   * Methid receive data from Github and check it.
+   *
+   * @param json JSON with data from Github webhook
+   */
+  public void doActionsAfterReceiveHook(JSONObject json) {
+    sendNotificationMessageAboutPR(json);
+    giveNewTaskIfPrOpened(json);
+    addMentorIfEventIsReview(json);
+    addPointIfPullLabeledDone(json);
+    checkReactionToChangeKarma(json);
   }
 
 
-  private void sendNotificationMessageAboutPR(JSONObject json)
-          throws IOException, SlackApiException {
+  private void sendNotificationMessageAboutPR(JSONObject json) {
     if (json.get("action").toString().equals(opened) || checkForLabeled(json)) {
       JSONObject pull = json.getJSONObject("pull_request");
       String user = pull.getJSONObject("user").getString("login");
       String url = pull.getJSONObject("_links").getJSONObject("html").getString("href");
       if (addMentorService.doesMentorExist(user)) {
-        addMentorService.sendNotifyWithMentor(user, url);
+        try {
+          addMentorService.sendNotifyWithMentor(user, url);
+        } catch (IOException | SlackApiException e) {
+          throw new RuntimeException(e);
+        }
       } else {
-        service
-                .sendMessageToConversation(channel, "User " + user
-                        + " created a pull request \n url: " + url);
+        try {
+          service.sendMessageToConversation(channel,
+                  "User " + user
+                          + " created a pull request \n url: " + url);
+        } catch (IOException | SlackApiException e) {
+          throw new RuntimeException(e);
+        }
 
       }
     }
@@ -154,7 +107,7 @@ public class GitHubHookServlet extends HttpServlet {
 
   private void addPointIfPullLabeledDone(JSONObject json) {
     if (json.get("action").toString().equals(labeledStr)
-        && json.getJSONObject("label").getString("name").equals("done")) {
+            && json.getJSONObject("label").getString("name").equals("done")) {
       List<Object> list = json.getJSONObject("pull_request").getJSONArray("labels").toList();
       String sender = json.getJSONObject("sender").getString("login");
       String creator = json.getJSONObject("pull_request").getJSONObject("user").getString("login");
@@ -169,12 +122,12 @@ public class GitHubHookServlet extends HttpServlet {
     if (json.get("action").equals("created") && hasIssueAndComment(json)) {
       traineeReviewer = json.getJSONObject("comment").getJSONObject("user").getString("login");
       checkCommentApproved = json.getJSONObject("comment")
-              .getString("body").toLowerCase().equals("approved");
+              .getString("body").equalsIgnoreCase("approved");
     } else if (json.get("action").equals("submitted")) {
       traineeReviewer = json.getJSONObject("review").getJSONObject("user").getString("login");
       if (json.getJSONObject("review").getString("body") != null) {
         checkCommentApproved = json.getJSONObject("review")
-                .getString("body").toLowerCase().equals("approved");
+                .getString("body").equalsIgnoreCase("approved");
       }
     }
     if (checkCommentApproved) {
@@ -203,8 +156,8 @@ public class GitHubHookServlet extends HttpServlet {
     try {
       json.getJSONObject("comment");
       checkComment = true;
-    } catch (JSONException ignored) {
-      ignored.getMessage();
+    } catch (JSONException e) {
+      e.printStackTrace();
     }
     return checkComment;
   }
@@ -216,4 +169,3 @@ public class GitHubHookServlet extends HttpServlet {
     }
   }
 }
-
