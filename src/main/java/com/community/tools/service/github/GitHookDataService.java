@@ -20,7 +20,7 @@ public class GitHookDataService {
   private JdbcTemplate connection;
 
   @Autowired
-  public void initConnection(DataSource dataSource){
+  public void initConnection(DataSource dataSource) {
     this.connection = new JdbcTemplate(dataSource);
   }
 
