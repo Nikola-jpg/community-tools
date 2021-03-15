@@ -32,16 +32,17 @@ public class GitHubHookController {
   /**
    * Method receive webhook data from GitHub.
    *
-   * @param json   JSONObject
+   * @param body   String
    * @param header "X-Hub-Signature" header
    * @param resp   HttpServletResponse
    * @throws IOException IOException
    */
   @PostMapping
-  public void getHookData(@RequestBody JSONObject json,
+  public void getHookData(@RequestBody String body,
                           @RequestHeader("X-Hub-Signature") String header,
                           HttpServletResponse resp) throws IOException {
 
+    JSONObject json = new JSONObject(body);
     try {
       if (new GithubAuthChecker(secret)
               .checkSignature(header, json.toString())) {
