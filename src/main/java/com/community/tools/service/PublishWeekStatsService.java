@@ -31,7 +31,7 @@ public class PublishWeekStatsService {
   private final GitHubService ghEventService;
   private final SlackService slackService;
 
-  @Value("${generalInformationChannel}")
+  @Value("${importantInformationChannel}")
   private String channel;
 
   @Value("${urlServer}")
@@ -39,8 +39,6 @@ public class PublishWeekStatsService {
 
   @Value("${noActivityMessage}")
   private String noActivityMessage;
-
-
 
   /**
    * Publish statistics of Events for last week. Statistic sends every Monday.
