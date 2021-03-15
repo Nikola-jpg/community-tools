@@ -43,22 +43,14 @@ public class GitHubHookController {
                           HttpServletResponse resp) throws IOException {
 
     JSONObject json = new JSONObject(body);
-    try {
-      if (new GithubAuthChecker(secret)
-              .checkSignature(header, json.toString())) {
-        gitHookDataService.saveDataIntoDB(json);
-        boolean actionExist = false;
-        if (json.has("action")) {
-          actionExist = true;
-        }
-        if (actionExist) {
-          gitHubHookService.doActionsAfterReceiveHook(json);
-        }
-      }
-    } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-      throw new RuntimeException(e);
+    gitHookDataService.saveDataIntoDB(json);
+    boolean actionExist = false;
+    if (json.has("action")) {
+      actionExist = true;
     }
-
+    if (actionExist) {
+      gitHubHookService.doActionsAfterReceiveHook(json);
+    }
   }
 }
 
