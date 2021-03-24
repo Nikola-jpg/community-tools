@@ -193,7 +193,7 @@ public class SlackService {
       User user = slack.methods(token).usersList(req -> req).getMembers().stream()
               .filter(u -> u.getId().equals(id))
               .findFirst().get();
-      return user.getRealName();
+      return user.getProfile().getDisplayName();
     } catch (IOException | SlackApiException e) {
       throw new RuntimeException(e);
     }
