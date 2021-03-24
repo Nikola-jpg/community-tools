@@ -70,7 +70,6 @@ public class GitHubHookService {
         } catch (IOException | SlackApiException e) {
           throw new RuntimeException(e);
         }
-
       }
     }
   }
@@ -157,7 +156,7 @@ public class GitHubHookService {
       json.getJSONObject("comment");
       checkComment = true;
     } catch (JSONException e) {
-      e.printStackTrace();
+      e.getMessage();
     }
     return checkComment;
   }
