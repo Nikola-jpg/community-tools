@@ -1,27 +1,23 @@
-package com.community.tools.util.statemachie.actions;
+package com.community.tools.util.statemachie.actions.information;
 
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.github.seratch.jslack.api.methods.SlackApiException;
-import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
-import org.springframework.stereotype.Component;
 
+public class ChannelInformationAction implements Action<State, Event> {
 
-public class AgreeLicenseAction implements Action<State, Event> {
-
-  @Value("${addGitName}")
-  private String addGitName;
+  @Value("${messageAboutSeveralInfoChannel}")
+  private String messageAboutSeveralInfoChannel;
   @Autowired
   private SlackService slackService;
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    slackService.sendBlocksMessage(slackService.getUserById(user), addGitName);
+    slackService.sendBlocksMessage(slackService.getUserById(user), messageAboutSeveralInfoChannel);
   }
 }

@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie.actions;
+package com.community.tools.util.statemachie.actions.guard;
 
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;

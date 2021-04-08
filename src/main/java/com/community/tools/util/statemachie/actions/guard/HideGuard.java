@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie.actions;
+package com.community.tools.util.statemachie.actions.guard;
 
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;

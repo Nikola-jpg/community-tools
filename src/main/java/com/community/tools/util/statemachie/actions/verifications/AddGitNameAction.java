@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie.actions;
+package com.community.tools.util.statemachie.actions.verifications;
 
 import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubConnectService;

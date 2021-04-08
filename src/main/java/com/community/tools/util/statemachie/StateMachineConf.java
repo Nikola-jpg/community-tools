@@ -1,45 +1,32 @@
 package com.community.tools.util.statemachie;
 
-import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
-import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
-import static com.community.tools.util.statemachie.Event.CHANGE_TASK;
-import static com.community.tools.util.statemachie.Event.CHANNELS_INFORMATION;
-import static com.community.tools.util.statemachie.Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
-import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.Event.GET_THE_NEW_TASK;
-import static com.community.tools.util.statemachie.Event.LAST_TASK;
-import static com.community.tools.util.statemachie.Event.LOGIN_CONFIRMATION;
-import static com.community.tools.util.statemachie.Event.QUESTION_FIRST;
-import static com.community.tools.util.statemachie.Event.QUESTION_SECOND;
-import static com.community.tools.util.statemachie.Event.QUESTION_THIRD;
-import static com.community.tools.util.statemachie.State.ADDED_GIT;
-import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
-import static com.community.tools.util.statemachie.State.CHECK_FOR_NEW_TASK;
-import static com.community.tools.util.statemachie.State.CHECK_LOGIN;
-import static com.community.tools.util.statemachie.State.CONGRATS_LAST_TASK;
-import static com.community.tools.util.statemachie.State.FIRST_QUESTION;
-import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.State.INFORMATION_CHANNELS;
-import static com.community.tools.util.statemachie.State.NEW_USER;
-import static com.community.tools.util.statemachie.State.SECOND_QUESTION;
-import static com.community.tools.util.statemachie.State.THIRD_QUESTION;
-
-import com.community.tools.util.statemachie.actions.AddGitNameAction;
-import com.community.tools.util.statemachie.actions.AgreeLicenseAction;
-import com.community.tools.util.statemachie.actions.ChangeTaskAction;
-import com.community.tools.util.statemachie.actions.ChannelInformationAction;
-import com.community.tools.util.statemachie.actions.CheckForNewTaskAction;
-import com.community.tools.util.statemachie.actions.DidNotPassVerificationGitLogin;
-import com.community.tools.util.statemachie.actions.ErrorAction;
-import com.community.tools.util.statemachie.actions.GetTheFirstTaskAction;
-import com.community.tools.util.statemachie.actions.HideGuard;
-import com.community.tools.util.statemachie.actions.LastTaskAction;
-import com.community.tools.util.statemachie.actions.LastTaskGuard;
-import com.community.tools.util.statemachie.actions.VerificationLoginAction;
+import com.community.tools.util.statemachie.actions.guard.HideGuard;
+import com.community.tools.util.statemachie.actions.information.ChannelInformationAction;
 import com.community.tools.util.statemachie.actions.questions.FirstQuestionAction;
 import com.community.tools.util.statemachie.actions.questions.SecondQuestionAction;
 import com.community.tools.util.statemachie.actions.questions.ThirdQuestionAction;
-import java.util.EnumSet;
+import com.community.tools.util.statemachie.actions.tasks.ChangeTaskAction;
+import com.community.tools.util.statemachie.actions.tasks.CheckForNewTaskAction;
+import com.community.tools.util.statemachie.actions.tasks.GetTheFirstTaskAction;
+import com.community.tools.util.statemachie.actions.tasks.LastTaskAction;
+import com.community.tools.util.statemachie.actions.guard.LastTaskGuard;
+import com.community.tools.util.statemachie.actions.verifications.AddGitNameAction;
+import com.community.tools.util.statemachie.actions.verifications.AgreeLicenseAction;
+import com.community.tools.util.statemachie.actions.verifications.DidNotPassVerificationGitLogin;
+import com.community.tools.util.statemachie.actions.error.ErrorAction;
+import com.community.tools.util.statemachie.actions.verifications.VerificationLoginAction;
+import com.community.tools.util.statemachie.actions.configs.information.ChannelInformationActionConf;
+import com.community.tools.util.statemachie.actions.configs.questions.FirstQuestionActionConfig;
+import com.community.tools.util.statemachie.actions.configs.questions.SecondQuestionActionConfig;
+import com.community.tools.util.statemachie.actions.configs.questions.ThirdQuestionActionConfig;
+import com.community.tools.util.statemachie.actions.configs.tasks.ChangeTaskActionConfig;
+import com.community.tools.util.statemachie.actions.configs.tasks.CheckForNewTaskActionConfig;
+import com.community.tools.util.statemachie.actions.configs.tasks.GetTheFirstTaskActionConfig;
+import com.community.tools.util.statemachie.actions.configs.tasks.LastTaskActionConfig;
+import com.community.tools.util.statemachie.actions.configs.verifications.AddGitNameActionConfig;
+import com.community.tools.util.statemachie.actions.configs.verifications.AgreeLicenseActionConfig;
+import com.community.tools.util.statemachie.actions.configs.verifications.DidNotPassVerificationGitLoginConf;
+import com.community.tools.util.statemachie.actions.configs.verifications.VerificationLoginActionConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,119 +36,123 @@ import org.springframework.statemachine.config.EnumStateMachineConfigurerAdapter
 import org.springframework.statemachine.config.builders.StateMachineConfigurationConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
+import org.springframework.statemachine.config.configurers.ExternalTransitionConfigurer;
 import org.springframework.statemachine.guard.Guard;
 import org.springframework.statemachine.persist.DefaultStateMachinePersister;
+
+import java.util.EnumSet;
+
+import static com.community.tools.util.statemachie.State.NEW_USER;
 
 @Configuration
 @EnableStateMachineFactory
 public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, Event> {
 
   @Autowired
-  StateMachinePersister persister;
+  private StateMachinePersister persister;
 
   @Override
   public void configure(final StateMachineStateConfigurer<State, Event> states)
-          throws Exception {
+      throws Exception {
     states.withStates().initial(NEW_USER).states(EnumSet.allOf(State.class));
   }
 
   @Override
   public void configure(
-          final StateMachineConfigurationConfigurer<State, Event> config)
-          throws Exception {
+      final StateMachineConfigurationConfigurer<State, Event> config)
+      throws Exception {
     config
-            .withConfiguration()
-            .autoStartup(true)
-            .listener(new StateMachineApplicationListener());
+        .withConfiguration()
+        .autoStartup(true)
+        .listener(new StateMachineApplicationListener());
   }
 
   @Override
   public void configure(final StateMachineTransitionConfigurer<State, Event> transitions)
-          throws Exception {
-    transitions
-            .withExternal()
-            .source(NEW_USER)
-            .target(FIRST_QUESTION)
-            .event(QUESTION_FIRST)
-            .action(firstQuestionAction(), errorAction())
+      throws Exception {
+    ExternalTransitionConfigurer<State, Event> firstQuestion = firstQuestionActionConfig()
+        .configure(transitions);
+    ExternalTransitionConfigurer<State, Event> secondQuestion = secondQuestionActionConfig()
+        .configure(firstQuestion);
+    ExternalTransitionConfigurer<State, Event> thirdQuestion = thirdQuestionActionConfig()
+        .configure(secondQuestion);
+    ExternalTransitionConfigurer<State, Event> channelInformation = channelInformationActionConf()
+        .configure(thirdQuestion);
+    ExternalTransitionConfigurer<State, Event> agreeLicense = agreeLicenseActionConfig()
+        .configure(channelInformation);
+    ExternalTransitionConfigurer<State, Event> verificationLogin = verificationLoginActionConfig()
+        .configure(agreeLicense);
+    ExternalTransitionConfigurer<State, Event> didntPassVerificationGitLogin = didNotPassVerificationGitLoginConf()
+        .configure(verificationLogin);
+    ExternalTransitionConfigurer<State, Event> addGitName = addGitNameActionConfig()
+        .configure(didntPassVerificationGitLogin);
+    ExternalTransitionConfigurer<State, Event> getTheFirstTask = getTheFirstTaskActionConfig()
+        .configure(addGitName);
+    ExternalTransitionConfigurer<State, Event> checkForNewTask = checkForNewTaskActionConfig()
+        .configure(getTheFirstTask);
+    ExternalTransitionConfigurer<State, Event> changeTaskAction = changeTaskActionConfig()
+        .configure(checkForNewTask);
+    lastTaskActionConfig().configure(changeTaskAction);
+  }
 
-            .and()
-            .withExternal()
-            .source(FIRST_QUESTION)
-            .target(SECOND_QUESTION)
-            .event(QUESTION_SECOND)
-            .action(secondQuestionAction(), errorAction())
+  @Bean
+  public FirstQuestionActionConfig firstQuestionActionConfig() {
+    return new FirstQuestionActionConfig(firstQuestionAction(), errorAction());
+  }
 
-            .and()
-            .withExternal()
-            .source(SECOND_QUESTION)
-            .target(THIRD_QUESTION)
-            .event(QUESTION_THIRD)
-            .action(thirdQuestionAction(), errorAction())
+  @Bean
+  public SecondQuestionActionConfig secondQuestionActionConfig() {
+    return new SecondQuestionActionConfig(secondQuestionAction(), errorAction());
+  }
 
-            .and()
-            .withExternal()
-            .source(THIRD_QUESTION)
-            .target(INFORMATION_CHANNELS)
-            .event(CHANNELS_INFORMATION)
-            .action(informationChannelsAction(), errorAction())
+  @Bean
+  public ThirdQuestionActionConfig thirdQuestionActionConfig() {
+    return new ThirdQuestionActionConfig(thirdQuestionAction(), errorAction());
+  }
 
-            .and()
-            .withExternal()
-            .source(INFORMATION_CHANNELS)
-            .target(AGREED_LICENSE)
-            .event(AGREE_LICENSE)
-            .action(agreeLicenseAction(), errorAction())
+  @Bean
+  public AgreeLicenseActionConfig agreeLicenseActionConfig() {
+    return new AgreeLicenseActionConfig(agreeLicenseAction(), errorAction());
+  }
 
-            .and()
-            .withExternal()
-            .source(AGREED_LICENSE)
-            .target(CHECK_LOGIN)
-            .event(LOGIN_CONFIRMATION)
-            .action(verificationLoginAction(), errorAction())
+  @Bean
+  public VerificationLoginActionConfig verificationLoginActionConfig() {
+    return new VerificationLoginActionConfig(verificationLoginAction(), errorAction());
+  }
 
-            .and()
-            .withExternal()
-            .source(CHECK_LOGIN)
-            .target(AGREED_LICENSE)
-            .event(DID_NOT_PASS_VERIFICATION_GIT_LOGIN)
-            .action(didntPassVerificationGitLogin(), errorAction())
+  @Bean
+  public ChannelInformationActionConf channelInformationActionConf() {
+    return new ChannelInformationActionConf(informationChannelsAction(), errorAction());
+  }
 
-            .and()
-            .withExternal()
-            .source(CHECK_LOGIN)
-            .target(ADDED_GIT)
-            .event(ADD_GIT_NAME)
-            .action(addGitNameAction(), errorAction())
+  @Bean
+  public DidNotPassVerificationGitLoginConf didNotPassVerificationGitLoginConf() {
+    return new DidNotPassVerificationGitLoginConf(didntPassVerificationGitLogin(), errorAction());
+  }
 
-            .and()
-            .withExternal()
-            .source(ADDED_GIT)
-            .target(GOT_THE_FIRST_TASK)
-            .event(GET_THE_FIRST_TASK)
-            .action(getTheFirstTaskAction(), errorAction())
+  @Bean
+  public AddGitNameActionConfig addGitNameActionConfig() {
+    return new AddGitNameActionConfig(addGitNameAction(), errorAction());
+  }
 
-            .and()
-            .withExternal()
-            .source(GOT_THE_FIRST_TASK)
-            .target(CHECK_FOR_NEW_TASK)
-            .event(GET_THE_NEW_TASK)
-            .action(checkForNewTaskAction(), errorAction())
+  @Bean
+  public GetTheFirstTaskActionConfig getTheFirstTaskActionConfig() {
+    return new GetTheFirstTaskActionConfig(getTheFirstTaskAction(), errorAction());
+  }
 
-            .and()
-            .withExternal()
-            .source(CHECK_FOR_NEW_TASK)
-            .target(GOT_THE_FIRST_TASK)
-            .event(CHANGE_TASK)
-            .action(changeTaskAction(), errorAction())
+  @Bean
+  public CheckForNewTaskActionConfig checkForNewTaskActionConfig() {
+    return new CheckForNewTaskActionConfig(checkForNewTaskAction(), errorAction());
+  }
 
-            .and()
-            .withExternal()
-            .source(CHECK_FOR_NEW_TASK)
-            .target(CONGRATS_LAST_TASK)
-            .event(LAST_TASK)
-            .guard(lastTaskGuard())
-            .action(lastTaskAction(), errorAction());
+  @Bean
+  public ChangeTaskActionConfig changeTaskActionConfig() {
+    return new ChangeTaskActionConfig(changeTaskAction(), errorAction());
+  }
+
+  @Bean
+  public LastTaskActionConfig lastTaskActionConfig() {
+    return new LastTaskActionConfig(lastTaskAction(), errorAction(), lastTaskGuard());
   }
 
   @Bean
