@@ -2,6 +2,7 @@ package com.community.tools.service.slack;
 
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
+import com.github.seratch.jslack.api.methods.request.chat.ChatPostMessageRequest;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.github.seratch.jslack.api.model.Channel;
@@ -15,6 +16,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,14 @@ public class SlackService {
   @Value("${slack.webhook}")
   private String slackWebHook;
 
+  @Autowired
+  private final Slack slack;
+
+  //@Autowired
+  private final UsersListRequest usersListRequest;
+
+  //@Autowired
+  private final ChatPostMessageRequest chatPostMessageRequest;
 
   /**
    * Send private message with messageText to username.
@@ -38,7 +48,7 @@ public class SlackService {
    * @throws SlackApiException SlackApiException
    */
   public String sendPrivateMessage(String username, String messageText) {
-    Slack slack = Slack.getInstance();
+    //Slack slack = Slack.getInstance();
     try {
       ChatPostMessageResponse postResponse =
               slack.methods(token).chatPostMessage(
@@ -219,11 +229,24 @@ public class SlackService {
    * @return Slack`s id
    */
   public String getIdByUsername(String username) {
-    Slack slack = Slack.getInstance();
+    //Slack slack = Slack.getInstance();
     try {
+      /*
+      Нужно создать бин UsersListRequest!!
+       */
+
+      User user = slack.methods(token).usersList(usersListRequest).getMembers().stream()
+          .filter(u -> u.getProfile().getDisplayName().equals(username))
+          .findFirst().get();
+
+      /*
+      Не проходит тесты. !!! usersList(req -> req) выбрасывает NPE
+       */
+      /*
       User user = slack.methods(token).usersList(req -> req).getMembers().stream()
           .filter(u -> u.getProfile().getDisplayName().equals(username))
           .findFirst().get();
+      */
       return user.getId();
     } catch (IOException | SlackApiException e) {
       throw new RuntimeException(e);
