@@ -1,27 +1,16 @@
 package com.community.tools.service.slack;
 
-import static com.community.tools.util.statemachie.Event.CHANNELS_INFORMATION;
-import static com.community.tools.util.statemachie.Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
-import static com.community.tools.util.statemachie.Event.QUESTION_SECOND;
-import static com.community.tools.util.statemachie.Event.QUESTION_THIRD;
-
 import com.community.tools.model.User;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
-
 import com.github.seratch.jslack.app_backend.events.EventsDispatcher;
 import com.github.seratch.jslack.app_backend.events.handler.MessageHandler;
 import com.github.seratch.jslack.app_backend.events.handler.TeamJoinHandler;
 import com.github.seratch.jslack.app_backend.events.payload.MessagePayload;
 import com.github.seratch.jslack.app_backend.events.payload.TeamJoinPayload;
 import com.github.seratch.jslack.app_backend.events.servlet.SlackEventsApiServlet;
-
-import java.io.IOException;
-import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +18,15 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+import static com.community.tools.util.statemachie.Event.CHANNELS_INFORMATION;
+import static com.community.tools.util.statemachie.Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
+import static com.community.tools.util.statemachie.Event.QUESTION_SECOND;
+import static com.community.tools.util.statemachie.Event.QUESTION_THIRD;
 
 @RequiredArgsConstructor
 @Component

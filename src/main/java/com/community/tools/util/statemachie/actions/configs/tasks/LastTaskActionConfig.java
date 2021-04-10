@@ -2,18 +2,17 @@ package com.community.tools.util.statemachie.actions.configs.tasks;
 
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.actions.configs.ActionConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.configurers.ExternalTransitionConfigurer;
 import org.springframework.statemachine.guard.Guard;
-import org.springframework.stereotype.Component;
 
 import static com.community.tools.util.statemachie.Event.LAST_TASK;
 import static com.community.tools.util.statemachie.State.CHECK_FOR_NEW_TASK;
 import static com.community.tools.util.statemachie.State.CONGRATS_LAST_TASK;
 
-@Component
-public class LastTaskActionConfig {
+public class LastTaskActionConfig implements ActionConfig {
 
   private Action<State, Event> lastTaskAction;
   private Action<State, Event> errorAction;
@@ -27,8 +26,9 @@ public class LastTaskActionConfig {
     this.lastTaskGuard = lastTaskGuard;
   }
 
-  public void configure(ExternalTransitionConfigurer<State, Event> transitions) throws Exception {
-    transitions
+  @Override
+  public ExternalTransitionConfigurer<State, Event> configure(ExternalTransitionConfigurer<State, Event> transitions) throws Exception {
+   return transitions
         .and()
         .withExternal()
         .source(CHECK_FOR_NEW_TASK)

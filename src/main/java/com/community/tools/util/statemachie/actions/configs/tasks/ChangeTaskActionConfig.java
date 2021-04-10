@@ -2,17 +2,16 @@ package com.community.tools.util.statemachie.actions.configs.tasks;
 
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.actions.configs.ActionConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.configurers.ExternalTransitionConfigurer;
-import org.springframework.stereotype.Component;
 
 import static com.community.tools.util.statemachie.Event.CHANGE_TASK;
 import static com.community.tools.util.statemachie.State.CHECK_FOR_NEW_TASK;
 import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
 
-@Component
-public class ChangeTaskActionConfig {
+public class ChangeTaskActionConfig implements ActionConfig {
 
   private Action<State, Event> changeTaskAction;
   private Action<State, Event> errorAction;
@@ -24,6 +23,7 @@ public class ChangeTaskActionConfig {
     this.errorAction = errorAction;
   }
 
+  @Override
   public ExternalTransitionConfigurer<State, Event> configure(ExternalTransitionConfigurer<State, Event> transition) throws Exception {
     return transition
         .and()

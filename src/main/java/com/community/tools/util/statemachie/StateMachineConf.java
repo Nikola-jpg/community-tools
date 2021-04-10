@@ -1,5 +1,6 @@
 package com.community.tools.util.statemachie;
 
+import com.community.tools.util.statemachie.actions.configs.ActionConfig;
 import com.community.tools.util.statemachie.actions.guard.HideGuard;
 import com.community.tools.util.statemachie.actions.information.ChannelInformationAction;
 import com.community.tools.util.statemachie.actions.questions.FirstQuestionAction;
@@ -70,29 +71,26 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
   @Override
   public void configure(final StateMachineTransitionConfigurer<State, Event> transitions)
       throws Exception {
+
     ExternalTransitionConfigurer<State, Event> firstQuestion = firstQuestionActionConfig()
         .configure(transitions);
-    ExternalTransitionConfigurer<State, Event> secondQuestion = secondQuestionActionConfig()
-        .configure(firstQuestion);
-    ExternalTransitionConfigurer<State, Event> thirdQuestion = thirdQuestionActionConfig()
-        .configure(secondQuestion);
-    ExternalTransitionConfigurer<State, Event> channelInformation = channelInformationActionConf()
-        .configure(thirdQuestion);
-    ExternalTransitionConfigurer<State, Event> agreeLicense = agreeLicenseActionConfig()
-        .configure(channelInformation);
-    ExternalTransitionConfigurer<State, Event> verificationLogin = verificationLoginActionConfig()
-        .configure(agreeLicense);
-    ExternalTransitionConfigurer<State, Event> didntPassVerificationGitLogin = didNotPassVerificationGitLoginConf()
-        .configure(verificationLogin);
-    ExternalTransitionConfigurer<State, Event> addGitName = addGitNameActionConfig()
-        .configure(didntPassVerificationGitLogin);
-    ExternalTransitionConfigurer<State, Event> getTheFirstTask = getTheFirstTaskActionConfig()
-        .configure(addGitName);
-    ExternalTransitionConfigurer<State, Event> checkForNewTask = checkForNewTaskActionConfig()
-        .configure(getTheFirstTask);
-    ExternalTransitionConfigurer<State, Event> changeTaskAction = changeTaskActionConfig()
-        .configure(checkForNewTask);
-    lastTaskActionConfig().configure(changeTaskAction);
+    ActionConfig[] actionConfigs = getConfigBeansArray();
+    transitionChains(firstQuestion, actionConfigs, 0);
+  }
+
+  private void transitionChains(ExternalTransitionConfigurer<State, Event> question, ActionConfig[] beans, int index) throws Exception {
+    int i = index;
+    ExternalTransitionConfigurer<State, Event> trans = beans[i].configure(question);
+    transitionChains(trans, beans, i + 1);
+  }
+
+  private ActionConfig[] getConfigBeansArray(){
+    return new ActionConfig[]{
+        secondQuestionActionConfig(), thirdQuestionActionConfig(),channelInformationActionConf(),
+        agreeLicenseActionConfig(),verificationLoginActionConfig(),didNotPassVerificationGitLoginConf(),
+        addGitNameActionConfig(),getTheFirstTaskActionConfig(),checkForNewTaskActionConfig(),
+        changeTaskActionConfig(),lastTaskActionConfig()
+    };
   }
 
   @Bean

@@ -6,13 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 import org.springframework.statemachine.config.configurers.ExternalTransitionConfigurer;
-import org.springframework.stereotype.Component;
 
 import static com.community.tools.util.statemachie.Event.QUESTION_FIRST;
 import static com.community.tools.util.statemachie.State.FIRST_QUESTION;
 import static com.community.tools.util.statemachie.State.NEW_USER;
 
-@Component
 public class FirstQuestionActionConfig {
 
   private Action<State, Event> firstQuestionAction;
