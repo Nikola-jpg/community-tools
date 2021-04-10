@@ -81,7 +81,9 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
   private void transitionChains(ExternalTransitionConfigurer<State, Event> question, ActionConfig[] beans, int index) throws Exception {
     int i = index;
     ExternalTransitionConfigurer<State, Event> trans = beans[i].configure(question);
-    transitionChains(trans, beans, i + 1);
+    if( i != 10) {
+      transitionChains(trans, beans, i + 1);
+    }
   }
 
   private ActionConfig[] getConfigBeansArray(){
