@@ -1,15 +1,15 @@
 package com.community.tools.util.statemachie.actions.configs.verifications;
 
+import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
+import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
+import static com.community.tools.util.statemachie.State.INFORMATION_CHANNELS;
+
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.configs.ActionConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.configurers.ExternalTransitionConfigurer;
-
-import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
-import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
-import static com.community.tools.util.statemachie.State.INFORMATION_CHANNELS;
 
 public class AgreeLicenseActionConfig implements ActionConfig {
 
@@ -24,7 +24,8 @@ public class AgreeLicenseActionConfig implements ActionConfig {
   }
 
   @Override
-  public ExternalTransitionConfigurer<State, Event> configure(ExternalTransitionConfigurer<State, Event> transition) throws Exception {
+  public ExternalTransitionConfigurer<State, Event> configure(
+      ExternalTransitionConfigurer<State, Event> transition) throws Exception {
     return transition
         .and()
         .withExternal()

@@ -1,21 +1,8 @@
 package com.community.tools.util.statemachie;
 
+import static com.community.tools.util.statemachie.State.NEW_USER;
+
 import com.community.tools.util.statemachie.actions.configs.ActionConfig;
-import com.community.tools.util.statemachie.actions.guard.HideGuard;
-import com.community.tools.util.statemachie.actions.information.ChannelInformationAction;
-import com.community.tools.util.statemachie.actions.questions.FirstQuestionAction;
-import com.community.tools.util.statemachie.actions.questions.SecondQuestionAction;
-import com.community.tools.util.statemachie.actions.questions.ThirdQuestionAction;
-import com.community.tools.util.statemachie.actions.tasks.ChangeTaskAction;
-import com.community.tools.util.statemachie.actions.tasks.CheckForNewTaskAction;
-import com.community.tools.util.statemachie.actions.tasks.GetTheFirstTaskAction;
-import com.community.tools.util.statemachie.actions.tasks.LastTaskAction;
-import com.community.tools.util.statemachie.actions.guard.LastTaskGuard;
-import com.community.tools.util.statemachie.actions.verifications.AddGitNameAction;
-import com.community.tools.util.statemachie.actions.verifications.AgreeLicenseAction;
-import com.community.tools.util.statemachie.actions.verifications.DidNotPassVerificationGitLogin;
-import com.community.tools.util.statemachie.actions.error.ErrorAction;
-import com.community.tools.util.statemachie.actions.verifications.VerificationLoginAction;
 import com.community.tools.util.statemachie.actions.configs.information.ChannelInformationActionConf;
 import com.community.tools.util.statemachie.actions.configs.questions.FirstQuestionActionConfig;
 import com.community.tools.util.statemachie.actions.configs.questions.SecondQuestionActionConfig;
@@ -28,6 +15,24 @@ import com.community.tools.util.statemachie.actions.configs.verifications.AddGit
 import com.community.tools.util.statemachie.actions.configs.verifications.AgreeLicenseActionConfig;
 import com.community.tools.util.statemachie.actions.configs.verifications.DidNotPassVerificationGitLoginConf;
 import com.community.tools.util.statemachie.actions.configs.verifications.VerificationLoginActionConfig;
+import com.community.tools.util.statemachie.actions.error.ErrorAction;
+import com.community.tools.util.statemachie.actions.guard.HideGuard;
+import com.community.tools.util.statemachie.actions.guard.LastTaskGuard;
+import com.community.tools.util.statemachie.actions.information.ChannelInformationAction;
+import com.community.tools.util.statemachie.actions.questions.FirstQuestionAction;
+import com.community.tools.util.statemachie.actions.questions.SecondQuestionAction;
+import com.community.tools.util.statemachie.actions.questions.ThirdQuestionAction;
+import com.community.tools.util.statemachie.actions.tasks.ChangeTaskAction;
+import com.community.tools.util.statemachie.actions.tasks.CheckForNewTaskAction;
+import com.community.tools.util.statemachie.actions.tasks.GetTheFirstTaskAction;
+import com.community.tools.util.statemachie.actions.tasks.LastTaskAction;
+import com.community.tools.util.statemachie.actions.verifications.AddGitNameAction;
+import com.community.tools.util.statemachie.actions.verifications.AgreeLicenseAction;
+import com.community.tools.util.statemachie.actions.verifications.DidNotPassVerificationGitLogin;
+import com.community.tools.util.statemachie.actions.verifications.VerificationLoginAction;
+
+import java.util.EnumSet;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,9 +46,6 @@ import org.springframework.statemachine.config.configurers.ExternalTransitionCon
 import org.springframework.statemachine.guard.Guard;
 import org.springframework.statemachine.persist.DefaultStateMachinePersister;
 
-import java.util.EnumSet;
-
-import static com.community.tools.util.statemachie.State.NEW_USER;
 
 @Configuration
 @EnableStateMachineFactory
@@ -78,20 +80,22 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
     transitionChains(firstQuestion, actionConfigs, 0);
   }
 
-  private void transitionChains(ExternalTransitionConfigurer<State, Event> question, ActionConfig[] beans, int index) throws Exception {
+  private void transitionChains(ExternalTransitionConfigurer<State, Event> question,
+                                ActionConfig[] beans, int index) throws Exception {
     int i = index;
     ExternalTransitionConfigurer<State, Event> trans = beans[i].configure(question);
-    if( i != 10) {
+    if (i != 10) {
       transitionChains(trans, beans, i + 1);
     }
   }
 
-  private ActionConfig[] getConfigBeansArray(){
+  private ActionConfig[] getConfigBeansArray() {
     return new ActionConfig[]{
-        secondQuestionActionConfig(), thirdQuestionActionConfig(),channelInformationActionConf(),
-        agreeLicenseActionConfig(),verificationLoginActionConfig(),didNotPassVerificationGitLoginConf(),
-        addGitNameActionConfig(),getTheFirstTaskActionConfig(),checkForNewTaskActionConfig(),
-        changeTaskActionConfig(),lastTaskActionConfig()
+        secondQuestionActionConfig(), thirdQuestionActionConfig(), channelInformationActionConf(),
+        agreeLicenseActionConfig(), verificationLoginActionConfig(),
+        didNotPassVerificationGitLoginConf(), addGitNameActionConfig(),
+        getTheFirstTaskActionConfig(), checkForNewTaskActionConfig(),
+        changeTaskActionConfig(), lastTaskActionConfig()
     };
   }
 

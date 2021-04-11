@@ -1,15 +1,15 @@
 package com.community.tools.util.statemachie.actions.configs.tasks;
 
+import static com.community.tools.util.statemachie.Event.GET_THE_NEW_TASK;
+import static com.community.tools.util.statemachie.State.CHECK_FOR_NEW_TASK;
+import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
+
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.configs.ActionConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.configurers.ExternalTransitionConfigurer;
-
-import static com.community.tools.util.statemachie.Event.GET_THE_NEW_TASK;
-import static com.community.tools.util.statemachie.State.CHECK_FOR_NEW_TASK;
-import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
 
 public class CheckForNewTaskActionConfig implements ActionConfig {
 
@@ -24,7 +24,8 @@ public class CheckForNewTaskActionConfig implements ActionConfig {
   }
 
   @Override
-  public ExternalTransitionConfigurer<State, Event> configure(ExternalTransitionConfigurer<State, Event> transition) throws Exception {
+  public ExternalTransitionConfigurer<State, Event> configure(
+      ExternalTransitionConfigurer<State, Event> transition) throws Exception {
     return transition
         .and()
         .withExternal()
