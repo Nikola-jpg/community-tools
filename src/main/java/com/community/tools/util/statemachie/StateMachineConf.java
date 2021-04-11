@@ -51,6 +51,9 @@ import org.springframework.statemachine.persist.DefaultStateMachinePersister;
 @EnableStateMachineFactory
 public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, Event> {
 
+  private static final int BEANS_QUANTITY = 10;
+  private static final int FIRST_INDEX = 0;
+
   @Autowired
   private StateMachinePersister persister;
 
@@ -77,14 +80,14 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
     ExternalTransitionConfigurer<State, Event> firstQuestion = firstQuestionActionConfig()
         .configure(transitions);
     ActionConfig[] actionConfigs = getConfigBeansArray();
-    transitionChains(firstQuestion, actionConfigs, 0);
+    transitionChains(firstQuestion, actionConfigs, FIRST_INDEX);
   }
 
   private void transitionChains(ExternalTransitionConfigurer<State, Event> question,
                                 ActionConfig[] beans, int index) throws Exception {
     int i = index;
     ExternalTransitionConfigurer<State, Event> trans = beans[i].configure(question);
-    if (i != 10) {
+    if (i != BEANS_QUANTITY) {
       transitionChains(trans, beans, i + 1);
     }
   }
