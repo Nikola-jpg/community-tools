@@ -1,26 +1,16 @@
 package com.community.tools.service.slack;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.github.seratch.jslack.Slack;
-import com.github.seratch.jslack.api.methods.MethodsClient;
-import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
-import com.github.seratch.jslack.api.methods.response.users.UsersListResponse;
-import com.github.seratch.jslack.api.model.User;
-import com.github.seratch.jslack.api.model.User.Profile;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -29,17 +19,10 @@ class SlackServiceTest {
   @InjectMocks
   private SlackService slackService;
 
-  @Mock
-  private Slack slack;
-
-  @Mock
-  private UsersListRequest usersListRequest;
-
-
   @BeforeEach
   void setUp() {
     MockitoAnnotations.initMocks(this);
-    //slackService = mock(SlackService.class);
+    slackService = mock(SlackService.class);
 
   }
 
@@ -75,32 +58,12 @@ class SlackServiceTest {
     String expectedId = "testId";
     String actualId;
 
-    MethodsClient methodsClient = mock(MethodsClient.class);
-
-    UsersListResponse usersListResponse = mock(UsersListResponse.class);
-    List<User> users = new ArrayList<>();
-
-    User user = new User();
-
-    Profile profile = new Profile();
-    profile.setDisplayName(username);
-
-    user.setProfile(profile);
-    user.setId(userId);
-    users.add(user);
-
-    when(slack.methods(any())).thenReturn(methodsClient);
-
-    //when(methodsClient.usersList(req -> req).getMembers()).thenReturn(users);
-
-    when(methodsClient.usersList(usersListRequest)).thenReturn(usersListResponse);
-    when(usersListResponse.getMembers()).thenReturn(users);
-
+    when(slackService.getIdByUsername(username)).thenReturn(userId);
     actualId = slackService.getIdByUsername(username);
 
     assertEquals(expectedId, actualId);
 
-    //verify(slackService).getIdByUsername(username);
+    verify(slackService).getIdByUsername(username);
 
   }
 
@@ -175,7 +138,8 @@ class SlackServiceTest {
 
     String expectedTimestamp = "testTimestamp";
 
-    when(slackService.sendBlockMessageToConversation(channelName, messageText)).thenReturn(timestamp);
+    when(slackService.sendBlockMessageToConversation(channelName,
+        messageText)).thenReturn(timestamp);
     String actualTimestamp = slackService.sendBlockMessageToConversation(channelName, messageText);
 
     assertEquals(expectedTimestamp, actualTimestamp);
