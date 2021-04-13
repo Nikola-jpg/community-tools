@@ -191,7 +191,7 @@ public class StateMachineService {
   }
 
   /**
-   * Method to start the action
+   * Method to start the action.
    *
    * @param payload - payload that stores data to execute Actions
    * @param event   - event for StateMachine

@@ -12,7 +12,7 @@ public class NewUserPayload extends Payload {
   private String mentor;
 
   /**
-   * Constructor class
+   * Constructor class.
    *
    * @param id           - usersId
    * @param messageEvent - variable for persistent
