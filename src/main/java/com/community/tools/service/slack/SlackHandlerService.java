@@ -173,69 +173,6 @@ public class SlackHandlerService {
                 .doAction(payload, event);
           }
 
-//          switch (machine.getState().getId()) {
-//            case NEW_USER:
-//              if (teamJoinPayload.getEvent().getText().equals("ready")) {
-//                machine.sendEvent(Event.QUESTION_FIRST);
-//                stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-//              } else {
-//                slackService.sendPrivateMessage(
-//                    slackService.getUserById(teamJoinPayload.getEvent().getUser()),
-//                    notThatMessage);
-//              }
-//              break;
-//            case FIRST_QUESTION:
-//              stateEntity = stateMachineRepository.findByUserID(userId).get();
-//              stateEntity.setFirstAnswerAboutRules(teamJoinPayload.getEvent().getText());
-//              stateMachineRepository.save(stateEntity);
-//              machine.sendEvent(Event.QUESTION_SECOND);
-//              stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-//              break;
-//            case SECOND_QUESTION:
-//              stateEntity = stateMachineRepository.findByUserID(userId).get();
-//              stateEntity.setSecondAnswerAboutRules(teamJoinPayload.getEvent().getText());
-//              stateMachineRepository.save(stateEntity);
-//              machine.sendEvent(Event.QUESTION_THIRD);
-//              stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-//              break;
-//            case THIRD_QUESTION:
-//              stateEntity = stateMachineRepository.findByUserID(userId).get();
-//              stateEntity.setThirdAnswerAboutRules(teamJoinPayload.getEvent().getText());
-//              stateMachineRepository.save(stateEntity);
-//              machine.sendEvent(Event.CHANNELS_INFORMATION);
-//              machine.sendEvent(Event.AGREE_LICENSE);
-//              stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-//              break;
-//            case AGREED_LICENSE:
-//              machine.getExtendedState().getVariables()
-//                  .put("gitNick", teamJoinPayload.getEvent().getText());
-//              machine.sendEvent(Event.LOGIN_CONFIRMATION);
-//              stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-//              break;
-//            case CHECK_LOGIN:
-//              if (teamJoinPayload.getEvent().getText().equals("yes")) {
-//                machine.sendEvent(Event.ADD_GIT_NAME);
-//                machine.sendEvent(Event.GET_THE_FIRST_TASK);
-//                stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-//              } else if (teamJoinPayload.getEvent().getText().equals("no")) {
-//                machine.sendEvent(Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN);
-//                stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-//              } else {
-//                slackService.sendPrivateMessage(
-//                    slackService.getUserById(teamJoinPayload.getEvent().getUser()),
-//                    notThatMessage);
-//              }
-//              break;
-//            case ADDED_GIT:
-//              machine.sendEvent(Event.GET_THE_FIRST_TASK);
-//              stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
-//              break;
-//            default:
-//              slackService.sendPrivateMessage(
-//                  slackService.getUserById(teamJoinPayload.getEvent().getUser()),
-//                  defaultMessage);
-//              break;
-//          }
         } catch (Exception e) {
           throw new RuntimeException("Impossible to answer request with id="
               + teamJoinPayload.getEvent().getUser(), e);
