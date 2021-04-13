@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AgreedLicensePayload extends Payload{
+public class AgreedLicensePayload extends Payload {
 
   private String gitNick;
 

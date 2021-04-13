@@ -162,6 +162,9 @@ public class SlackHandlerService {
               payload = new AddedGitPayload(Integer.parseInt(userId), messageEvent);
               event = Event.GET_THE_FIRST_TASK;
               break;
+            default:
+              event = null;
+              payload = null;
           }
 
           if (event == null) {
