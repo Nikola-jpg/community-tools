@@ -262,6 +262,7 @@ public class SlackService implements SendMessageService {
    *
    * @param message Text of message
    */
+  @Override
   public void sendAnnouncement(String message) {
     try {
       Payload payload = Payload.builder().text(message).build();

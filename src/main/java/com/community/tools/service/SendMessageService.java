@@ -3,9 +3,7 @@ package com.community.tools.service;
 import com.github.seratch.jslack.api.model.User;
 import java.util.Set;
 
-/**
- * @author Hryhorii Perets
- */
+
 public interface SendMessageService {
 
   String sendPrivateMessage(String username, String messageText);
@@ -26,5 +24,7 @@ public interface SendMessageService {
   String getIdByUser(String id);
 
   Set<User> getAllUsers();
+
+  void sendAnnouncement(String message);
 
 }
