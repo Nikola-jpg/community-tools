@@ -10,7 +10,9 @@ import com.community.tools.util.statemachie.actions.configs.ActionConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.configurers.ExternalTransitionConfigurer;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ChannelInformationActionConf implements ActionConfig {
 
   private Action<State, Event> informationChannelsAction;

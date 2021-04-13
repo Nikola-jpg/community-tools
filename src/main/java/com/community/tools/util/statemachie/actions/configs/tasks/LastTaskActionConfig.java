@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.configurers.ExternalTransitionConfigurer;
 import org.springframework.statemachine.guard.Guard;
+import org.springframework.stereotype.Component;
 
+@Component
 public class LastTaskActionConfig implements ActionConfig {
 
   private Action<State, Event> lastTaskAction;

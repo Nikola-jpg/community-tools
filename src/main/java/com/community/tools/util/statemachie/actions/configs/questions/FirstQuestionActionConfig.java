@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 import org.springframework.statemachine.config.configurers.ExternalTransitionConfigurer;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FirstQuestionActionConfig {
 
   private Action<State, Event> firstQuestionAction;

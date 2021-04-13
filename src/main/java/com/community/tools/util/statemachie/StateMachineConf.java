@@ -46,7 +46,6 @@ import org.springframework.statemachine.config.configurers.ExternalTransitionCon
 import org.springframework.statemachine.guard.Guard;
 import org.springframework.statemachine.persist.DefaultStateMachinePersister;
 
-
 @Configuration
 @EnableStateMachineFactory
 public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, Event> {
@@ -56,6 +55,42 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
 
   @Autowired
   private StateMachinePersister persister;
+
+  @Autowired
+  private FirstQuestionActionConfig firstQuestionActionConfig;
+
+  @Autowired
+  private SecondQuestionActionConfig secondQuestionActionConfig;
+
+  @Autowired
+  private ThirdQuestionActionConfig thirdQuestionActionConfig;
+
+  @Autowired
+  private ChangeTaskActionConfig changeTaskActionConfig;
+
+  @Autowired
+  private CheckForNewTaskActionConfig checkForNewTaskActionConfig;
+
+  @Autowired
+  private GetTheFirstTaskActionConfig getTheFirstTaskActionConfig;
+
+  @Autowired
+  private LastTaskActionConfig lastTaskActionConfig;
+
+  @Autowired
+  private AddGitNameActionConfig addGitNameActionConfig;
+
+  @Autowired
+  private AgreeLicenseActionConfig agreeLicenseActionConfig;
+
+  @Autowired
+  private DidNotPassVerificationGitLoginConf didNotPassVerificationGitLoginConf;
+
+  @Autowired
+  private VerificationLoginActionConfig verificationLoginActionConfig;
+
+  @Autowired
+  private ChannelInformationActionConf channelInformationActionConf;
 
   @Override
   public void configure(final StateMachineStateConfigurer<State, Event> states)
@@ -76,8 +111,7 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
   @Override
   public void configure(final StateMachineTransitionConfigurer<State, Event> transitions)
       throws Exception {
-
-    ExternalTransitionConfigurer<State, Event> firstQuestion = firstQuestionActionConfig()
+    ExternalTransitionConfigurer<State, Event> firstQuestion = firstQuestionActionConfig
         .configure(transitions);
     ActionConfig[] actionConfigs = getConfigBeansArray();
     transitionChains(firstQuestion, actionConfigs, FIRST_INDEX);
@@ -85,81 +119,20 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
 
   private void transitionChains(ExternalTransitionConfigurer<State, Event> question,
                                 ActionConfig[] beans, int index) throws Exception {
-    int i = index;
-    ExternalTransitionConfigurer<State, Event> trans = beans[i].configure(question);
-    if (i != BEANS_QUANTITY) {
-      transitionChains(trans, beans, i + 1);
+    ExternalTransitionConfigurer<State, Event> trans = beans[index].configure(question);
+    if (index != BEANS_QUANTITY) {
+      transitionChains(trans, beans, index + 1);
     }
   }
 
   private ActionConfig[] getConfigBeansArray() {
     return new ActionConfig[]{
-        secondQuestionActionConfig(), thirdQuestionActionConfig(), channelInformationActionConf(),
-        agreeLicenseActionConfig(), verificationLoginActionConfig(),
-        didNotPassVerificationGitLoginConf(), addGitNameActionConfig(),
-        getTheFirstTaskActionConfig(), checkForNewTaskActionConfig(),
-        changeTaskActionConfig(), lastTaskActionConfig()
+        secondQuestionActionConfig, thirdQuestionActionConfig, channelInformationActionConf,
+        agreeLicenseActionConfig, verificationLoginActionConfig,
+        didNotPassVerificationGitLoginConf, addGitNameActionConfig,
+        getTheFirstTaskActionConfig, checkForNewTaskActionConfig,
+        changeTaskActionConfig, lastTaskActionConfig
     };
-  }
-
-  @Bean
-  public FirstQuestionActionConfig firstQuestionActionConfig() {
-    return new FirstQuestionActionConfig(firstQuestionAction(), errorAction());
-  }
-
-  @Bean
-  public SecondQuestionActionConfig secondQuestionActionConfig() {
-    return new SecondQuestionActionConfig(secondQuestionAction(), errorAction());
-  }
-
-  @Bean
-  public ThirdQuestionActionConfig thirdQuestionActionConfig() {
-    return new ThirdQuestionActionConfig(thirdQuestionAction(), errorAction());
-  }
-
-  @Bean
-  public AgreeLicenseActionConfig agreeLicenseActionConfig() {
-    return new AgreeLicenseActionConfig(agreeLicenseAction(), errorAction());
-  }
-
-  @Bean
-  public VerificationLoginActionConfig verificationLoginActionConfig() {
-    return new VerificationLoginActionConfig(verificationLoginAction(), errorAction());
-  }
-
-  @Bean
-  public ChannelInformationActionConf channelInformationActionConf() {
-    return new ChannelInformationActionConf(informationChannelsAction(), errorAction());
-  }
-
-  @Bean
-  public DidNotPassVerificationGitLoginConf didNotPassVerificationGitLoginConf() {
-    return new DidNotPassVerificationGitLoginConf(didntPassVerificationGitLogin(), errorAction());
-  }
-
-  @Bean
-  public AddGitNameActionConfig addGitNameActionConfig() {
-    return new AddGitNameActionConfig(addGitNameAction(), errorAction());
-  }
-
-  @Bean
-  public GetTheFirstTaskActionConfig getTheFirstTaskActionConfig() {
-    return new GetTheFirstTaskActionConfig(getTheFirstTaskAction(), errorAction());
-  }
-
-  @Bean
-  public CheckForNewTaskActionConfig checkForNewTaskActionConfig() {
-    return new CheckForNewTaskActionConfig(checkForNewTaskAction(), errorAction());
-  }
-
-  @Bean
-  public ChangeTaskActionConfig changeTaskActionConfig() {
-    return new ChangeTaskActionConfig(changeTaskAction(), errorAction());
-  }
-
-  @Bean
-  public LastTaskActionConfig lastTaskActionConfig() {
-    return new LastTaskActionConfig(lastTaskAction(), errorAction(), lastTaskGuard());
   }
 
   @Bean
