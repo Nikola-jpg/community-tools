@@ -9,6 +9,8 @@ import static com.community.tools.util.statemachie.State.NEW_USER;
 
 import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubService;
+import com.community.tools.service.payload.Payload;
+import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
@@ -180,5 +182,11 @@ public class StateMachineService {
     machine.getExtendedState().getVariables().put("mentor", "NO_MENTOR");
     machine.start();
     persister.persist(machine, id);
+  }
+
+  public void doAction(Payload payload, Event event) {
+    StateMachine<State, Event> machine = factory.getStateMachine();
+    machine.sendEvent(event);
+    persistMachine(machine, payload.getMessageEvent().getUser());
   }
 }
