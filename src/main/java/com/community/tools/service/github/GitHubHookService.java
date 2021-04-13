@@ -63,13 +63,9 @@ public class GitHubHookService {
           throw new RuntimeException(e);
         }
       } else {
-        try {
-          service.sendMessageToConversation(channel,
+        service.sendMessageToConversation(channel,
                   "User " + user
                           + " created a pull request \n url: " + url);
-        } catch (IOException | SlackApiException e) {
-          throw new RuntimeException(e);
-        }
       }
     }
   }

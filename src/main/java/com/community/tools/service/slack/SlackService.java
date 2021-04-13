@@ -1,5 +1,6 @@
 package com.community.tools.service.slack;
 
+import com.community.tools.service.SendMessageService;
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class SlackService {
+public class SlackService implements SendMessageService {
 
   @Value("${slack.token}")
   private String token;
@@ -36,6 +37,7 @@ public class SlackService {
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
+  @Override
   public String sendPrivateMessage(String username, String messageText) {
     Slack slack = Slack.getInstance();
     try {
@@ -62,9 +64,9 @@ public class SlackService {
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
+  @Override
   public String sendBlocksMessage(String username, String messageText) {
     Slack slack = Slack.getInstance();
-
     try {
       User user = slack.methods(token).usersList(req -> req).getMembers().stream()
               .filter(u -> u.getProfile().getDisplayName().equals(username))
@@ -87,20 +89,23 @@ public class SlackService {
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
-  public String sendAttachmentsMessage(String username, String messageText)
-          throws IOException, SlackApiException {
+  @Override
+  public String sendAttachmentsMessage(String username, String messageText) {
     Slack slack = Slack.getInstance();
+    try {
+      User user = slack.methods(token).usersList(req -> req).getMembers().stream()
+          .filter(u -> u.getProfile().getDisplayName().equals(username))
+          .findFirst().get();
 
-    User user = slack.methods(token).usersList(req -> req).getMembers().stream()
-            .filter(u -> u.getProfile().getDisplayName().equals(username))
-            .findFirst().get();
+      ChatPostMessageResponse postResponse =
+          slack.methods(token).chatPostMessage(
+              req -> req.channel(user.getId()).asUser(true)
+                  .attachmentsAsString(messageText));
+      return postResponse.getTs();
+    } catch (IOException | SlackApiException exception) {
+      throw new RuntimeException(exception);
+    }
 
-    ChatPostMessageResponse postResponse =
-            slack.methods(token).chatPostMessage(
-                req -> req.channel(user.getId()).asUser(true)
-                            .attachmentsAsString(messageText));
-
-    return postResponse.getTs();
   }
 
   /**
@@ -112,20 +117,24 @@ public class SlackService {
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
-  public String sendMessageToConversation(String channelName, String messageText)
-          throws IOException, SlackApiException {
-
+  @Override
+  public String sendMessageToConversation(String channelName, String messageText) {
     Slack slack = Slack.getInstance();
-    Conversation channel = slack.methods(token)
-            .conversationsList(req -> req)
-            .getChannels()
-            .stream()
-            .filter(u -> u.getName().equals(channelName))
-            .findFirst().get();
-    ChatPostMessageResponse postResponse =
-            slack.methods(token).chatPostMessage(
-                req -> req.channel(channel.getId()).asUser(true).text(messageText));
-    return postResponse.getTs();
+    try {
+      Conversation channel = slack.methods(token)
+          .conversationsList(req -> req)
+          .getChannels()
+          .stream()
+          .filter(u -> u.getName().equals(channelName))
+          .findFirst().get();
+      ChatPostMessageResponse postResponse =
+          slack.methods(token).chatPostMessage(
+              req -> req.channel(channel.getId()).asUser(true).text(messageText));
+      return postResponse.getTs();
+    } catch (IOException | SlackApiException exception) {
+      throw new RuntimeException(exception);
+    }
+
   }
 
   /**
@@ -137,20 +146,24 @@ public class SlackService {
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
-  public String sendBlockMessageToConversation(String channelName, String messageText)
-          throws IOException, SlackApiException {
-
+  @Override
+  public String sendBlockMessageToConversation(String channelName, String messageText) {
     Slack slack = Slack.getInstance();
-    Conversation channel = slack.methods(token)
-            .conversationsList(req -> req)
-            .getChannels()
-            .stream()
-            .filter(u -> u.getName().equals(channelName))
-            .findFirst().get();
-    ChatPostMessageResponse postResponse =
-            slack.methods(token).chatPostMessage(
-                req -> req.channel(channel.getId()).asUser(true).blocksAsString(messageText));
-    return postResponse.getTs();
+    try {
+      Conversation channel = slack.methods(token)
+          .conversationsList(req -> req)
+          .getChannels()
+          .stream()
+          .filter(u -> u.getName().equals(channelName))
+          .findFirst().get();
+      ChatPostMessageResponse postResponse =
+          slack.methods(token).chatPostMessage(
+              req -> req.channel(channel.getId()).asUser(true).blocksAsString(messageText));
+      return postResponse.getTs();
+    } catch (IOException | SlackApiException exception) {
+      throw new RuntimeException(exception);
+    }
+
   }
 
   /**
@@ -163,22 +176,26 @@ public class SlackService {
    * @throws SlackApiException SlackApiException
    */
   @Deprecated
-  public String sendMessageToChat(String channelName, String messageText)
-          throws IOException, SlackApiException {
+  @Override
+  public String sendMessageToChat(String channelName, String messageText) {
     Slack slack = Slack.getInstance();
+    try {
+      Channel channel = slack.methods(token)
+          .channelsList(req -> req)
+          .getChannels()
+          .stream()
+          .filter(u -> u.getName().equals(channelName))
+          .findFirst().get();
 
-    Channel channel = slack.methods(token)
-            .channelsList(req -> req)
-            .getChannels()
-            .stream()
-            .filter(u -> u.getName().equals(channelName))
-            .findFirst().get();
+      ChatPostMessageResponse postResponse =
+          slack.methods(token).chatPostMessage(
+              req -> req.channel(channel.getId()).asUser(true).text(messageText));
 
-    ChatPostMessageResponse postResponse =
-            slack.methods(token).chatPostMessage(
-                req -> req.channel(channel.getId()).asUser(true).text(messageText));
+      return postResponse.getTs();
+    } catch (IOException | SlackApiException exception) {
+      throw new RuntimeException(exception);
+    }
 
-    return postResponse.getTs();
   }
 
   /**
@@ -187,6 +204,7 @@ public class SlackService {
    * @param id Slack`s id
    * @return realName of User
    */
+  @Override
   public String getUserById(String id) {
     Slack slack = Slack.getInstance();
     try {
@@ -205,6 +223,7 @@ public class SlackService {
    * @param id Slack`s id
    * @return Slack`s id
    */
+  @Override
   public String getIdByUser(String id) {
     Slack slack = Slack.getInstance();
     try {
@@ -222,6 +241,7 @@ public class SlackService {
    *
    * @return Set of users.
    */
+  @Override
   public Set<User> getAllUsers() {
     try {
       Slack slack = Slack.getInstance();
