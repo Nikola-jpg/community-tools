@@ -3,6 +3,7 @@ package com.community.tools.controller;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.model.EventData;
+import com.community.tools.service.SendMessageService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -27,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 public class GitHubController {
-  private final SlackService slackService;
+  private final SendMessageService sendMessageService;
   private final GitHubService gitHubService;
 
   /**

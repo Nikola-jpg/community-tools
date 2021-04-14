@@ -2,9 +2,9 @@ package com.community.tools.controller;
 
 import static org.springframework.http.ResponseEntity.ok;
 
+import com.community.tools.service.SendMessageService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.GitHubService;
-import com.community.tools.service.slack.SlackService;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.model.User.Profile;
 import com.github.seratch.jslack.app_backend.interactive_messages.payload.BlockActionPayload;
@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GitSlackUsersController {
 
   private final StateMachineService stateMachineService;
-  private final SlackService slackService;
+  private final SendMessageService sendMessageService;
   private final GitHubService gitService;
 
   /**
@@ -59,7 +59,7 @@ public class GitSlackUsersController {
   @ApiOperation(value = "Returns list of slack users that work with the bot")
   @GetMapping(value = "/slack", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getSlackAllUsers() {
-    Set<User> allSlackUsers = slackService.getAllUsers();
+    Set<User> allSlackUsers = sendMessageService.getAllUsers();
 
     List<String> listSlackUsersName = allSlackUsers.stream()
         .map(User::getProfile)
