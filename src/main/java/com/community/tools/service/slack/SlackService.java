@@ -17,6 +17,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 @Service
 @RequiredArgsConstructor
@@ -199,6 +200,18 @@ public class SlackService implements SendMessageService {
   }
 
   /**
+   * Get Conversation by Slack`s channelName.
+   *
+   * @param channelName Slack`s channelName
+   * @return id of Conversation
+   */
+  @Override
+  public String getIdByChannelName(String channelName) {
+    throw new NotImplementedException();
+  }
+
+
+  /**
    * Get user by Slack`s id.
    *
    * @param id Slack`s id
@@ -235,6 +248,18 @@ public class SlackService implements SendMessageService {
       throw new RuntimeException(e);
     }
   }
+
+  /**
+   * Get user by Slack`s username.
+   *
+   * @param username Slack`s id
+   * @return Slack`s id
+   */
+  @Override
+  public String getIdByUsername(String username) {
+    throw new NotImplementedException();
+  }
+
 
   /**
    * Get all Slack`s user.

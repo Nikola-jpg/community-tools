@@ -19,9 +19,13 @@ public interface SendMessageService {
   String sendMessageToChat(String channelName, String messageText);
 
 
+  String getIdByChannelName(String channelName);
+
   String getUserById(String id);
 
   String getIdByUser(String id);
+
+  String getIdByUsername(String username);
 
   Set<User> getAllUsers();
 
