@@ -8,7 +8,6 @@ import static org.mockito.Mockito.eq;
 import com.community.tools.model.Event;
 import com.community.tools.model.EventData;
 import com.community.tools.service.github.GitHubService;
-import com.community.tools.service.slack.SlackService;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -33,7 +32,7 @@ class PublishWeekStatsServiceTest {
   private GitHubService ghEventService;
 
   @Mock
-  private SlackService slackService;
+  private SendMessageService sendMessageService;
 
   @BeforeAll
   public void initMocks() {
@@ -66,7 +65,7 @@ class PublishWeekStatsServiceTest {
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();
-      Mockito.verify(slackService).sendBlockMessageToConversation(anyString(), eq(message));
+      Mockito.verify(sendMessageService).sendBlockMessageToConversation(anyString(), eq(message));
     });
   }
 
@@ -108,7 +107,7 @@ class PublishWeekStatsServiceTest {
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();
-      Mockito.verify(slackService).sendBlockMessageToConversation(anyString(), eq(message));
+      Mockito.verify(sendMessageService).sendBlockMessageToConversation(anyString(), eq(message));
     });
   }
 
@@ -153,7 +152,7 @@ class PublishWeekStatsServiceTest {
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();
-      Mockito.verify(slackService).sendBlockMessageToConversation(anyString(), eq(message));
+      Mockito.verify(sendMessageService).sendBlockMessageToConversation(anyString(), eq(message));
     });
   }
 
