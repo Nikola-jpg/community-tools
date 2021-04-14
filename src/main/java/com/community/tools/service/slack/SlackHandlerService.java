@@ -98,7 +98,6 @@ public class SlackHandlerService {
   private MessageHandler messageHandler = new MessageHandler() {
     @Override
     public void handle(MessagePayload teamJoinPayload) {
-      User stateEntity;
       MessageEvent messageEvent = teamJoinPayload.getEvent();
       if (!messageEvent.getUser().equals(idOfSlackBot)) {
         try {
