@@ -199,10 +199,10 @@ public class StateMachineService {
   public void doAction(Payload payload, Event event) {
     String id = payload.getId().toString();
     try {
-    StateMachine<State, Event> machine = restoreMachine(id);
-    machine.getExtendedState().getVariables().put("payload", payload);
-    machine.sendEvent(event);
-    persistMachine(machine, id);
+      StateMachine<State, Event> machine = restoreMachine(id);
+      machine.getExtendedState().getVariables().put("payload", payload);
+      machine.sendEvent(event);
+      persistMachine(machine, id);
     } catch (Exception e) {
       e.printStackTrace();
     }
