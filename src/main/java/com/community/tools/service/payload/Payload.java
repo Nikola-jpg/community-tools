@@ -10,10 +10,7 @@ public class Payload {
 
   protected Integer id;
 
-  protected MessageEvent messageEvent;
-
-  public Payload(Integer id, MessageEvent messageEvent) {
+  public Payload(Integer id) {
     this.id = id;
-    this.messageEvent = messageEvent;
   }
 }

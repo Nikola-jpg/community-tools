@@ -118,7 +118,6 @@ public class SlackHandlerService {
               if (messageEvent.getText().equals("ready")) {
                 payload = new NewUserPayload(
                     Integer.parseInt(userId),
-                    messageEvent,
                     Integer.parseInt(
                         machine.getExtendedState().getVariables().get("taskNumber").toString()),
                     machine.getExtendedState().getVariables().get("mentor").toString()
@@ -129,21 +128,20 @@ public class SlackHandlerService {
               }
               break;
             case FIRST_QUESTION:
-              payload = new QuestionPayload(Integer.parseInt(userId), messageEvent);
+              payload = new QuestionPayload(Integer.parseInt(userId), messageEvent.getText());
               event = Event.QUESTION_SECOND;
               break;
             case SECOND_QUESTION:
-              payload = new QuestionPayload(Integer.parseInt(userId), messageEvent);
+              payload = new QuestionPayload(Integer.parseInt(userId), messageEvent.getText());
               event = Event.QUESTION_THIRD;
               break;
             case THIRD_QUESTION:
-              payload = new QuestionPayload(Integer.parseInt(userId), messageEvent);
+              payload = new QuestionPayload(Integer.parseInt(userId), messageEvent.getText());
               event = Event.CHANNELS_INFORMATION;
               break;
             case AGREED_LICENSE:
               payload = new AgreedLicensePayload(
                   Integer.parseInt(userId),
-                  messageEvent,
                   messageEvent.getText()
               );
               event = Event.LOGIN_CONFIRMATION;
@@ -156,10 +154,10 @@ public class SlackHandlerService {
               } else {
                 message = notThatMessage;
               }
-              payload = new CheckLoginPayload(Integer.parseInt(userId), messageEvent);
+              payload = new CheckLoginPayload(Integer.parseInt(userId));
               break;
             case ADDED_GIT:
-              payload = new AddedGitPayload(Integer.parseInt(userId), messageEvent);
+              payload = new AddedGitPayload(Integer.parseInt(userId));
               event = Event.GET_THE_FIRST_TASK;
               break;
             default:

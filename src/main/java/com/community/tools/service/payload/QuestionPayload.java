@@ -8,7 +8,10 @@ import lombok.Setter;
 @Setter
 public class QuestionPayload extends Payload {
 
-  public QuestionPayload(Integer id, MessageEvent messageEvent) {
-    super(id, messageEvent);
+  private String eventText;
+
+  public QuestionPayload(Integer id, String eventText) {
+    super(id);
+    this.eventText = eventText;
   }
 }

@@ -197,8 +197,14 @@ public class StateMachineService {
    * @param event   - event for StateMachine
    */
   public void doAction(Payload payload, Event event) {
-    StateMachine<State, Event> machine = factory.getStateMachine();
+    String id = payload.getId().toString();
+    try {
+    StateMachine<State, Event> machine = restoreMachine(id);
+    machine.getExtendedState().getVariables().put("payload", payload);
     machine.sendEvent(event);
-    persistMachine(machine, payload.getMessageEvent().getUser());
+    persistMachine(machine, id);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

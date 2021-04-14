@@ -15,12 +15,11 @@ public class NewUserPayload extends Payload {
    * Constructor class.
    *
    * @param id           - usersId
-   * @param messageEvent - variable for persistent
    * @param taskNumber   - variable for working Action
    * @param mentor       - variable for Action
    */
-  public NewUserPayload(Integer id, MessageEvent messageEvent, Integer taskNumber, String mentor) {
-    super(id, messageEvent);
+  public NewUserPayload(Integer id, Integer taskNumber, String mentor) {
+    super(id);
     this.taskNumber = taskNumber;
     this.mentor = mentor;
   }

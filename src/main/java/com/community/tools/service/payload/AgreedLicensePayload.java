@@ -10,8 +10,8 @@ public class AgreedLicensePayload extends Payload {
 
   private String gitNick;
 
-  public AgreedLicensePayload(Integer id, MessageEvent messageEvent, String gitNick) {
-    super(id, messageEvent);
+  public AgreedLicensePayload(Integer id, String gitNick) {
+    super(id);
     this.gitNick = gitNick;
   }
 }
