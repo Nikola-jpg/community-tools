@@ -31,7 +31,7 @@ public class LeaderBoardService {
   TemplateEngine templateEngine;
 
   @Autowired
-  SendMessageService sendMessageService;
+  MessageService messageService;
 
 
   /**
@@ -79,7 +79,7 @@ public class LeaderBoardService {
    */
   public List<User> addSlackNameToUser() {
     List<User> list = stateMachineRepository.findAll();
-    Set<com.github.seratch.jslack.api.model.User> slackUsers = sendMessageService.getAllUsers();
+    Set<com.github.seratch.jslack.api.model.User> slackUsers = messageService.getAllUsers();
     Map<String, String> map = slackUsers.stream()
             .filter(u -> u.getRealName() != null)
             .collect(Collectors.toMap(user -> user.getId(), user -> user.getRealName()));

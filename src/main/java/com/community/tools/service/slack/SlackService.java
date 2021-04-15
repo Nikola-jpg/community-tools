@@ -1,6 +1,6 @@
 package com.community.tools.service.slack;
 
-import com.community.tools.service.SendMessageService;
+import com.community.tools.service.MessageService;
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
@@ -17,11 +17,10 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 @Service
 @RequiredArgsConstructor
-public class SlackService implements SendMessageService {
+public class SlackService implements MessageService {
 
   @Value("${slack.token}")
   private String token;
@@ -207,7 +206,7 @@ public class SlackService implements SendMessageService {
    */
   @Override
   public String getIdByChannelName(String channelName) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
 
@@ -257,7 +256,7 @@ public class SlackService implements SendMessageService {
    */
   @Override
   public String getIdByUsername(String username) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
 

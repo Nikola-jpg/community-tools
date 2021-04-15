@@ -7,12 +7,10 @@ import static org.mockito.Mockito.when;
 import com.community.tools.model.Mentors;
 import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
-import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -28,15 +26,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateMachine;
-import org.springframework.statemachine.config.StateMachineFactory;
-import org.springframework.statemachine.support.AbstractStateMachine;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -46,7 +41,7 @@ class PointsTaskServiceTest {
   private PointsTaskService pointsTaskService;
 
   @Mock
-  private SendMessageService sendMessageService;
+  private MessageService messageService;
 
   @Mock
   StateMachineService stateMachineService;

@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 public class PublishWeekStatsService {
 
   private final GitHubService ghEventService;
-  private final SendMessageService sendMessageService;
+  private final MessageService messageService;
 
   @Value("${importantInformationChannel}")
   private String channel;
@@ -56,7 +56,7 @@ public class PublishWeekStatsService {
     List<EventData> events = ghEventService.getEvents(startDate, endDate);
     StringBuilder messageBuilder = new StringBuilder();
     if (events.size() == 0) {
-      sendMessageService.sendMessageToConversation(channel, noActivityMessage);
+      messageService.sendMessageToConversation(channel, noActivityMessage);
       System.out.println(events);
     } else {
       Map<String, List<EventData>> sortedMapGroupByActors = new HashMap<>();
@@ -99,7 +99,7 @@ public class PublishWeekStatsService {
                 messageBuilder.append("\"}]}");
               });
       messageBuilder.append("]");
-      sendMessageService.sendBlockMessageToConversation(channel, messageBuilder.toString());
+      messageService.sendBlockMessageToConversation(channel, messageBuilder.toString());
     }
   }
 
@@ -121,7 +121,7 @@ public class PublishWeekStatsService {
             + "\", \"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"%s"
             + "\",\"alt_text\": \"inspiration\"}]", url, img);
 
-    sendMessageService.sendBlockMessageToConversation(channel, message);
+    messageService.sendBlockMessageToConversation(channel, message);
   }
 
   private String emojiGen(Event type) {

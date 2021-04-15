@@ -1,6 +1,6 @@
 package com.community.tools.service.github;
 
-import com.community.tools.service.SendMessageService;
+import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.jpa.MentorsRepository;
 import com.community.tools.util.statemachie.Event;
@@ -23,7 +23,7 @@ public class AddMentorService {
   @Autowired
   private MentorsRepository mentorsRepository;
   @Autowired
-  private SendMessageService sendMessageService;
+  private MessageService messageService;
 
   /**
    * Add Mentor to the trainee, which make pull request.
@@ -53,7 +53,7 @@ public class AddMentorService {
    * @param url  Url of pull request
    */
   public void sendNotifyWithMentor(String user, String url) throws IOException, SlackApiException {
-    sendMessageService
+    messageService
         .sendMessageToConversation(channel, "User " + user
          + " created a pull request \n url: " + url
          + "\n Please check it : <@" + mentorsRepository

@@ -47,7 +47,7 @@ public class StateMachineService {
   private StateMachinePersister<State, Event, String> persister;
 
   private final GitHubService gitHubService;
-  private final SendMessageService sendMessageService;
+  private final MessageService messageService;
 
   /**
    * Check Slack`s user and Github login.
@@ -56,12 +56,12 @@ public class StateMachineService {
    * @throws Exception Exception
    */
   public void agreeForGitHubNickName(String nickName, String userId) throws Exception {
-    String user = sendMessageService.getUserById(userId);
+    String user = messageService.getUserById(userId);
 
     StateMachine<State, Event> machine = restoreMachine(userId);
 
     if (machine.getState().getId() == AGREED_LICENSE) {
-      sendMessageService.sendPrivateMessage(user,
+      messageService.sendPrivateMessage(user,
               checkNickName + nickName);
 
       boolean nicknameMatch = gitHubService.getGitHubAllUsers().stream()
@@ -77,11 +77,11 @@ public class StateMachineService {
         stateMachineRepository.save(stateEntity);
 
       } else {
-        sendMessageService.sendPrivateMessage(user, failedCheckNickName);
+        messageService.sendPrivateMessage(user, failedCheckNickName);
       }
 
     } else {
-      sendMessageService.sendPrivateMessage(user, doNotUnderstandWhatTodo);
+      messageService.sendPrivateMessage(user, doNotUnderstandWhatTodo);
 
     }
   }
@@ -94,28 +94,28 @@ public class StateMachineService {
    */
   public void checkActionsFromButton(String action, String userId) throws Exception {
     StateMachine<State, Event> machine = restoreMachine(userId);
-    String user = sendMessageService.getUserById(userId);
+    String user = messageService.getUserById(userId);
     switch (action) {
       case "AGREE_LICENSE":
         if (machine.getState().getId() == NEW_USER) {
           machine.sendEvent(QUESTION_FIRST);
           persistMachine(machine, userId);
         } else {
-          sendMessageService.sendBlocksMessage(user, notThatMessage);
+          messageService.sendBlocksMessage(user, notThatMessage);
         }
         break;
       case "theEnd":
 
         if (machine.getState().getId() == GOT_THE_FIRST_TASK) {
           machine.sendEvent(GET_THE_FIRST_TASK);
-          sendMessageService
+          messageService
               .sendPrivateMessage(user, "that was the end, congrats");
         } else {
-          sendMessageService.sendBlocksMessage(user, notThatMessage);
+          messageService.sendBlocksMessage(user, notThatMessage);
         }
         break;
       default:
-        sendMessageService.sendBlocksMessage(user, noOneCase);
+        messageService.sendBlocksMessage(user, noOneCase);
 
     }
   }

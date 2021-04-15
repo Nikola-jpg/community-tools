@@ -1,10 +1,6 @@
 package com.community.tools.service;
 
-import com.github.seratch.jslack.api.model.User;
-import java.util.Set;
-
-
-public interface SendMessageService {
+public interface MessageService extends UserService {
 
   String sendPrivateMessage(String username, String messageText);
 
@@ -20,14 +16,6 @@ public interface SendMessageService {
 
 
   String getIdByChannelName(String channelName);
-
-  String getUserById(String id);
-
-  String getIdByUser(String id);
-
-  String getIdByUsername(String username);
-
-  Set<User> getAllUsers();
 
   void sendAnnouncement(String message);
 

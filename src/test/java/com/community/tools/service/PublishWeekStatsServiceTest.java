@@ -32,7 +32,7 @@ class PublishWeekStatsServiceTest {
   private GitHubService ghEventService;
 
   @Mock
-  private SendMessageService sendMessageService;
+  private MessageService messageService;
 
   @BeforeAll
   public void initMocks() {
@@ -65,7 +65,7 @@ class PublishWeekStatsServiceTest {
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();
-      Mockito.verify(sendMessageService).sendBlockMessageToConversation(anyString(), eq(message));
+      Mockito.verify(messageService).sendBlockMessageToConversation(anyString(), eq(message));
     });
   }
 
@@ -107,7 +107,7 @@ class PublishWeekStatsServiceTest {
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();
-      Mockito.verify(sendMessageService).sendBlockMessageToConversation(anyString(), eq(message));
+      Mockito.verify(messageService).sendBlockMessageToConversation(anyString(), eq(message));
     });
   }
 
@@ -152,7 +152,7 @@ class PublishWeekStatsServiceTest {
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();
-      Mockito.verify(sendMessageService).sendBlockMessageToConversation(anyString(), eq(message));
+      Mockito.verify(messageService).sendBlockMessageToConversation(anyString(), eq(message));
     });
   }
 
