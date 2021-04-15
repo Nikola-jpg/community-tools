@@ -14,6 +14,7 @@ import com.community.tools.service.slack.SlackHandlerService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.actions.transitions.configs.verifications.AddGitNameActionTransition;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.io.IOException;
@@ -42,7 +43,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class AddGitNameActionTest {
 
   @InjectMocks
-  private AddGitNameAction addGitNameAction;
+  private AddGitNameActionTransition addGitNameAction;
   @Mock
   private StateMachineRepository repository;
   @Mock
@@ -74,15 +75,15 @@ public class AddGitNameActionTest {
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
 
-    Field repoField = AddGitNameAction.class.getDeclaredField("gitHubConnectService");
+    Field repoField = AddGitNameActionTransition.class.getDeclaredField("gitHubConnectService");
     repoField.setAccessible(true);
     repoField.set(addGitNameAction, gitHubConnectService);
 
-    Field repoService = AddGitNameAction.class.getDeclaredField("gitHubService");
+    Field repoService = AddGitNameActionTransition.class.getDeclaredField("gitHubService");
     repoService.setAccessible(true);
     repoService.set(addGitNameAction, gitHubService);
 
-    Field slackService = AddGitNameAction.class.getDeclaredField("slackService");
+    Field slackService = AddGitNameActionTransition.class.getDeclaredField("slackService");
     slackService.setAccessible(true);
     slackService.set(addGitNameAction, slackSer);
 
