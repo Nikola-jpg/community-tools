@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie.actions.transitions.configs.tasks;
+package com.community.tools.util.statemachie.actions.transitions.tasks;
 
 import static com.community.tools.util.statemachie.Event.CHANGE_TASK;
 import static com.community.tools.util.statemachie.State.CHECK_FOR_NEW_TASK;

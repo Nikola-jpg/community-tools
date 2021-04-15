@@ -2,7 +2,7 @@ package com.community.tools.util.statemachie.actions.error;
 
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.actions.transitions.configs.verifications.AgreeLicenseActionTransition;
+import com.community.tools.util.statemachie.actions.transitions.verifications.AgreeLicenseActionTransition;
 import java.util.logging.Logger;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;

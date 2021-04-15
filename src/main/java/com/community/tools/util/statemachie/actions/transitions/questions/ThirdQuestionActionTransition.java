@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie.actions.transitions.configs.questions;
+package com.community.tools.util.statemachie.actions.transitions.questions;
 
 import static com.community.tools.util.statemachie.Event.QUESTION_THIRD;
 import static com.community.tools.util.statemachie.State.SECOND_QUESTION;

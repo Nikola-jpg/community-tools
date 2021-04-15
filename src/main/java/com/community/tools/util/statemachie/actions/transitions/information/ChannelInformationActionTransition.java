@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie.actions.transitions.configs.information;
+package com.community.tools.util.statemachie.actions.transitions.information;
 
 import static com.community.tools.util.statemachie.Event.CHANNELS_INFORMATION;
 import static com.community.tools.util.statemachie.State.INFORMATION_CHANNELS;

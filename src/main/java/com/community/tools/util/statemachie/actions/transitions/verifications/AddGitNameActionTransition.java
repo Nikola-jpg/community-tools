@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie.actions.transitions.configs.verifications;
+package com.community.tools.util.statemachie.actions.transitions.verifications;
 
 import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
 import static com.community.tools.util.statemachie.State.ADDED_GIT;

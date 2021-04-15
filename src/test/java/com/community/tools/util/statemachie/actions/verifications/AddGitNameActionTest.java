@@ -14,7 +14,7 @@ import com.community.tools.service.slack.SlackHandlerService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.actions.transitions.configs.verifications.AddGitNameActionTransition;
+import com.community.tools.util.statemachie.actions.transitions.verifications.AddGitNameActionTransition;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.io.IOException;
