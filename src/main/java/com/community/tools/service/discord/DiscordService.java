@@ -1,13 +1,13 @@
 package com.community.tools.service.discord;
 
-import java.util.List;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +22,7 @@ public class DiscordService {
       jda.awaitReady();
       jda.getUserById(getIdUserByUsername(username)).openPrivateChannel().queue((channel) ->
       {
-        // Send a private message to the user
-        channel.sendMessageFormat(messageText);
+        channel.sendMessageFormat(messageText).queue();
       });
 
       return "";
@@ -35,10 +34,13 @@ public class DiscordService {
   public String sendBlocksMessage(String username, String messageText) {
     try {
       EmbedBuilder embedBuilder = new EmbedBuilder();
+
       embedBuilder.setDescription(messageText);
       jda.awaitReady();
-      jda.getTextChannels().stream().filter(textChannel -> textChannel.getName().equals("загальний"))
-          .findFirst().get().sendMessage(embedBuilder.build()).queue();
+      jda.getUserById(getIdUserByUsername(username)).openPrivateChannel().queue((channel) ->
+      {
+        channel.sendMessage(embedBuilder.build()).queue();
+      });
 
       return "";
     } catch (InterruptedException exception) {
@@ -51,8 +53,10 @@ public class DiscordService {
       EmbedBuilder embedBuilder = new EmbedBuilder();
       embedBuilder.setDescription(messageText);
       jda.awaitReady();
-      jda.getTextChannels().stream().filter(textChannel -> textChannel.getName().equals("загальний"))
-          .findFirst().get().sendMessage(embedBuilder.build()).queue();
+      jda.getUserById(getIdUserByUsername(username)).openPrivateChannel().queue((channel) ->
+      {
+        channel.sendMessage(embedBuilder.build()).queue();
+      });
 
       return "";
     } catch (InterruptedException exception) {
@@ -114,4 +118,5 @@ public class DiscordService {
     User user = jda.getUsers().stream().filter(u -> u.getName().equals(username)).findFirst().get();
     return user.getId();
   }
+
 }
