@@ -196,15 +196,11 @@ public class StateMachineService {
    * @param payload - payload that stores data to execute Actions
    * @param event   - event for StateMachine
    */
-  public void doAction(Payload payload, Event event) {
+  public void doAction(Payload payload, Event event) throws Exception {
     String id = payload.getId().toString();
-    try {
-      StateMachine<State, Event> machine = restoreMachine(id);
-      machine.getExtendedState().getVariables().put("payload", payload);
-      machine.sendEvent(event);
-      persistMachine(machine, id);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    StateMachine<State, Event> machine = restoreMachine(id);
+    machine.getExtendedState().getVariables().put("payload", payload);
+    machine.sendEvent(event);
+    persistMachine(machine, id);
   }
 }
