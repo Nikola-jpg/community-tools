@@ -20,6 +20,10 @@ public class DiscordConfig {
   @Value("${discord.token}")
   private String token;
 
+  /**
+   * Created and configure object JDA.
+   * @return object JDA
+   */
   @Bean
   public JDA jda() {
     try {

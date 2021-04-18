@@ -22,7 +22,7 @@ public class DiscordEventListener extends ListenerAdapter {
 
   @Override
   public void onPrivateMessageReceived(@NotNull PrivateMessageReceivedEvent event) {
-    if(event.getMessage().getContentRaw().equalsIgnoreCase("#help")) {
+    if (event.getMessage().getContentRaw().equalsIgnoreCase("#help")) {
       event.getAuthor().openPrivateChannel().queue((channel) -> {
         channel.sendMessageFormat("How can i help you?").queue();
       });
