@@ -36,8 +36,10 @@ public class DiscordConfig {
       builder.setCompression(Compression.NONE);
       builder.setActivity(Activity.playing("Discord"));
       builder.addEventListeners(new DiscordEventListener());
-      return builder.build();
-    } catch (LoginException exception) {
+      JDA jda = builder.build();
+      jda.awaitReady();
+      return jda;
+    } catch (LoginException | InterruptedException exception) {
       throw new RuntimeException(exception);
     }
   }

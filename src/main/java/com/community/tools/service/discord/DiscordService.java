@@ -1,7 +1,7 @@
 package com.community.tools.service.discord;
 
-import com.github.seratch.jslack.api.methods.SlackApiException;
-import java.io.IOException;
+import java.util.Set;
+import java.util.stream.Collectors;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -27,7 +27,7 @@ public class DiscordService {
     try {
       jda.awaitReady();
       jda.getUserById(getIdUserByUsername(username)).openPrivateChannel().queue((channel) -> {
-        channel.sendMessageFormat(messageText).queue();
+        channel.sendMessage(messageText).queue();
       }
       );
 
@@ -52,7 +52,7 @@ public class DiscordService {
       EmbedBuilder embedBuilder = new EmbedBuilder();
       jda.awaitReady();
       jda.getUserById(getIdUserByUsername(username)).openPrivateChannel().queue((channel) -> {
-        channel.sendMessage(messageBuilder.getStringBuilder()).queue();
+        channel.sendMessage(messageBuilder.build()).queue();
       });
 
       return "";
@@ -60,6 +60,29 @@ public class DiscordService {
       throw new RuntimeException(exception);
     }
   }
+
+
+  public String sendBlocksMessageDiscord(String username, String messageText) {
+    try {
+      MessageBuilder messageBuilder = new MessageBuilder();
+      messageBuilder.appendCodeBlock(messageText, "json");
+
+      EmbedBuilder embedBuilder = new EmbedBuilder();
+      embedBuilder.setAuthor(username)
+          .addField("Description", messageText, true)
+          .setThumbnail("https://s3-media3.fl.yelpcdn.com/bphoto/c7ed05m9lC2EmA3Aruue7A/o.jpg");
+
+      jda.awaitReady();
+      jda.getUserById(getIdUserByUsername(username)).openPrivateChannel().queue((channel) -> {
+        channel.sendMessage(embedBuilder.build()).queue();
+      });
+
+      return "";
+    } catch (InterruptedException exception) {
+      throw new RuntimeException(exception);
+    }
+  }
+
 
   /**
    * Send attachment message with messageText to username.
@@ -171,4 +194,14 @@ public class DiscordService {
     return user.getId();
   }
 
+  /**
+   * Get all Discord`s user.
+   *
+   * @return Set of users.
+   */
+  public Set<User> getAllUsers() {
+    Set<User> users = jda.getUsers().stream().collect(Collectors.toSet());
+
+    return users;
+  }
 }
