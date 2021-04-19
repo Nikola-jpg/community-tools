@@ -1,5 +1,6 @@
 package com.community.tools.service.discord;
 
+import com.community.tools.service.MessageService;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DiscordService {
+public class DiscordService implements MessageService {
 
   @Autowired
   private JDA jda;
@@ -23,10 +24,11 @@ public class DiscordService {
    * @param messageText Text of message
    * @return timestamp of message
    */
+  @Override
   public String sendPrivateMessage(String username, String messageText) {
     try {
       jda.awaitReady();
-      jda.getUserById(getIdUserByUsername(username)).openPrivateChannel().queue((channel) -> {
+      jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
         channel.sendMessage(messageText).queue();
       }
       );
@@ -44,6 +46,7 @@ public class DiscordService {
    * @param messageText Text of message
    * @return timestamp of message
    */
+  @Override
   public String sendBlocksMessage(String username, String messageText) {
     try {
       MessageBuilder messageBuilder = new MessageBuilder();
@@ -51,7 +54,7 @@ public class DiscordService {
 
       EmbedBuilder embedBuilder = new EmbedBuilder();
       jda.awaitReady();
-      jda.getUserById(getIdUserByUsername(username)).openPrivateChannel().queue((channel) -> {
+      jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
         channel.sendMessage(messageBuilder.build()).queue();
       });
 
@@ -61,7 +64,13 @@ public class DiscordService {
     }
   }
 
-
+  /**
+   * Send block message with messageText to username.
+   *
+   * @param username    Discord login
+   * @param messageText Text of message
+   * @return timestamp of message
+   */
   public String sendBlocksMessageDiscord(String username, String messageText) {
     try {
       MessageBuilder messageBuilder = new MessageBuilder();
@@ -73,7 +82,7 @@ public class DiscordService {
           .setThumbnail("https://s3-media3.fl.yelpcdn.com/bphoto/c7ed05m9lC2EmA3Aruue7A/o.jpg");
 
       jda.awaitReady();
-      jda.getUserById(getIdUserByUsername(username)).openPrivateChannel().queue((channel) -> {
+      jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
         channel.sendMessage(embedBuilder.build()).queue();
       });
 
@@ -91,12 +100,13 @@ public class DiscordService {
    * @param messageText Text of message
    * @return timestamp of message
    */
+  @Override
   public String sendAttachmentsMessage(String username, String messageText) {
     try {
       EmbedBuilder embedBuilder = new EmbedBuilder();
       embedBuilder.setDescription(messageText);
       jda.awaitReady();
-      jda.getUserById(getIdUserByUsername(username)).openPrivateChannel().queue((channel) -> {
+      jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
         channel.sendMessage(embedBuilder.build()).queue();
       });
 
@@ -113,10 +123,11 @@ public class DiscordService {
    * @param messageText Text of message
    * @return timestamp of message
    */
+  @Override
   public String sendMessageToConversation(String channelName, String messageText) {
     try {
       jda.awaitReady();
-      jda.getTextChannelById(getIdChannelByChannelName(channelName))
+      jda.getTextChannelById(getIdByChannelName(channelName))
           .sendMessage(messageText).queue();
 
       return "";
@@ -132,18 +143,44 @@ public class DiscordService {
    * @param messageText Blocks of message
    * @return timestamp of message
    */
+  @Override
   public String sendBlockMessageToConversation(String channelName, String messageText) {
     try {
       EmbedBuilder embedBuilder = new EmbedBuilder();
       embedBuilder.setDescription(messageText);
       jda.awaitReady();
-      jda.getTextChannelById(getIdChannelByChannelName(channelName))
+      jda.getTextChannelById(getIdByChannelName(channelName))
           .sendMessage(embedBuilder.build()).queue();
 
       return "";
     } catch (InterruptedException exception) {
       throw new RuntimeException(exception);
     }
+  }
+
+  @Override
+  public String sendMessageToChat(String channelName, String messageText) {
+    return null;
+  }
+
+  /**
+   * Get channel by Discord`s channelName.
+   *
+   * @param channelName Discord`s channelName
+   * @return channelName of Channel
+   */
+  @Override
+  public String getIdByChannelName(String channelName) {
+    TextChannel channel = jda.getTextChannels().stream()
+        .filter(textChannel -> textChannel.getName().equals(channelName))
+        .findFirst().get();
+    String channelId = channel.getId();
+    return channelId;
+  }
+
+  @Override
+  public void sendAnnouncement(String message) {
+
   }
 
 
@@ -158,18 +195,9 @@ public class DiscordService {
     return textChannel.getName();
   }
 
-  /**
-   * Get channel by Discord`s channelName.
-   *
-   * @param channelName Discord`s channelName
-   * @return channelName of Channel
-   */
-  public String getIdChannelByChannelName(String channelName) {
-    TextChannel channel = jda.getTextChannels().stream()
-        .filter(textChannel -> textChannel.getName().equals(channelName))
-        .findFirst().get();
-    String channelId = channel.getId();
-    return channelId;
+  @Override
+  public String getUserById(String id) {
+    return null;
   }
 
   /**
@@ -178,9 +206,11 @@ public class DiscordService {
    * @param id Slack`s id
    * @return realName of User
    */
-  public String getUserById(String id) {
+  @Override
+  public String getIdByUser(String id) {
     User user =  jda.getUserById(id);
     return user.getName();
+
   }
 
   /**
@@ -189,16 +219,19 @@ public class DiscordService {
    * @param username Discord`s username
    * @return realName of User
    */
-  public String getIdUserByUsername(String username) {
+  @Override
+  public String getIdByUsername(String username) {
     User user = jda.getUsers().stream().filter(u -> u.getName().equals(username)).findFirst().get();
     return user.getId();
   }
+
 
   /**
    * Get all Discord`s user.
    *
    * @return Set of users.
    */
+  @Override
   public Set<User> getAllUsers() {
     Set<User> users = jda.getUsers().stream().collect(Collectors.toSet());
 
