@@ -1,5 +1,6 @@
 package com.community.tools.service.slack;
 
+import com.community.tools.service.MessageService;
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class SlackService {
+public class SlackService implements MessageService {
 
   @Value("${slack.token}")
   private String token;
