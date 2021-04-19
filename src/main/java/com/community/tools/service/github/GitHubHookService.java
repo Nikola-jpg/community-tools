@@ -1,8 +1,8 @@
 package com.community.tools.service.github;
 
-import com.community.tools.service.MessageService;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
+import com.community.tools.service.slack.SlackService;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class GitHubHookService {
   @Value("${generalInformationChannel}")
   private String channel;
   @Autowired
-  private MessageService messageService;
+  private SlackService service;
   @Autowired
   private GitHubGiveNewTask gitHubGiveNewTask;
   @Autowired
@@ -63,7 +63,7 @@ public class GitHubHookService {
           throw new RuntimeException(e);
         }
       } else {
-        messageService.sendMessageToConversation(channel,
+        service.sendMessageToConversation(channel,
                   "User " + user
                           + " created a pull request \n url: " + url);
       }
