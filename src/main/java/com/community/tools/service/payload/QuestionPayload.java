@@ -9,8 +9,11 @@ public class QuestionPayload extends Payload {
 
   private String eventText;
 
-  public QuestionPayload(Integer id, String eventText) {
+  private String user;
+
+  public QuestionPayload(Integer id, String eventText, String user) {
     super(id);
     this.eventText = eventText;
+    this.user = user;
   }
 }

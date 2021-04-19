@@ -104,10 +104,12 @@ public class SlackHandlerService {
           if (messageEvent.getText().equals("reset") && testModeSwitcher) {
             resetUser(messageEvent.getUser());
           }
-          StateMachine<State, Event> machine = stateMachineService
-              .restoreMachine(messageEvent.getUser());
 
-          String userId = machine.getExtendedState().getVariables().get("id").toString();
+          String id = messageEvent.getUser();
+          StateMachine<State, Event> machine = stateMachineService
+              .restoreMachine(id);
+
+          String userForQuestion = machine.getExtendedState().getVariables().get("id").toString();
 
           String message = defaultMessage;
           Event event = null;
@@ -116,7 +118,7 @@ public class SlackHandlerService {
             case NEW_USER:
               if (messageEvent.getText().equals("ready")) {
                 payload = new NewUserPayload(
-                    Integer.parseInt(userId),
+                    Integer.parseInt(id),
                     Integer.parseInt(
                         machine.getExtendedState().getVariables().get("taskNumber").toString()),
                     machine.getExtendedState().getVariables().get("mentor").toString()
@@ -127,20 +129,23 @@ public class SlackHandlerService {
               }
               break;
             case FIRST_QUESTION:
-              payload = new QuestionPayload(Integer.parseInt(userId), messageEvent.getText());
+              payload = new QuestionPayload(Integer.parseInt(id), messageEvent.getText(),
+                  userForQuestion);
               event = Event.QUESTION_SECOND;
               break;
             case SECOND_QUESTION:
-              payload = new QuestionPayload(Integer.parseInt(userId), messageEvent.getText());
+              payload = new QuestionPayload(Integer.parseInt(id), messageEvent.getText(),
+                  userForQuestion);
               event = Event.QUESTION_THIRD;
               break;
             case THIRD_QUESTION:
-              payload = new QuestionPayload(Integer.parseInt(userId), messageEvent.getText());
+              payload = new QuestionPayload(Integer.parseInt(id), messageEvent.getText(),
+                  userForQuestion);
               event = Event.CHANNELS_INFORMATION;
               break;
             case AGREED_LICENSE:
               payload = new AgreedLicensePayload(
-                  Integer.parseInt(userId),
+                  Integer.parseInt(id),
                   messageEvent.getText()
               );
               event = Event.LOGIN_CONFIRMATION;
@@ -153,10 +158,10 @@ public class SlackHandlerService {
               } else {
                 message = notThatMessage;
               }
-              payload = new CheckLoginPayload(Integer.parseInt(userId));
+              payload = new CheckLoginPayload(Integer.parseInt(id));
               break;
             case ADDED_GIT:
-              payload = new AddedGitPayload(Integer.parseInt(userId));
+              payload = new AddedGitPayload(Integer.parseInt(id));
               event = Event.GET_THE_FIRST_TASK;
               break;
             default:
