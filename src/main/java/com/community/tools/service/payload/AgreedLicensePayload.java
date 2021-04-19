@@ -9,6 +9,12 @@ public class AgreedLicensePayload extends Payload {
 
   private String gitNick;
 
+  /**
+   * Constructor for class.
+   *
+   * @param id      - usersId
+   * @param gitNick - nick in Git
+   */
   public AgreedLicensePayload(Integer id, String gitNick) {
     super(id);
     this.gitNick = gitNick;

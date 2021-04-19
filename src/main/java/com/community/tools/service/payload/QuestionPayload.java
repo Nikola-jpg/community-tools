@@ -7,13 +7,20 @@ import lombok.Setter;
 @Setter
 public class QuestionPayload extends Payload {
 
-  private String eventText;
+  private String answer;
 
   private String user;
 
-  public QuestionPayload(Integer id, String eventText, String user) {
+  /**
+   * Constructor for class.
+   *
+   * @param id     - usersId
+   * @param answer - text answer
+   * @param user   - users id for adding answer
+   */
+  public QuestionPayload(Integer id, String answer, String user) {
     super(id);
-    this.eventText = eventText;
+    this.answer = answer;
     this.user = user;
   }
 }
