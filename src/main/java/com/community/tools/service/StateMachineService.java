@@ -9,7 +9,6 @@ import static com.community.tools.util.statemachie.State.NEW_USER;
 
 import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubService;
-import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
@@ -48,7 +47,7 @@ public class StateMachineService {
   private StateMachinePersister<State, Event, String> persister;
 
   private final GitHubService gitHubService;
-  private final SlackService slackService;
+  private final MessageService messageService;
 
   /**
    * Check Slack`s user and Github login.
@@ -57,12 +56,12 @@ public class StateMachineService {
    * @throws Exception Exception
    */
   public void agreeForGitHubNickName(String nickName, String userId) throws Exception {
-    String user = slackService.getUserById(userId);
+    String user = messageService.getUserById(userId);
 
     StateMachine<State, Event> machine = restoreMachine(userId);
 
     if (machine.getState().getId() == AGREED_LICENSE) {
-      slackService.sendPrivateMessage(user,
+      messageService.sendPrivateMessage(user,
               checkNickName + nickName);
 
       boolean nicknameMatch = gitHubService.getGitHubAllUsers().stream()
@@ -78,11 +77,11 @@ public class StateMachineService {
         stateMachineRepository.save(stateEntity);
 
       } else {
-        slackService.sendPrivateMessage(user, failedCheckNickName);
+        messageService.sendPrivateMessage(user, failedCheckNickName);
       }
 
     } else {
-      slackService.sendPrivateMessage(user, doNotUnderstandWhatTodo);
+      messageService.sendPrivateMessage(user, doNotUnderstandWhatTodo);
 
     }
   }
@@ -95,28 +94,28 @@ public class StateMachineService {
    */
   public void checkActionsFromButton(String action, String userId) throws Exception {
     StateMachine<State, Event> machine = restoreMachine(userId);
-    String user = slackService.getUserById(userId);
+    String user = messageService.getUserById(userId);
     switch (action) {
       case "AGREE_LICENSE":
         if (machine.getState().getId() == NEW_USER) {
           machine.sendEvent(QUESTION_FIRST);
           persistMachine(machine, userId);
         } else {
-          slackService.sendBlocksMessage(user, notThatMessage);
+          messageService.sendBlocksMessage(user, notThatMessage);
         }
         break;
       case "theEnd":
 
         if (machine.getState().getId() == GOT_THE_FIRST_TASK) {
           machine.sendEvent(GET_THE_FIRST_TASK);
-          slackService
+          messageService
               .sendPrivateMessage(user, "that was the end, congrats");
         } else {
-          slackService.sendBlocksMessage(user, notThatMessage);
+          messageService.sendBlocksMessage(user, notThatMessage);
         }
         break;
       default:
-        slackService.sendBlocksMessage(user, noOneCase);
+        messageService.sendBlocksMessage(user, noOneCase);
 
     }
   }
