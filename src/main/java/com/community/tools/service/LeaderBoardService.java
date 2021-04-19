@@ -1,7 +1,6 @@
 package com.community.tools.service;
 
 import com.community.tools.model.User;
-import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.awt.Color;
@@ -32,7 +31,7 @@ public class LeaderBoardService {
   TemplateEngine templateEngine;
 
   @Autowired
-  SlackService slackService;
+  MessageService messageService;
 
 
   /**
@@ -80,7 +79,7 @@ public class LeaderBoardService {
    */
   public List<User> addSlackNameToUser() {
     List<User> list = stateMachineRepository.findAll();
-    Set<com.github.seratch.jslack.api.model.User> slackUsers = slackService.getAllUsers();
+    Set<com.github.seratch.jslack.api.model.User> slackUsers = messageService.getAllUsers();
     Map<String, String> map = slackUsers.stream()
             .filter(u -> u.getRealName() != null)
             .collect(Collectors.toMap(user -> user.getId(), user -> user.getRealName()));
