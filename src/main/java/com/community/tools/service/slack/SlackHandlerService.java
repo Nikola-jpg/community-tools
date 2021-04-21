@@ -1,19 +1,17 @@
 package com.community.tools.service.slack;
 
+import static com.community.tools.util.statemachie.Event.CHANNELS_INFORMATION;
+import static com.community.tools.util.statemachie.Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
+import static com.community.tools.util.statemachie.Event.QUESTION_SECOND;
+import static com.community.tools.util.statemachie.Event.QUESTION_THIRD;
+
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
-import com.community.tools.service.payload.AddedGitPayload;
-import com.community.tools.service.payload.AgreedLicensePayload;
-import com.community.tools.service.payload.CheckLoginPayload;
-import com.community.tools.service.payload.NewUserPayload;
-import com.community.tools.service.payload.Payload;
-import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
-import com.github.seratch.jslack.api.model.event.MessageEvent;
 import com.github.seratch.jslack.app_backend.events.EventsDispatcher;
 import com.github.seratch.jslack.app_backend.events.handler.MessageHandler;
 import com.github.seratch.jslack.app_backend.events.handler.TeamJoinHandler;
@@ -35,7 +33,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class SlackHandlerService {
-
   @Value("${notThatMessage}")
   private String notThatMessage;
   @Value("${welcome}")
@@ -80,7 +77,6 @@ public class SlackHandlerService {
 
   /**
    * Reset User with Slack id.
-   *
    * @param id Slack id
    * @throws Exception Exception
    */
@@ -102,89 +98,83 @@ public class SlackHandlerService {
   private MessageHandler messageHandler = new MessageHandler() {
     @Override
     public void handle(MessagePayload teamJoinPayload) {
-      MessageEvent messageEvent = teamJoinPayload.getEvent();
-      if (!messageEvent.getUser().equals(idOfSlackBot)) {
+      User stateEntity;
+      if (!teamJoinPayload.getEvent().getUser().equals(idOfSlackBot)) {
         try {
-          if (messageEvent.getText().equals("reset") && testModeSwitcher) {
-            resetUser(messageEvent.getUser());
+          if (teamJoinPayload.getEvent().getText().equals("reset") && testModeSwitcher) {
+            resetUser(teamJoinPayload.getEvent().getUser());
           }
-
-          String id = messageEvent.getUser();
           StateMachine<State, Event> machine = stateMachineService
-              .restoreMachine(id);
+                  .restoreMachine(teamJoinPayload.getEvent().getUser());
 
-          String userForQuestion = machine.getExtendedState().getVariables().get("id").toString();
+          String user = machine.getExtendedState().getVariables().get("id").toString();
 
-          String message = defaultMessage;
-          Event event = null;
-          Payload payload = null;
           switch (machine.getState().getId()) {
             case NEW_USER:
-              if (messageEvent.getText().equals("ready")) {
-                payload = new NewUserPayload(
-                    Integer.parseInt(id),
-                    Integer.parseInt(
-                        machine.getExtendedState().getVariables().get("taskNumber").toString()),
-                    machine.getExtendedState().getVariables().get("mentor").toString()
-                );
-                event = Event.QUESTION_FIRST;
+              if (teamJoinPayload.getEvent().getText().equals("ready")) {
+                machine.sendEvent(Event.QUESTION_FIRST);
+                stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               } else {
-                message = notThatMessage;
+                messageService.sendPrivateMessage(
+                        messageService.getUserById(teamJoinPayload.getEvent().getUser()),
+                        notThatMessage);
               }
               break;
             case FIRST_QUESTION:
-              payload = new QuestionPayload(Integer.parseInt(id), messageEvent.getText(),
-                  userForQuestion);
-              event = Event.QUESTION_SECOND;
+              stateEntity = stateMachineRepository.findByUserID(user).get();
+              stateEntity.setFirstAnswerAboutRules(teamJoinPayload.getEvent().getText());
+              stateMachineRepository.save(stateEntity);
+              machine.sendEvent(QUESTION_SECOND);
+              stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
             case SECOND_QUESTION:
-              payload = new QuestionPayload(Integer.parseInt(id), messageEvent.getText(),
-                  userForQuestion);
-              event = Event.QUESTION_THIRD;
+              stateEntity = stateMachineRepository.findByUserID(user).get();
+              stateEntity.setSecondAnswerAboutRules(teamJoinPayload.getEvent().getText());
+              stateMachineRepository.save(stateEntity);
+              machine.sendEvent(QUESTION_THIRD);
+              stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
             case THIRD_QUESTION:
-              payload = new QuestionPayload(Integer.parseInt(id), messageEvent.getText(),
-                  userForQuestion);
-              event = Event.CHANNELS_INFORMATION;
+              stateEntity = stateMachineRepository.findByUserID(user).get();
+              stateEntity.setThirdAnswerAboutRules(teamJoinPayload.getEvent().getText());
+              stateMachineRepository.save(stateEntity);
+              machine.sendEvent(CHANNELS_INFORMATION);
+              machine.sendEvent(Event.AGREE_LICENSE);
+              stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
             case AGREED_LICENSE:
-              payload = new AgreedLicensePayload(
-                  Integer.parseInt(id),
-                  messageEvent.getText()
-              );
-              event = Event.LOGIN_CONFIRMATION;
+              machine.getExtendedState().getVariables()
+                      .put("gitNick", teamJoinPayload.getEvent().getText());
+              machine.sendEvent(Event.LOGIN_CONFIRMATION);
+              stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
             case CHECK_LOGIN:
-              if (messageEvent.getText().equals("yes")) {
-                event = Event.ADD_GIT_NAME;
-              } else if (messageEvent.getText().equals("no")) {
-                event = Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
+              if (teamJoinPayload.getEvent().getText().equals("yes")) {
+                machine.sendEvent(Event.ADD_GIT_NAME);
+                machine.sendEvent(Event.GET_THE_FIRST_TASK);
+                stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
+              } else if (teamJoinPayload.getEvent().getText().equals("no")) {
+                machine.sendEvent(DID_NOT_PASS_VERIFICATION_GIT_LOGIN);
+                stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               } else {
-                message = notThatMessage;
+                messageService.sendPrivateMessage(
+                        messageService.getUserById(teamJoinPayload.getEvent().getUser()),
+                        notThatMessage);
               }
-              payload = new CheckLoginPayload(Integer.parseInt(id));
               break;
             case ADDED_GIT:
-              payload = new AddedGitPayload(Integer.parseInt(id));
-              event = Event.GET_THE_FIRST_TASK;
+              machine.sendEvent(Event.GET_THE_FIRST_TASK);
+              stateMachineService.persistMachine(machine, teamJoinPayload.getEvent().getUser());
               break;
             default:
-              event = null;
-              payload = null;
+              messageService.sendPrivateMessage(
+                      messageService.getUserById(teamJoinPayload.getEvent().getUser()),
+                      defaultMessage);
+              break;
           }
-
-          if (event == null) {
-            messageService.sendPrivateMessage(
-                messageService.getUserById(messageEvent.getUser()),
-                message);
-          } else {
-            stateMachineService
-                .doAction(payload, event);
-          }
-
         } catch (Exception e) {
           throw new RuntimeException("Impossible to answer request with id="
-              + teamJoinPayload.getEvent().getUser(), e);
+                  + teamJoinPayload.getEvent().getUser(), e);
         }
       }
     }
