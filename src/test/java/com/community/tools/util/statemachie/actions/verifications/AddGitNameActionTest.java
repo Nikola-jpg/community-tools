@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie.actions;
+package com.community.tools.util.statemachie.actions.verifications;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -14,19 +14,17 @@ import com.community.tools.service.slack.SlackHandlerService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.actions.transitions.verifications.AddGitNameActionTransition;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
 import lombok.SneakyThrows;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -36,7 +34,6 @@ import org.kohsuke.github.GHUser;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.StateMachine;
@@ -46,7 +43,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class AddGitNameActionTest {
 
   @InjectMocks
-  private AddGitNameAction addGitNameAction;
+  private AddGitNameActionTransition addGitNameAction;
   @Mock
   private StateMachineRepository repository;
   @Mock
@@ -78,15 +75,15 @@ public class AddGitNameActionTest {
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
 
-    Field repoField = AddGitNameAction.class.getDeclaredField("gitHubConnectService");
+    Field repoField = AddGitNameActionTransition.class.getDeclaredField("gitHubConnectService");
     repoField.setAccessible(true);
     repoField.set(addGitNameAction, gitHubConnectService);
 
-    Field repoService = AddGitNameAction.class.getDeclaredField("gitHubService");
+    Field repoService = AddGitNameActionTransition.class.getDeclaredField("gitHubService");
     repoService.setAccessible(true);
     repoService.set(addGitNameAction, gitHubService);
 
-    Field slackService = AddGitNameAction.class.getDeclaredField("slackService");
+    Field slackService = AddGitNameActionTransition.class.getDeclaredField("slackService");
     slackService.setAccessible(true);
     slackService.set(addGitNameAction, slackSer);
 

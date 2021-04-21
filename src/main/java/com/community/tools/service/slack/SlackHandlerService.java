@@ -11,17 +11,16 @@ import com.community.tools.service.StateMachineService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
-
 import com.github.seratch.jslack.app_backend.events.EventsDispatcher;
 import com.github.seratch.jslack.app_backend.events.handler.MessageHandler;
 import com.github.seratch.jslack.app_backend.events.handler.TeamJoinHandler;
 import com.github.seratch.jslack.app_backend.events.payload.MessagePayload;
 import com.github.seratch.jslack.app_backend.events.payload.TeamJoinPayload;
 import com.github.seratch.jslack.app_backend.events.servlet.SlackEventsApiServlet;
-
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
