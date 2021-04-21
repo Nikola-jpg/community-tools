@@ -10,7 +10,6 @@ import static com.community.tools.util.statemachie.State.NEW_USER;
 import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.Payload;
-import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
