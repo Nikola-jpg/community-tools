@@ -7,8 +7,6 @@ import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
 import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
 import static com.community.tools.util.statemachie.State.NEW_USER;
 
-
-import com.community.tools.service.payload.Payload;
 import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.util.statemachie.Event;
