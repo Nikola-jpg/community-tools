@@ -2,19 +2,14 @@ package com.community.tools.service;
 
 import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
-import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
-import com.github.seratch.jslack.api.methods.SlackApiException;
-import com.google.gson.JsonParseException;
 
-import java.io.IOException;
 import java.util.Map;
 
 import javax.persistence.EntityNotFoundException;
 
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateMachine;
@@ -33,7 +28,7 @@ public class PointsTaskService {
   private Map<String, Integer> pointsForTask;
 
   @Autowired
-  private SlackService slackService;
+  private MessageService messageService;
 
   @Autowired
   StateMachineService stateMachineService;
@@ -90,7 +85,7 @@ public class PointsTaskService {
    * @param id Slack User Id
    */
   public void sendAbilityReviewMess(String id) {
-    slackService.sendBlocksMessage(slackService.getUserById(id), abilityReviewMessage);
+    messageService.sendBlocksMessage(messageService.getUserById(id), abilityReviewMessage);
   }
 
   /**
@@ -99,6 +94,6 @@ public class PointsTaskService {
    */
   public void sendMessageWhichDescribesZeroPoints(String id, String pullName) {
     String messageDescribesZero = zeroPointsMessage.replace("pull_name", pullName);
-    slackService.sendPrivateMessage(slackService.getUserById(id), messageDescribesZero);
+    messageService.sendPrivateMessage(messageService.getUserById(id), messageDescribesZero);
   }
 }

@@ -1,6 +1,7 @@
 package com.community.tools.service.slack;
 
 import com.community.tools.model.User;
+import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.payload.AddedGitPayload;
 import com.community.tools.service.payload.AgreedLicensePayload;
@@ -50,7 +51,7 @@ public class SlackHandlerService {
   @Value("${testModeSwitcher}")
   private Boolean testModeSwitcher;
 
-  private final SlackService slackService;
+  private final MessageService messageService;
   private final StateMachineService stateMachineService;
   @Autowired
   private StateMachineRepository stateMachineRepository;
@@ -66,11 +67,11 @@ public class SlackHandlerService {
         stateMachineRepository.save(stateEntity);
 
         stateMachineService.persistMachineForNewUser(user);
-        slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser().getRealName(),
-            welcome);
-        slackService
-            .sendBlocksMessage(teamJoinPayload.getEvent().getUser().getRealName(),
-                messageAboutRules);
+        messageService.sendPrivateMessage(teamJoinPayload.getEvent().getUser().getRealName(),
+                welcome);
+        messageService
+                .sendBlocksMessage(teamJoinPayload.getEvent().getUser().getRealName(),
+                        messageAboutRules);
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
@@ -90,9 +91,12 @@ public class SlackHandlerService {
     stateMachineRepository.save(stateEntity);
     stateMachineService.persistMachineForNewUser(id);
 
-    String user = slackService.getUserById(id);
-    slackService.sendPrivateMessage(user, welcome);
-    slackService.sendBlocksMessage(user, messageAboutRules);
+    String user = messageService.getUserById(id);
+    messageService.sendPrivateMessage(user,
+            welcome);
+    messageService
+            .sendBlocksMessage(user,
+                    messageAboutRules);
   }
 
   private MessageHandler messageHandler = new MessageHandler() {
@@ -170,8 +174,8 @@ public class SlackHandlerService {
           }
 
           if (event == null) {
-            slackService.sendPrivateMessage(
-                slackService.getUserById(messageEvent.getUser()),
+            messageService.sendPrivateMessage(
+                messageService.getUserById(messageEvent.getUser()),
                 message);
           } else {
             stateMachineService
