@@ -27,16 +27,16 @@ public class DiscordConfig {
   @Bean
   public JDA jda() {
     try {
-      JDABuilder builder = JDABuilder.createDefault(token);
-      builder.setChunkingFilter(ChunkingFilter.ALL);
-      builder.setMemberCachePolicy(MemberCachePolicy.ALL);
-      builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE);
-      builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
-      builder.setBulkDeleteSplittingEnabled(false);
-      builder.setCompression(Compression.NONE);
-      builder.setActivity(Activity.playing("Discord"));
-      builder.addEventListeners(new DiscordEventListener());
-      JDA jda = builder.build();
+      JDA jda = JDABuilder.createDefault(token)
+          .setChunkingFilter(ChunkingFilter.ALL)
+          .setMemberCachePolicy(MemberCachePolicy.ALL)
+          .disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)
+          .enableIntents(GatewayIntent.GUILD_MEMBERS)
+          .setBulkDeleteSplittingEnabled(false)
+          .setCompression(Compression.NONE)
+          .setActivity(Activity.playing("Discord"))
+          .addEventListeners(new DiscordEventListener())
+          .build();
       jda.awaitReady();
       return jda;
     } catch (LoginException | InterruptedException exception) {

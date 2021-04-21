@@ -1,21 +1,25 @@
 package com.community.tools.service.discord;
 
 import com.community.tools.service.MessageService;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class DiscordService implements MessageService {
 
-  @Autowired
-  private JDA jda;
+  private final JDA jda;
 
   /**
    * Send private message with messageText to username.
@@ -26,17 +30,10 @@ public class DiscordService implements MessageService {
    */
   @Override
   public String sendPrivateMessage(String username, String messageText) {
-    try {
-      jda.awaitReady();
-      jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
-        channel.sendMessage(messageText).queue();
-      }
-      );
-
-      return "";
-    } catch (InterruptedException exception) {
-      throw new RuntimeException(exception);
-    }
+    jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
+      channel.sendMessage(messageText).queue();
+    });
+    return "";
   }
 
   /**
@@ -48,20 +45,83 @@ public class DiscordService implements MessageService {
    */
   @Override
   public String sendBlocksMessage(String username, String messageText) {
-    try {
-      MessageBuilder messageBuilder = new MessageBuilder();
-      messageBuilder.appendCodeBlock(messageText, "json");
+    EmbedBuilder embedBuilder = new EmbedBuilder();
+    jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
+      channel.sendMessage(embedBuilder.build()).queue();
+    });
+    return "";
+  }
 
-      EmbedBuilder embedBuilder = new EmbedBuilder();
-      jda.awaitReady();
-      jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
-        channel.sendMessage(messageBuilder.build()).queue();
-      });
+  /**
+   * Send block message with messageText to username.
+   *
+   * @param username    Discord login
+   * @param messageText List of message with code block
+   * @return timestamp of message
+   */
+  @Override
+  public String sendBlocksMessage(String username, List<Map<NameBlock, String>> messageText) {
+    jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
+      channel.sendMessage(createBlocksMessage(messageText)).queue();
+    });
+    return "";
+  }
 
-      return "";
-    } catch (InterruptedException exception) {
-      throw new RuntimeException(exception);
+
+  /**
+   * Create block of message with code block.
+   *
+   * @param messageText List of message with code block
+   * @return MessageEmbed object
+   */
+  public MessageEmbed createBlocksMessage(List<Map<NameBlock, String>> messageText) {
+    EmbedBuilder embedBuilder = new EmbedBuilder();
+    for (Map<NameBlock, String> block: messageText) {
+      for (NameBlock key: block.keySet()) {
+        switch (key) {
+          case TITLE: {
+            embedBuilder.setTitle(block.get(NameBlock.TITLE));
+            break;
+          }
+          case DESCRIPTION: {
+            embedBuilder.appendDescription(block.get(NameBlock.DESCRIPTION));
+            break;
+          }
+          case AUTHOR: {
+            embedBuilder.setAuthor(block.get(NameBlock.AUTHOR));
+            break;
+          }
+          case COLOR: {
+            embedBuilder.setColor(Integer.parseInt(block.get(NameBlock.COLOR)));
+            break;
+          }
+          case FIELD: {
+            embedBuilder.addField("", block.get(NameBlock.FIELD), true);
+            break;
+          }
+          case BLANK_FIELD: {
+            embedBuilder.addBlankField(Boolean.parseBoolean(block.get(NameBlock.BLANK_FIELD)));
+            break;
+          }
+          case THUMBNAIL: {
+            embedBuilder.setThumbnail(block.get(NameBlock.THUMBNAIL));
+            break;
+          }
+          case IMAGE: {
+            embedBuilder.setImage(block.get(NameBlock.IMAGE));
+            break;
+          }
+          case FOOTER: {
+            embedBuilder.setFooter(block.get(NameBlock.FOOTER));
+            break;
+          }
+          default: {
+
+          }
+        }
+      }
     }
+    return embedBuilder.build();
   }
 
   /**
@@ -72,24 +132,18 @@ public class DiscordService implements MessageService {
    * @return timestamp of message
    */
   public String sendBlocksMessageDiscord(String username, String messageText) {
-    try {
-      MessageBuilder messageBuilder = new MessageBuilder();
-      messageBuilder.appendCodeBlock(messageText, "json");
+    MessageBuilder messageBuilder = new MessageBuilder();
+    messageBuilder.appendCodeBlock(messageText, "json");
 
-      EmbedBuilder embedBuilder = new EmbedBuilder();
-      embedBuilder.setAuthor(username)
+    EmbedBuilder embedBuilder = new EmbedBuilder();
+    embedBuilder.setAuthor(username)
           .addField("Description", messageText, true)
           .setThumbnail("https://s3-media3.fl.yelpcdn.com/bphoto/c7ed05m9lC2EmA3Aruue7A/o.jpg");
 
-      jda.awaitReady();
-      jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
-        channel.sendMessage(embedBuilder.build()).queue();
-      });
-
-      return "";
-    } catch (InterruptedException exception) {
-      throw new RuntimeException(exception);
-    }
+    jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
+      channel.sendMessage(embedBuilder.build()).queue();
+    });
+    return "";
   }
 
 
@@ -102,18 +156,12 @@ public class DiscordService implements MessageService {
    */
   @Override
   public String sendAttachmentsMessage(String username, String messageText) {
-    try {
-      EmbedBuilder embedBuilder = new EmbedBuilder();
-      embedBuilder.setDescription(messageText);
-      jda.awaitReady();
-      jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
-        channel.sendMessage(embedBuilder.build()).queue();
-      });
-
-      return "";
-    } catch (InterruptedException exception) {
-      throw new RuntimeException(exception);
-    }
+    EmbedBuilder embedBuilder = new EmbedBuilder();
+    embedBuilder.setDescription(messageText);
+    jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
+      channel.sendMessage(embedBuilder.build()).queue();
+    });
+    return "";
   }
 
   /**
@@ -125,15 +173,9 @@ public class DiscordService implements MessageService {
    */
   @Override
   public String sendMessageToConversation(String channelName, String messageText) {
-    try {
-      jda.awaitReady();
-      jda.getTextChannelById(getIdByChannelName(channelName))
+    jda.getTextChannelById(getIdByChannelName(channelName))
           .sendMessage(messageText).queue();
-
-      return "";
-    } catch (InterruptedException exception) {
-      throw new RuntimeException(exception);
-    }
+    return "";
   }
 
   /**
@@ -145,17 +187,12 @@ public class DiscordService implements MessageService {
    */
   @Override
   public String sendBlockMessageToConversation(String channelName, String messageText) {
-    try {
-      EmbedBuilder embedBuilder = new EmbedBuilder();
-      embedBuilder.setDescription(messageText);
-      jda.awaitReady();
-      jda.getTextChannelById(getIdByChannelName(channelName))
-          .sendMessage(embedBuilder.build()).queue();
+    EmbedBuilder embedBuilder = new EmbedBuilder();
+    embedBuilder.setDescription(messageText);
 
-      return "";
-    } catch (InterruptedException exception) {
-      throw new RuntimeException(exception);
-    }
+    jda.getTextChannelById(getIdByChannelName(channelName))
+          .sendMessage(embedBuilder.build()).queue();
+    return "";
   }
 
   @Override
@@ -197,7 +234,7 @@ public class DiscordService implements MessageService {
 
   @Override
   public String getUserById(String id) {
-    return null;
+    return jda.getUserById(id).getName();
   }
 
   /**

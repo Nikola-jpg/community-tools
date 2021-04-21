@@ -5,7 +5,6 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class DiscordEventListener extends ListenerAdapter {
 
   @Override
-  public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
+  public void onGuildMemberJoin(GuildMemberJoinEvent event) {
     event.getUser().openPrivateChannel().queue((channel) -> {
       channel.sendMessageFormat("Welcome").queue();
     });
@@ -21,7 +20,7 @@ public class DiscordEventListener extends ListenerAdapter {
 
 
   @Override
-  public void onPrivateMessageReceived(@NotNull PrivateMessageReceivedEvent event) {
+  public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
     if (event.getMessage().getContentRaw().equalsIgnoreCase("#help")) {
       event.getAuthor().openPrivateChannel().queue((channel) -> {
         channel.sendMessageFormat("How can i help you?").queue();
@@ -30,10 +29,11 @@ public class DiscordEventListener extends ListenerAdapter {
   }
 
   @Override
-  public void onReady(@NotNull ReadyEvent event) {
+  public void onReady(ReadyEvent event) {
     super.onReady(event);
     log.info("{} is ready", event.getJDA().getSelfUser());
 
   }
+
 
 }

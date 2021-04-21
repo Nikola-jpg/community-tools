@@ -1,6 +1,7 @@
 package com.community.tools.service.slack;
 
 import com.community.tools.service.MessageService;
+import com.community.tools.service.discord.NameBlock;
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
@@ -12,20 +13,26 @@ import com.github.seratch.jslack.api.webhook.Payload;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Primary
 public class SlackService implements MessageService {
 
   @Value("${slack.token}")
   private String token;
   @Value("${slack.webhook}")
   private String slackWebHook;
+
+  private String text;
 
   /**
    * Send private message with messageText to username.
@@ -36,6 +43,7 @@ public class SlackService implements MessageService {
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
+  @Override
   public String sendPrivateMessage(String username, String messageText) {
     Slack slack = Slack.getInstance();
     try {
@@ -58,6 +66,7 @@ public class SlackService implements MessageService {
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
+  @Override
   public String sendBlocksMessage(String username, String messageText) {
     Slack slack = Slack.getInstance();
     try {
@@ -71,6 +80,41 @@ public class SlackService implements MessageService {
   }
 
   /**
+   * Send block message with messageText to username.
+   *
+   * @param username    Slack login
+   * @param messageText List of message with code block
+   * @return timestamp of message
+   * @throws IOException       IOException
+   * @throws SlackApiException SlackApiException
+   */
+  @Override
+  public String sendBlocksMessage(String username, List<Map<NameBlock, String>> messageText) {
+    Slack slack = Slack.getInstance();
+    try {
+      ChatPostMessageResponse postResponse = slack.methods(token).chatPostMessage(
+          req -> req.channel(getIdByUsername(username)).asUser(true)
+              .blocksAsString(createBlocksMessage(messageText)));
+      return postResponse.getTs();
+    } catch (IOException | SlackApiException exception) {
+      throw new RuntimeException(exception);
+    }
+  }
+
+  /**
+   * Create block of message with code block.
+   *
+   * @param messageText List of message with code block
+   * @return block As String
+   */
+  public String createBlocksMessage(List<Map<NameBlock, String>> messageText) {
+    if ((messageText.get(0).get(NameBlock.BLOCKS)) != null) {
+      return messageText.get(0).get(NameBlock.BLOCKS);
+    }
+    return null;
+  }
+
+  /**
    * Send attachment message with messageText to username.
    *
    * @param username    Slack login
@@ -79,6 +123,7 @@ public class SlackService implements MessageService {
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
+  @Override
   public String sendAttachmentsMessage(String username, String messageText) {
     Slack slack = Slack.getInstance();
     try {
@@ -102,6 +147,7 @@ public class SlackService implements MessageService {
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
+  @Override
   public String sendMessageToConversation(String channelName, String messageText) {
     Slack slack = Slack.getInstance();
     try {
@@ -123,6 +169,7 @@ public class SlackService implements MessageService {
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
+  @Override
   public String sendBlockMessageToConversation(String channelName, String messageText) {
     Slack slack = Slack.getInstance();
     try {
@@ -146,6 +193,7 @@ public class SlackService implements MessageService {
    * @throws SlackApiException SlackApiException
    */
   @Deprecated
+  @Override
   public String sendMessageToChat(String channelName, String messageText) {
     Slack slack = Slack.getInstance();
     try {
@@ -171,6 +219,7 @@ public class SlackService implements MessageService {
    * @param channelName Slack`s channelName
    * @return id of Conversation
    */
+  @Override
   public String getIdByChannelName(String channelName) {
     Slack slack = Slack.getInstance();
     try {
@@ -193,6 +242,7 @@ public class SlackService implements MessageService {
    * @param id Slack`s id
    * @return realName of User
    */
+  @Override
   public String getUserById(String id) {
     Slack slack = Slack.getInstance();
     try {
@@ -211,6 +261,7 @@ public class SlackService implements MessageService {
    * @param id Slack`s id
    * @return Slack`s id
    */
+  @Override
   public String getIdByUser(String id) {
     Slack slack = Slack.getInstance();
     try {
@@ -229,6 +280,7 @@ public class SlackService implements MessageService {
    * @param username Slack`s id
    * @return Slack`s id
    */
+  @Override
   public String getIdByUsername(String username) {
     Slack slack = Slack.getInstance();
     try {
@@ -246,6 +298,7 @@ public class SlackService implements MessageService {
    *
    * @return Set of users.
    */
+  @Override
   public Set<User> getAllUsers() {
     try {
       Slack slack = Slack.getInstance();
@@ -266,6 +319,7 @@ public class SlackService implements MessageService {
    *
    * @param message Text of message
    */
+  @Override
   public void sendAnnouncement(String message) {
     try {
       Payload payload = Payload.builder().text(message).build();
