@@ -200,7 +200,7 @@ public class StateMachineService {
     machine.getExtendedState().getVariables().put("dataPayload", payload);
     machine.sendEvent(event);
     if (event.equals(Event.CHANNELS_INFORMATION)) {
-      machine.sendEvent(Event.AGREE_LICENSE);
+      machine.sendEvent(event.getNext());
     }
     persistMachine(machine, id);
   }
