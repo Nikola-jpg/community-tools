@@ -41,7 +41,8 @@ public class ChannelInformationActionTransition implements Transition {
     User stateEntity = stateMachineRepository.findByUserID(id).get();
     stateEntity.setThirdAnswerAboutRules(payloadThirdAnswer.getAnswer());
     stateMachineRepository.save(stateEntity);
-    messageService.sendBlocksMessage(messageService.getUserById(id), messageAboutSeveralInfoChannel);
+    messageService
+        .sendBlocksMessage(messageService.getUserById(id), messageAboutSeveralInfoChannel);
   }
 
   @Override

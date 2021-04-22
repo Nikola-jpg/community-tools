@@ -11,8 +11,10 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
+import org.springframework.statemachine.annotation.WithStateMachine;
 import org.springframework.statemachine.guard.Guard;
 
+@WithStateMachine
 public class HideGuard implements Guard<State, Event> {
 
   @Value("${checkNickName}")
