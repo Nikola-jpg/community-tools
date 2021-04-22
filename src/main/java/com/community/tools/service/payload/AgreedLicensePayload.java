@@ -1,10 +1,12 @@
 package com.community.tools.service.payload;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class AgreedLicensePayload extends Payload {
 
   private String gitNick;
@@ -15,7 +17,7 @@ public class AgreedLicensePayload extends Payload {
    * @param id      - usersId
    * @param gitNick - nick in Git
    */
-  public AgreedLicensePayload(Integer id, String gitNick) {
+  public AgreedLicensePayload(String id, String gitNick) {
     super(id);
     this.gitNick = gitNick;
   }

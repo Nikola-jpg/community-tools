@@ -4,7 +4,7 @@ import static com.community.tools.util.statemachie.Event.GET_THE_NEW_TASK;
 import static com.community.tools.util.statemachie.State.CHECK_FOR_NEW_TASK;
 import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
 
-import com.community.tools.service.slack.SlackService;
+import com.community.tools.service.MessageService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.Transition;
@@ -21,7 +21,7 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 public class CheckForNewTaskActionTransition implements Transition {
 
   @Autowired
-  private SlackService slackService;
+  private MessageService messageService;
 
   @Value("${tasksForUsers}")
   private String[] tasksForUsers;
@@ -49,6 +49,6 @@ public class CheckForNewTaskActionTransition implements Transition {
         "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Here is your next <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/"
             + tasksList.get(i) + "|TASK>.\"}}]";
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    slackService.sendBlocksMessage(slackService.getUserById(user), taskMessage);
+    messageService.sendBlocksMessage(messageService.getUserById(user), taskMessage);
   }
 }

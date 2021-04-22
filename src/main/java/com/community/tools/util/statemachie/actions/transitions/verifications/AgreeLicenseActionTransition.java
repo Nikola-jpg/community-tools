@@ -4,7 +4,8 @@ import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
 import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
 import static com.community.tools.util.statemachie.State.INFORMATION_CHANNELS;
 
-import com.community.tools.service.slack.SlackService;
+import com.community.tools.service.MessageService;
+import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.Transition;
@@ -22,7 +23,7 @@ public class AgreeLicenseActionTransition implements Transition {
   private String addGitName;
 
   @Autowired
-  private SlackService slackService;
+  private MessageService messageService;
 
   @Autowired
   private Action<State, Event> errorAction;
@@ -40,7 +41,9 @@ public class AgreeLicenseActionTransition implements Transition {
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    slackService.sendBlocksMessage(slackService.getUserById(user), addGitName);
+    QuestionPayload payload = (QuestionPayload) stateContext.getExtendedState()
+        .getVariables().get("dataPayload");
+    String user = payload.getId();
+    messageService.sendBlocksMessage(messageService.getUserById(user), addGitName);
   }
 }

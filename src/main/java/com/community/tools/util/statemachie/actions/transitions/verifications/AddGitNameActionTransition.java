@@ -5,9 +5,10 @@ import static com.community.tools.util.statemachie.State.ADDED_GIT;
 import static com.community.tools.util.statemachie.State.CHECK_LOGIN;
 
 import com.community.tools.model.User;
+import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
-import com.community.tools.service.slack.SlackService;
+import com.community.tools.service.payload.CheckLoginPayload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.Transition;
@@ -32,7 +33,7 @@ public class AddGitNameActionTransition implements Transition {
   @Value("${generalInformationChannel}")
   private String channel;
   @Autowired
-  private SlackService slackService;
+  private MessageService messageService;
   @Autowired
   private StateMachineRepository stateMachineRepository;
   @Autowired
@@ -54,8 +55,10 @@ public class AddGitNameActionTransition implements Transition {
   @SneakyThrows
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    String nickname = stateContext.getExtendedState().getVariables().get("gitNick").toString();
+    CheckLoginPayload payload = (CheckLoginPayload) stateContext.getExtendedState().getVariables()
+        .get("dataPayload");
+    String user = payload.getId();
+    String nickname = payload.getGitNick();
 
     User stateEntity = stateMachineRepository.findByUserID(user).get();
     stateEntity.setGitName(nickname);
@@ -70,21 +73,21 @@ public class AddGitNameActionTransition implements Transition {
           .stream().filter(e -> e.getName().equals("trainees")).findFirst()
           .get().add(userGitLogin);
     } catch (IOException e) {
-      slackService.sendPrivateMessage(slackService.getUserById(user),
+      messageService.sendPrivateMessage(messageService.getUserById(user),
           "Something went wrong when adding to role. You need to contact the admin!");
     }
-    slackService.sendPrivateMessage(slackService.getUserById(user), congratsAvailableNick);
-    slackService.sendMessageToConversation(channel,
+    messageService.sendPrivateMessage(messageService.getUserById(user), congratsAvailableNick);
+    messageService.sendMessageToConversation(channel,
         generalInformationAboutUserToChannel(user, userGitLogin)
             + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
   }
 
   private String generalInformationAboutUserToChannel(String slackName, GHUser user) {
-    return slackService.getUserById(slackName) + " - " + user.getLogin();
+    return messageService.getUserById(slackName) + " - " + user.getLogin();
   }
 
   private String sendUserAnswersToChannel(String firstAnswer, String secondAnswer,
-                                          String thirdAnswer) {
+      String thirdAnswer) {
     return "Answer on questions : \n"
         + "1. " + firstAnswer + ";\n"
         + "2. " + secondAnswer + ";\n"

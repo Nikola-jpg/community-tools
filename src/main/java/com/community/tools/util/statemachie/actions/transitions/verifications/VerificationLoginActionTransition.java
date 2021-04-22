@@ -4,8 +4,9 @@ import static com.community.tools.util.statemachie.Event.LOGIN_CONFIRMATION;
 import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
 import static com.community.tools.util.statemachie.State.CHECK_LOGIN;
 
+import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
-import com.community.tools.service.slack.SlackService;
+import com.community.tools.service.payload.AgreedLicensePayload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.Transition;
@@ -26,7 +27,7 @@ public class VerificationLoginActionTransition implements Transition {
   @Value("${askAboutProfile}")
   private String askAboutProfile;
   @Autowired
-  private SlackService slackService;
+  private MessageService messageService;
   @Autowired
   private GitHubService gitHubService;
 
@@ -43,11 +44,14 @@ public class VerificationLoginActionTransition implements Transition {
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    String nickname = stateContext.getExtendedState().getVariables().get("gitNick").toString();
+    AgreedLicensePayload payload = (AgreedLicensePayload) stateContext.getExtendedState()
+        .getVariables()
+        .get("dataPayload");
+    String id = payload.getId();
+    String nickname = payload.getGitNick();
     try {
       GHUser userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
-      slackService.sendPrivateMessage(slackService.getUserById(user),
+      messageService.sendPrivateMessage(messageService.getUserById(id),
           askAboutProfile + "\n" + userGitLogin.getHtmlUrl().toString());
     } catch (IOException e) {
       throw new RuntimeException(e);

@@ -4,7 +4,8 @@ import static com.community.tools.util.statemachie.Event.QUESTION_FIRST;
 import static com.community.tools.util.statemachie.State.FIRST_QUESTION;
 import static com.community.tools.util.statemachie.State.NEW_USER;
 
-import com.community.tools.service.slack.SlackService;
+import com.community.tools.service.MessageService;
+import com.community.tools.service.payload.NewUserPayload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.Transition;
@@ -22,15 +23,17 @@ public class FirstQuestionActionTransition implements Transition {
   private String firstQuestion;
 
   @Autowired
-  private SlackService slackService;
+  private MessageService messageService;
 
   @Autowired
   private Action<State, Event> errorAction;
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    slackService.sendBlocksMessage(slackService.getUserById(user), firstQuestion);
+    NewUserPayload payload = (NewUserPayload) stateContext.getExtendedState().getVariables()
+        .get("dataPayload");
+    String id = payload.getId();
+    messageService.sendBlocksMessage(messageService.getUserById(id), firstQuestion);
   }
 
   @Override

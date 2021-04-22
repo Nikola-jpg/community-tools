@@ -1,10 +1,12 @@
 package com.community.tools.service.payload;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class NewUserPayload extends Payload {
 
   private Integer taskNumber;
@@ -18,7 +20,7 @@ public class NewUserPayload extends Payload {
    * @param taskNumber - variable for working Action
    * @param mentor     - variable for Action
    */
-  public NewUserPayload(Integer id, Integer taskNumber, String mentor) {
+  public NewUserPayload(String id, Integer taskNumber, String mentor) {
     super(id);
     this.taskNumber = taskNumber;
     this.mentor = mentor;

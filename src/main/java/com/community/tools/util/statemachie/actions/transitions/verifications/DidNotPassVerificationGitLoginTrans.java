@@ -4,7 +4,8 @@ import static com.community.tools.util.statemachie.Event.DID_NOT_PASS_VERIFICATI
 import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
 import static com.community.tools.util.statemachie.State.CHECK_LOGIN;
 
-import com.community.tools.service.slack.SlackService;
+import com.community.tools.service.MessageService;
+import com.community.tools.service.payload.CheckLoginPayload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.Transition;
@@ -23,7 +24,7 @@ public class DidNotPassVerificationGitLoginTrans implements Transition {
   @Value("${answeredNoDuringVerification}")
   private String answeredNoDuringVerification;
   @Autowired
-  private SlackService slackService;
+  private MessageService messageService;
 
   @Override
   public void configure(
@@ -38,8 +39,10 @@ public class DidNotPassVerificationGitLoginTrans implements Transition {
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    slackService.sendPrivateMessage(slackService.getUserById(user),
+    CheckLoginPayload payload = (CheckLoginPayload) stateContext.getExtendedState().getVariables()
+        .get("dataPayload");
+    String user = payload.getId().toString();
+    messageService.sendPrivateMessage(messageService.getUserById(user),
         answeredNoDuringVerification);
   }
 }

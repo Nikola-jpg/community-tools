@@ -4,10 +4,13 @@ import static com.community.tools.util.statemachie.Event.QUESTION_THIRD;
 import static com.community.tools.util.statemachie.State.SECOND_QUESTION;
 import static com.community.tools.util.statemachie.State.THIRD_QUESTION;
 
-import com.community.tools.service.slack.SlackService;
+import com.community.tools.model.User;
+import com.community.tools.service.MessageService;
+import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.Transition;
+import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -22,10 +25,13 @@ public class ThirdQuestionActionTransition implements Transition {
   private String thirdQuestion;
 
   @Autowired
-  private SlackService slackService;
+  private MessageService messageService;
 
   @Autowired
   private Action<State, Event> errorAction;
+
+  @Autowired
+  private StateMachineRepository stateMachineRepository;
 
   @Override
   public void configure(
@@ -40,7 +46,12 @@ public class ThirdQuestionActionTransition implements Transition {
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    slackService.sendBlocksMessage(slackService.getUserById(user), thirdQuestion);
+    QuestionPayload payloadSecondAnswer = (QuestionPayload) stateContext.getExtendedState()
+        .getVariables().get("dataPayload");
+    String id = payloadSecondAnswer.getUser();
+    User stateEntity = stateMachineRepository.findByUserID(id).get();
+    stateEntity.setSecondAnswerAboutRules(payloadSecondAnswer.getAnswer());
+    stateMachineRepository.save(stateEntity);
+    messageService.sendBlocksMessage(messageService.getUserById(id), thirdQuestion);
   }
 }

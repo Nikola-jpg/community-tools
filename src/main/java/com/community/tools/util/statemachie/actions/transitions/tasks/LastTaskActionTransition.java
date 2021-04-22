@@ -4,7 +4,7 @@ import static com.community.tools.util.statemachie.Event.LAST_TASK;
 import static com.community.tools.util.statemachie.State.CHECK_FOR_NEW_TASK;
 import static com.community.tools.util.statemachie.State.CONGRATS_LAST_TASK;
 
-import com.community.tools.service.slack.SlackService;
+import com.community.tools.service.MessageService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.Transition;
@@ -29,7 +29,7 @@ public class LastTaskActionTransition implements Transition {
   private String lastTask;
 
   @Autowired
-  private SlackService slackService;
+  private MessageService messageService;
 
   @Override
   public void configure(
@@ -46,6 +46,6 @@ public class LastTaskActionTransition implements Transition {
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    slackService.sendPrivateMessage(slackService.getUserById(user), lastTask);
+    messageService.sendPrivateMessage(messageService.getUserById(user), lastTask);
   }
 }

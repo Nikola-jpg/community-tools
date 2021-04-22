@@ -64,7 +64,7 @@ public class StateMachineService {
 
     if (machine.getState().getId() == AGREED_LICENSE) {
       messageService.sendPrivateMessage(user,
-              checkNickName + nickName);
+          checkNickName + nickName);
 
       boolean nicknameMatch = gitHubService.getGitHubAllUsers().stream()
           .anyMatch(e -> e.getLogin().equals(nickName));
@@ -195,10 +195,13 @@ public class StateMachineService {
    * @param event   - event for StateMachine
    */
   public void doAction(Payload payload, Event event) throws Exception {
-    String id = payload.getId().toString();
+    String id = payload.getId();
     StateMachine<State, Event> machine = restoreMachine(id);
-    machine.getExtendedState().getVariables().put("payload", payload);
+    machine.getExtendedState().getVariables().put("dataPayload", payload);
     machine.sendEvent(event);
+    if (event.equals(Event.CHANNELS_INFORMATION)) {
+      machine.sendEvent(Event.AGREE_LICENSE);
+    }
     persistMachine(machine, id);
   }
 }

@@ -1,8 +1,12 @@
 package com.community.tools.service.payload;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class AddedGitPayload extends Payload {
 
-  public AddedGitPayload(Integer id) {
+  public AddedGitPayload(String id) {
     super(id);
   }
+
 }
