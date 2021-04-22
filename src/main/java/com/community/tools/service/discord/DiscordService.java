@@ -2,7 +2,6 @@ package com.community.tools.service.discord;
 
 import com.community.tools.service.MessageService;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,6 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -56,13 +54,13 @@ public class DiscordService implements MessageService {
    * Send block message with messageText to username.
    *
    * @param username    Discord login
-   * @param messageText List of message with code block
+   * @param fields List of BlockField with code block
    * @return timestamp of message
    */
   @Override
-  public String sendBlocksMessage(String username, List<Map<NameBlock, String>> messageText) {
+  public String sendBlocksMessage(String username, List<BlockField> fields) {
     jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
-      channel.sendMessage(createBlocksMessage(messageText)).queue();
+      channel.sendMessage(createBlocksMessage(fields)).queue();
     });
     return "";
   }
@@ -71,53 +69,53 @@ public class DiscordService implements MessageService {
   /**
    * Create block of message with code block.
    *
-   * @param messageText List of message with code block
+   * @param fields List of BlockField with code block
    * @return MessageEmbed object
    */
-  public MessageEmbed createBlocksMessage(List<Map<NameBlock, String>> messageText) {
+  public MessageEmbed createBlocksMessage(List<BlockField> fields) {
     EmbedBuilder embedBuilder = new EmbedBuilder();
-    for (Map<NameBlock, String> block: messageText) {
-      for (NameBlock key: block.keySet()) {
-        switch (key) {
-          case TITLE: {
-            embedBuilder.setTitle(block.get(NameBlock.TITLE));
-            break;
-          }
-          case DESCRIPTION: {
-            embedBuilder.appendDescription(block.get(NameBlock.DESCRIPTION));
-            break;
-          }
-          case AUTHOR: {
-            embedBuilder.setAuthor(block.get(NameBlock.AUTHOR));
-            break;
-          }
-          case COLOR: {
-            embedBuilder.setColor(Integer.parseInt(block.get(NameBlock.COLOR)));
-            break;
-          }
-          case FIELD: {
-            embedBuilder.addField("", block.get(NameBlock.FIELD), true);
-            break;
-          }
-          case BLANK_FIELD: {
-            embedBuilder.addBlankField(Boolean.parseBoolean(block.get(NameBlock.BLANK_FIELD)));
-            break;
-          }
-          case THUMBNAIL: {
-            embedBuilder.setThumbnail(block.get(NameBlock.THUMBNAIL));
-            break;
-          }
-          case IMAGE: {
-            embedBuilder.setImage(block.get(NameBlock.IMAGE));
-            break;
-          }
-          case FOOTER: {
-            embedBuilder.setFooter(block.get(NameBlock.FOOTER));
-            break;
-          }
-          default: {
+    for (BlockField field: fields) {
+      switch (field.getName()) {
+        case TITLE: {
+          embedBuilder.setTitle(field.getFirstValue(), field.getSecondValue());
+          break;
+        }
+        case DESCRIPTION: {
+          embedBuilder.appendDescription(field.getFirstValue());
+          break;
+        }
+        case AUTHOR: {
+          embedBuilder.setAuthor(field.getFirstValue(), field.getSecondValue(),
+              field.getThirdValue());
+          break;
+        }
+        case COLOR: {
+          embedBuilder.setColor(Integer.parseInt(field.getFirstValue()));
+          break;
+        }
+        case FIELD: {
+          embedBuilder.addField(field.getSecondValue() == null ? "" : field.getSecondValue(),
+              field.getFirstValue(), Boolean.parseBoolean(field.getThirdValue()));
+          break;
+        }
+        case BLANK_FIELD: {
+          embedBuilder.addBlankField(Boolean.parseBoolean(field.getFirstValue()));
+          break;
+        }
+        case THUMBNAIL: {
+          embedBuilder.setThumbnail(field.getFirstValue());
+          break;
+        }
+        case IMAGE: {
+          embedBuilder.setImage(field.getFirstValue());
+          break;
+        }
+        case FOOTER: {
+          embedBuilder.setFooter(field.getFirstValue(), field.getSecondValue());
+          break;
+        }
+        default: {
 
-          }
         }
       }
     }

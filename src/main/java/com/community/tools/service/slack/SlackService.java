@@ -1,7 +1,8 @@
 package com.community.tools.service.slack;
 
 import com.community.tools.service.MessageService;
-import com.community.tools.service.discord.NameBlock;
+import com.community.tools.service.discord.BlockField;
+import com.community.tools.service.discord.FieldName;
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
@@ -83,18 +84,18 @@ public class SlackService implements MessageService {
    * Send block message with messageText to username.
    *
    * @param username    Slack login
-   * @param messageText List of message with code block
+   * @param fields List of BlockField with code block
    * @return timestamp of message
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
   @Override
-  public String sendBlocksMessage(String username, List<Map<NameBlock, String>> messageText) {
+  public String sendBlocksMessage(String username, List<BlockField> fields) {
     Slack slack = Slack.getInstance();
     try {
       ChatPostMessageResponse postResponse = slack.methods(token).chatPostMessage(
           req -> req.channel(getIdByUsername(username)).asUser(true)
-              .blocksAsString(createBlocksMessage(messageText)));
+              .blocksAsString(createBlocksMessage(fields)));
       return postResponse.getTs();
     } catch (IOException | SlackApiException exception) {
       throw new RuntimeException(exception);
@@ -104,12 +105,12 @@ public class SlackService implements MessageService {
   /**
    * Create block of message with code block.
    *
-   * @param messageText List of message with code block
+   * @param fields List of BlockField with code block
    * @return block As String
    */
-  public String createBlocksMessage(List<Map<NameBlock, String>> messageText) {
-    if ((messageText.get(0).get(NameBlock.BLOCKS)) != null) {
-      return messageText.get(0).get(NameBlock.BLOCKS);
+  public String createBlocksMessage(List<BlockField> fields) {
+    if ((fields.get(0).getName()).equals(FieldName.BLOCKS)) {
+      return fields.get(0).getFirstValue();
     }
     return null;
   }
