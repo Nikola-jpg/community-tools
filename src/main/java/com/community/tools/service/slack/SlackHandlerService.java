@@ -3,12 +3,11 @@ package com.community.tools.service.slack;
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
-import com.community.tools.service.payload.AddedGitPayload;
 import com.community.tools.service.payload.AgreedLicensePayload;
 import com.community.tools.service.payload.CheckLoginPayload;
-import com.community.tools.service.payload.NewUserPayload;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.QuestionPayload;
+import com.community.tools.service.payload.SinglePayload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
@@ -122,31 +121,23 @@ public class SlackHandlerService {
           switch (machine.getState().getId()) {
             case NEW_USER:
               if (messageEvent.getText().equals("ready")) {
-                payload = new NewUserPayload(
-                    id,
-                    Integer.parseInt(
-                        machine.getExtendedState().getVariables().get("taskNumber").toString()),
-                    machine.getExtendedState().getVariables().get("mentor").toString()
-                );
+                payload = new SinglePayload(id);
                 event = Event.QUESTION_FIRST;
               } else {
                 message = notThatMessage;
               }
               break;
             case FIRST_QUESTION:
-              payload = new QuestionPayload(id, messageEvent.getText(),
-                  userForQuestion);
+              payload = new QuestionPayload(id, messageEvent.getText(), userForQuestion);
               event = Event.QUESTION_SECOND;
               break;
             case SECOND_QUESTION:
-              payload = new QuestionPayload(id, messageEvent.getText(),
-                  userForQuestion);
+              payload = new QuestionPayload(id, messageEvent.getText(), userForQuestion);
               event = Event.QUESTION_THIRD;
               break;
             case THIRD_QUESTION:
-              payload = new QuestionPayload(id, messageEvent.getText(),
-                  userForQuestion);
-              event = Event.CHANNELS_INFORMATION;
+              payload = new QuestionPayload(id, messageEvent.getText(), userForQuestion);
+              event = Event.CONSENT_TO_INFORMATION;
               break;
             case AGREED_LICENSE:
               gitNick = messageEvent.getText();
@@ -164,7 +155,7 @@ public class SlackHandlerService {
               payload = new CheckLoginPayload(id, gitNick);
               break;
             case ADDED_GIT:
-              payload = new AddedGitPayload(id);
+              payload = new SinglePayload(id);
               event = Event.GET_THE_FIRST_TASK;
               break;
             default:
@@ -178,7 +169,7 @@ public class SlackHandlerService {
                 message);
           } else {
             stateMachineService
-                .doAction(payload, event);
+                .doAction(machine, payload, event);
           }
 
         } catch (Exception e) {

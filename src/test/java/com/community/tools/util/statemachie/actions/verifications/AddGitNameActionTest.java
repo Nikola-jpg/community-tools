@@ -124,7 +124,7 @@ public class AddGitNameActionTest {
     when(slackSer.sendMessageToConversation(anyString(), anyString())).thenReturn("");
 
     addGitNameAction.execute(stateContext);
-    verify(stateContext, times(2)).getExtendedState();
+    verify(stateContext, times(4)).getExtendedState();
     verify(gitHubService, times(2)).getUserByLoginInGitHub("likeRewca");
     verify(gitHubConnectService, times(2)).getGitHubRepository();
     verify(slackSer, times(5)).getUserById("U0191K2V20K");
@@ -165,7 +165,7 @@ public class AddGitNameActionTest {
         .thenReturn("");
 
     addGitNameAction.execute(stateContext);
-    verify(stateContext, times(1)).getExtendedState();
+    verify(stateContext, times(2)).getExtendedState();
     verify(gitHubService, times(1)).getUserByLoginInGitHub("likeRewca");
     verify(gitHubConnectService, times(1)).getGitHubRepository();
     verify(slackSer, times(3)).getUserById("U0191K2V20K");

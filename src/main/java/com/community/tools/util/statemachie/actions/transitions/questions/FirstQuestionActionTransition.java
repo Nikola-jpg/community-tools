@@ -5,7 +5,7 @@ import static com.community.tools.util.statemachie.State.FIRST_QUESTION;
 import static com.community.tools.util.statemachie.State.NEW_USER;
 
 import com.community.tools.service.MessageService;
-import com.community.tools.service.payload.NewUserPayload;
+import com.community.tools.service.payload.SinglePayload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.Transition;
@@ -30,7 +30,7 @@ public class FirstQuestionActionTransition implements Transition {
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    NewUserPayload payload = (NewUserPayload) stateContext.getExtendedState().getVariables()
+    SinglePayload payload = (SinglePayload) stateContext.getExtendedState().getVariables()
         .get("dataPayload");
     String id = payload.getId();
     messageService.sendBlocksMessage(messageService.getUserById(id), firstQuestion);

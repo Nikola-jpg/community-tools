@@ -1,7 +1,7 @@
 package com.community.tools.util.statemachie.actions.transitions.information;
 
-import static com.community.tools.util.statemachie.Event.CHANNELS_INFORMATION;
-import static com.community.tools.util.statemachie.State.INFORMATION_CHANNELS;
+import static com.community.tools.util.statemachie.Event.CONSENT_TO_INFORMATION;
+import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
 import static com.community.tools.util.statemachie.State.THIRD_QUESTION;
 
 import com.community.tools.model.User;
@@ -19,10 +19,13 @@ import org.springframework.statemachine.annotation.WithStateMachine;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
 @WithStateMachine
-public class ChannelInformationActionTransition implements Transition {
+public class ConsentToInformationActionTransition implements Transition {
 
   @Value("${messageAboutSeveralInfoChannel}")
   private String messageAboutSeveralInfoChannel;
+
+  @Value("${addGitName}")
+  private String addGitName;
 
   @Autowired
   private MessageService messageService;
@@ -43,6 +46,7 @@ public class ChannelInformationActionTransition implements Transition {
     stateMachineRepository.save(stateEntity);
     messageService
         .sendBlocksMessage(messageService.getUserById(id), messageAboutSeveralInfoChannel);
+    messageService.sendBlocksMessage(messageService.getUserById(id), addGitName);
   }
 
   @Override
@@ -51,8 +55,8 @@ public class ChannelInformationActionTransition implements Transition {
     transitions
         .withExternal()
         .source(THIRD_QUESTION)
-        .target(INFORMATION_CHANNELS)
-        .event(CHANNELS_INFORMATION)
+        .target(AGREED_LICENSE)
+        .event(CONSENT_TO_INFORMATION)
         .action(this, errorAction);
   }
 }

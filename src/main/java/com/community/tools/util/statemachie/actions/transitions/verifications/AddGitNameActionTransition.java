@@ -80,6 +80,7 @@ public class AddGitNameActionTransition implements Transition {
     messageService.sendMessageToConversation(channel,
         generalInformationAboutUserToChannel(user, userGitLogin)
             + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
+    stateContext.getExtendedState().getVariables().put("gitNick", nickname);
   }
 
   private String generalInformationAboutUserToChannel(String slackName, GHUser user) {

@@ -194,14 +194,9 @@ public class StateMachineService {
    * @param payload - payload that stores data to execute Actions
    * @param event   - event for StateMachine
    */
-  public void doAction(Payload payload, Event event) throws Exception {
-    String id = payload.getId();
-    StateMachine<State, Event> machine = restoreMachine(id);
+  public void doAction(StateMachine<State, Event> machine, Payload payload, Event event) {
     machine.getExtendedState().getVariables().put("dataPayload", payload);
     machine.sendEvent(event);
-    if (event.equals(Event.CHANNELS_INFORMATION)) {
-      machine.sendEvent(event.getNext());
-    }
-    persistMachine(machine, id);
+    persistMachine(machine, payload.getId());
   }
 }

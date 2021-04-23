@@ -5,7 +5,7 @@ import static com.community.tools.util.statemachie.State.ADDED_GIT;
 import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
 
 import com.community.tools.service.MessageService;
-import com.community.tools.service.payload.AddedGitPayload;
+import com.community.tools.service.payload.SinglePayload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.Transition;
@@ -41,7 +41,7 @@ public class GetTheFirstTaskActionTransition implements Transition {
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    AddedGitPayload payload = (AddedGitPayload) stateContext.getExtendedState().getVariables()
+    SinglePayload payload = (SinglePayload) stateContext.getExtendedState().getVariables()
         .get("dataPayload");
     String user = payload.getId();
     messageService.sendBlocksMessage(messageService.getUserById(user), getFirstTask);

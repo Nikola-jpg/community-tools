@@ -53,6 +53,7 @@ public class VerificationLoginActionTransition implements Transition {
       GHUser userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
       messageService.sendPrivateMessage(messageService.getUserById(id),
           askAboutProfile + "\n" + userGitLogin.getHtmlUrl().toString());
+
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

@@ -41,7 +41,7 @@ public class DidNotPassVerificationGitLoginTrans implements Transition {
   public void execute(StateContext<State, Event> stateContext) {
     CheckLoginPayload payload = (CheckLoginPayload) stateContext.getExtendedState().getVariables()
         .get("dataPayload");
-    String user = payload.getId().toString();
+    String user = payload.getId();
     messageService.sendPrivateMessage(messageService.getUserById(user),
         answeredNoDuringVerification);
   }
