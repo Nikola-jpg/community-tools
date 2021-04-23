@@ -1,8 +1,6 @@
 package com.community.tools.service.slack;
 
 import com.community.tools.service.MessageService;
-import com.community.tools.service.discord.BlockField;
-import com.community.tools.service.discord.FieldName;
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
@@ -14,18 +12,15 @@ import com.github.seratch.jslack.api.webhook.Payload;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Primary
+//@Primary
 public class SlackService implements MessageService {
 
   @Value("${slack.token}")
@@ -62,57 +57,22 @@ public class SlackService implements MessageService {
    * Send block message with messageText to username.
    *
    * @param username    Slack login
-   * @param messageText Text of message
+   * @param message Text of message
    * @return timestamp of message
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
   @Override
-  public String sendBlocksMessage(String username, String messageText) {
+  public <T> String sendBlocksMessage(String username, T message) {
     Slack slack = Slack.getInstance();
     try {
       ChatPostMessageResponse postResponse = slack.methods(token).chatPostMessage(
           req -> req.channel(getIdByUsername(username)).asUser(true)
-                      .blocksAsString(messageText));
+                      .blocksAsString((String) message));
       return postResponse.getTs();
     } catch (IOException | SlackApiException exception) {
       throw new RuntimeException(exception);
     }
-  }
-
-  /**
-   * Send block message with messageText to username.
-   *
-   * @param username    Slack login
-   * @param fields List of BlockField with code block
-   * @return timestamp of message
-   * @throws IOException       IOException
-   * @throws SlackApiException SlackApiException
-   */
-  @Override
-  public String sendBlocksMessage(String username, List<BlockField> fields) {
-    Slack slack = Slack.getInstance();
-    try {
-      ChatPostMessageResponse postResponse = slack.methods(token).chatPostMessage(
-          req -> req.channel(getIdByUsername(username)).asUser(true)
-              .blocksAsString(createBlocksMessage(fields)));
-      return postResponse.getTs();
-    } catch (IOException | SlackApiException exception) {
-      throw new RuntimeException(exception);
-    }
-  }
-
-  /**
-   * Create block of message with code block.
-   *
-   * @param fields List of BlockField with code block
-   * @return block As String
-   */
-  public String createBlocksMessage(List<BlockField> fields) {
-    if ((fields.get(0).getName()).equals(FieldName.BLOCKS)) {
-      return fields.get(0).getFirstValue();
-    }
-    return null;
   }
 
   /**

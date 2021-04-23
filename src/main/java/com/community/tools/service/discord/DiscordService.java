@@ -11,10 +11,12 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Primary
 public class DiscordService implements MessageService {
 
   private final JDA jda;
@@ -38,89 +40,17 @@ public class DiscordService implements MessageService {
    * Send block message with messageText to username.
    *
    * @param username    Discord login
-   * @param messageText Text of message
+   * @param message object of MessageEmbed
    * @return timestamp of message
    */
   @Override
-  public String sendBlocksMessage(String username, String messageText) {
-    EmbedBuilder embedBuilder = new EmbedBuilder();
+  public <T> String sendBlocksMessage(String username, T message) {
     jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
-      channel.sendMessage(embedBuilder.build()).queue();
+      channel.sendMessage((MessageEmbed) message).queue();
     });
     return "";
   }
 
-  /**
-   * Send block message with messageText to username.
-   *
-   * @param username    Discord login
-   * @param fields List of BlockField with code block
-   * @return timestamp of message
-   */
-  @Override
-  public String sendBlocksMessage(String username, List<BlockField> fields) {
-    jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
-      channel.sendMessage(createBlocksMessage(fields)).queue();
-    });
-    return "";
-  }
-
-
-  /**
-   * Create block of message with code block.
-   *
-   * @param fields List of BlockField with code block
-   * @return MessageEmbed object
-   */
-  public MessageEmbed createBlocksMessage(List<BlockField> fields) {
-    EmbedBuilder embedBuilder = new EmbedBuilder();
-    for (BlockField field: fields) {
-      switch (field.getName()) {
-        case TITLE: {
-          embedBuilder.setTitle(field.getFirstValue(), field.getSecondValue());
-          break;
-        }
-        case DESCRIPTION: {
-          embedBuilder.appendDescription(field.getFirstValue());
-          break;
-        }
-        case AUTHOR: {
-          embedBuilder.setAuthor(field.getFirstValue(), field.getSecondValue(),
-              field.getThirdValue());
-          break;
-        }
-        case COLOR: {
-          embedBuilder.setColor(Integer.parseInt(field.getFirstValue()));
-          break;
-        }
-        case FIELD: {
-          embedBuilder.addField(field.getSecondValue() == null ? "" : field.getSecondValue(),
-              field.getFirstValue(), Boolean.parseBoolean(field.getThirdValue()));
-          break;
-        }
-        case BLANK_FIELD: {
-          embedBuilder.addBlankField(Boolean.parseBoolean(field.getFirstValue()));
-          break;
-        }
-        case THUMBNAIL: {
-          embedBuilder.setThumbnail(field.getFirstValue());
-          break;
-        }
-        case IMAGE: {
-          embedBuilder.setImage(field.getFirstValue());
-          break;
-        }
-        case FOOTER: {
-          embedBuilder.setFooter(field.getFirstValue(), field.getSecondValue());
-          break;
-        }
-        default: {
-
-        }
-      }
-    }
-    return embedBuilder.build();
-  }
 
   /**
    * Send block message with messageText to username.
