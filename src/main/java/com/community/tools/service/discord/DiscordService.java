@@ -1,13 +1,10 @@
 package com.community.tools.service.discord;
 
 import com.community.tools.service.MessageService;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -51,43 +48,17 @@ public class DiscordService implements MessageService {
     return "";
   }
 
-
-  /**
-   * Send block message with messageText to username.
-   *
-   * @param username    Discord login
-   * @param messageText Text of message
-   * @return timestamp of message
-   */
-  public String sendBlocksMessageDiscord(String username, String messageText) {
-    MessageBuilder messageBuilder = new MessageBuilder();
-    messageBuilder.appendCodeBlock(messageText, "json");
-
-    EmbedBuilder embedBuilder = new EmbedBuilder();
-    embedBuilder.setAuthor(username)
-          .addField("Description", messageText, true)
-          .setThumbnail("https://s3-media3.fl.yelpcdn.com/bphoto/c7ed05m9lC2EmA3Aruue7A/o.jpg");
-
-    jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
-      channel.sendMessage(embedBuilder.build()).queue();
-    });
-    return "";
-  }
-
-
   /**
    * Send attachment message with messageText to username.
    *
    * @param username    Discord login
-   * @param messageText Text of message
+   * @param message object of MessageEmbed
    * @return timestamp of message
    */
   @Override
-  public String sendAttachmentsMessage(String username, String messageText) {
-    EmbedBuilder embedBuilder = new EmbedBuilder();
-    embedBuilder.setDescription(messageText);
+  public <T> String sendAttachmentsMessage(String username, T message) {
     jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
-      channel.sendMessage(embedBuilder.build()).queue();
+      channel.sendMessage((MessageEmbed) message).queue();
     });
     return "";
   }
@@ -110,16 +81,13 @@ public class DiscordService implements MessageService {
    * Send attachment message with blocks of Text to the channel.
    *
    * @param channelName Name of channel
-   * @param messageText Blocks of message
+   * @param message object of MessageEmbed
    * @return timestamp of message
    */
   @Override
-  public String sendBlockMessageToConversation(String channelName, String messageText) {
-    EmbedBuilder embedBuilder = new EmbedBuilder();
-    embedBuilder.setDescription(messageText);
-
+  public <T> String sendBlockMessageToConversation(String channelName, T message) {
     jda.getTextChannelById(getIdByChannelName(channelName))
-          .sendMessage(embedBuilder.build()).queue();
+        .sendMessage((MessageEmbed) message).queue();
     return "";
   }
 

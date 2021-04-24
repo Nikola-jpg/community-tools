@@ -16,6 +16,7 @@ import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -79,19 +80,19 @@ public class SlackService implements MessageService {
    * Send attachment message with messageText to username.
    *
    * @param username    Slack login
-   * @param messageText Text of message
+   * @param message Text of message
    * @return timestamp of message
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
   @Override
-  public String sendAttachmentsMessage(String username, String messageText) {
+  public <T> String sendAttachmentsMessage(String username, T message) {
     Slack slack = Slack.getInstance();
     try {
       ChatPostMessageResponse postResponse =
           slack.methods(token).chatPostMessage(
               req -> req.channel(getIdByUsername(username)).asUser(true)
-                  .attachmentsAsString(messageText));
+                  .attachmentsAsString((String) message));
 
       return postResponse.getTs();
     } catch (IOException | SlackApiException exception) {
@@ -125,19 +126,19 @@ public class SlackService implements MessageService {
    * Send attachment message with blocks of Text to the channel.
    *
    * @param channelName Name of channel
-   * @param messageText Blocks of message
+   * @param message Blocks of message
    * @return timestamp of message
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
   @Override
-  public String sendBlockMessageToConversation(String channelName, String messageText) {
+  public <T> String sendBlockMessageToConversation(String channelName, T message) {
     Slack slack = Slack.getInstance();
     try {
       ChatPostMessageResponse postResponse =
           slack.methods(token).chatPostMessage(
               req -> req.channel(getIdByChannelName(channelName))
-                  .asUser(true).blocksAsString(messageText));
+                  .asUser(true).blocksAsString((String) message));
       return postResponse.getTs();
     } catch (IOException | SlackApiException exception) {
       throw new RuntimeException(exception);

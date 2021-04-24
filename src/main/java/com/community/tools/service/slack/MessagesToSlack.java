@@ -27,7 +27,7 @@ public class MessagesToSlack {
   public static final String MESSAGE_ABOUT_RULES = "[{ \"type\": \"section\", \"text\": {"
       + " \"type\": \"mrkdwn\", \"text\": \"" + Messages.MESSAGE_ABOUT_RULES_1 + "\" }}, {"
       + " \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \""
-      + Messages.MESSAGE_ABOUT_RULES_2 + "\" } }, { \"type\": \"section\", \"text\": {"
+      + Messages.MESSAGE_ABOUT_RULES_2 + "|Rules>\" } }, { \"type\": \"section\", \"text\": {"
       + " \"type\": \"mrkdwn\", \"text\": \"" + Messages.MESSAGE_ABOUT_RULES_3 + "\"} }, {"
       + "\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\",\"text\": \""
       + Messages.MESSAGE_ABOUT_RULES_4 + "\"}]}]";

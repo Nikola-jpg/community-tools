@@ -47,11 +47,11 @@ public class Messages {
   public static final String MESSAGE_ABOUT_RULES_1 = "Before you start, be sure to familiarize"
       + " yourself with the rules.  You can read the rules by clicking on this link.:point_down:";
   public static final String MESSAGE_ABOUT_RULES_2 =
-      "<https://github.com/Broscorp-net/traineeship/blob/master/README.md|Rules>";
+      "<https://github.com/Broscorp-net/traineeship/blob/master/README.md>";
   public static final String MESSAGE_ABOUT_RULES_3 = "After you have read the rules,"
       + " please answer a few questions.";
   public static final String MESSAGE_ABOUT_RULES_4 = "`Let me know when you are ready"
-      + " (write \\\"ready\\\").`";
+      + " (write \"ready\").`";
 
 
 

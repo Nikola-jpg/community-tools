@@ -6,11 +6,11 @@ public interface MessageService extends UserService {
 
   <T> String sendBlocksMessage(String username, T message);
 
-  String sendAttachmentsMessage(String username, String messageText);
+  <T> String sendAttachmentsMessage(String username, T message);
 
   String sendMessageToConversation(String channelName, String messageText);
 
-  String sendBlockMessageToConversation(String channelName, String messageText);
+  <T> String sendBlockMessageToConversation(String channelName, T message);
 
   String sendMessageToChat(String channelName, String messageText);
 
