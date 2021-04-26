@@ -1,13 +1,11 @@
-package com.community.tools.util.statemachie.actions.transitions.tasks;
+package com.community.tools.util.statemachine.actions.transitions.tasks;
 
-import static com.community.tools.util.statemachie.Event.LAST_TASK;
-import static com.community.tools.util.statemachie.State.CHECK_FOR_NEW_TASK;
-import static com.community.tools.util.statemachie.State.CONGRATS_LAST_TASK;
+import static com.community.tools.util.statemachine.Event.LAST_TASK;
 
 import com.community.tools.service.MessageService;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.actions.Transition;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
+import com.community.tools.util.statemachine.actions.Transition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -36,8 +34,8 @@ public class LastTaskActionTransition implements Transition {
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
     transitions
         .withExternal()
-        .source(CHECK_FOR_NEW_TASK)
-        .target(CONGRATS_LAST_TASK)
+        .source(State.CHECK_FOR_NEW_TASK)
+        .target(State.CONGRATS_LAST_TASK)
         .event(LAST_TASK)
         .guard(lastTaskGuard)
         .action(this, errorAction);

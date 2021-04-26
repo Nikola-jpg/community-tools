@@ -3,7 +3,6 @@ package com.community.tools.service.github;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
-import com.community.tools.service.slack.SlackService;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
 import java.io.IOException;

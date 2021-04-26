@@ -1,14 +1,10 @@
-package com.community.tools.util.statemachie.actions.transitions.verifications;
-
-import static com.community.tools.util.statemachie.Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
-import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
-import static com.community.tools.util.statemachie.State.CHECK_LOGIN;
+package com.community.tools.util.statemachine.actions.transitions.verifications;
 
 import com.community.tools.service.MessageService;
 import com.community.tools.service.payload.VerificationPayload;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.actions.Transition;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
+import com.community.tools.util.statemachine.actions.Transition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -31,9 +27,9 @@ public class DidNotPassVerificationGitLoginTrans implements Transition {
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
     transitions
         .withExternal()
-        .source(CHECK_LOGIN)
-        .target(AGREED_LICENSE)
-        .event(DID_NOT_PASS_VERIFICATION_GIT_LOGIN)
+        .source(State.CHECK_LOGIN)
+        .target(State.AGREED_LICENSE)
+        .event(Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN)
         .action(this, errorAction);
   }
 

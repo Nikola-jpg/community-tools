@@ -1,18 +1,14 @@
-package com.community.tools.util.statemachie.actions.transitions.verifications;
-
-import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
-import static com.community.tools.util.statemachie.State.ADDED_GIT;
-import static com.community.tools.util.statemachie.State.CHECK_LOGIN;
+package com.community.tools.util.statemachine.actions.transitions.verifications;
 
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.VerificationPayload;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.actions.Transition;
-import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
+import com.community.tools.util.statemachine.actions.Transition;
+import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import java.io.IOException;
 import lombok.SneakyThrows;
 import org.kohsuke.github.GHUser;
@@ -46,9 +42,9 @@ public class AddGitNameActionTransition implements Transition {
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
     transitions
         .withExternal()
-        .source(CHECK_LOGIN)
-        .target(ADDED_GIT)
-        .event(ADD_GIT_NAME)
+        .source(State.CHECK_LOGIN)
+        .target(State.ADDED_GIT)
+        .event(Event.ADD_GIT_NAME)
         .action(this, errorAction);
   }
 

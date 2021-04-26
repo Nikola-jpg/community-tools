@@ -1,7 +1,7 @@
-package com.community.tools.util.statemachie.actions;
+package com.community.tools.util.statemachine.actions;
 
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 

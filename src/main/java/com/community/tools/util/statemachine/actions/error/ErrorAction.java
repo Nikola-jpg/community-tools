@@ -1,7 +1,7 @@
-package com.community.tools.util.statemachie.actions.error;
+package com.community.tools.util.statemachine.actions.error;
 
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
 import java.util.logging.Logger;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;

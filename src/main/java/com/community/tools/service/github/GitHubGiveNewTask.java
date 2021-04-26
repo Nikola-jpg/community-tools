@@ -1,8 +1,8 @@
 package com.community.tools.service.github;
 
 import com.community.tools.service.StateMachineService;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateMachine;

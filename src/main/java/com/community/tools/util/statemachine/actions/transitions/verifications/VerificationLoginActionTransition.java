@@ -1,15 +1,11 @@
-package com.community.tools.util.statemachie.actions.transitions.verifications;
-
-import static com.community.tools.util.statemachie.Event.LOGIN_CONFIRMATION;
-import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
-import static com.community.tools.util.statemachie.State.CHECK_LOGIN;
+package com.community.tools.util.statemachine.actions.transitions.verifications;
 
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.VerificationPayload;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.actions.Transition;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
+import com.community.tools.util.statemachine.actions.Transition;
 import java.io.IOException;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +32,9 @@ public class VerificationLoginActionTransition implements Transition {
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
     transitions
         .withExternal()
-        .source(AGREED_LICENSE)
-        .target(CHECK_LOGIN)
-        .event(LOGIN_CONFIRMATION)
+        .source(State.AGREED_LICENSE)
+        .target(State.CHECK_LOGIN)
+        .event(Event.LOGIN_CONFIRMATION)
         .action(this, errorAction);
   }
 

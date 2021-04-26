@@ -1,16 +1,12 @@
-package com.community.tools.util.statemachie.actions.transitions.information;
-
-import static com.community.tools.util.statemachie.Event.CONSENT_TO_INFORMATION;
-import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
-import static com.community.tools.util.statemachie.State.THIRD_QUESTION;
+package com.community.tools.util.statemachine.actions.transitions.information;
 
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.payload.QuestionPayload;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.actions.Transition;
-import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
+import com.community.tools.util.statemachine.actions.Transition;
+import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -54,9 +50,9 @@ public class ConsentToInformationActionTransition implements Transition {
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
     transitions
         .withExternal()
-        .source(THIRD_QUESTION)
-        .target(AGREED_LICENSE)
-        .event(CONSENT_TO_INFORMATION)
+        .source(State.THIRD_QUESTION)
+        .target(State.AGREED_LICENSE)
+        .event(Event.CONSENT_TO_INFORMATION)
         .action(this, errorAction);
   }
 }

@@ -1,16 +1,12 @@
-package com.community.tools.util.statemachie.actions.transitions.questions;
-
-import static com.community.tools.util.statemachie.Event.QUESTION_THIRD;
-import static com.community.tools.util.statemachie.State.SECOND_QUESTION;
-import static com.community.tools.util.statemachie.State.THIRD_QUESTION;
+package com.community.tools.util.statemachine.actions.transitions.questions;
 
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.payload.QuestionPayload;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.actions.Transition;
-import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
+import com.community.tools.util.statemachine.actions.Transition;
+import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -19,10 +15,10 @@ import org.springframework.statemachine.annotation.WithStateMachine;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
 @WithStateMachine
-public class ThirdQuestionActionTransition implements Transition {
+public class SecondQuestionActionTransition implements Transition {
 
-  @Value("${thirdQuestion}")
-  private String thirdQuestion;
+  @Value("${secondQuestion}")
+  private String secondQuestion;
 
   @Autowired
   private MessageService messageService;
@@ -38,20 +34,20 @@ public class ThirdQuestionActionTransition implements Transition {
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
     transitions
         .withExternal()
-        .source(SECOND_QUESTION)
-        .target(THIRD_QUESTION)
-        .event(QUESTION_THIRD)
+        .source(State.FIRST_QUESTION)
+        .target(State.SECOND_QUESTION)
+        .event(Event.QUESTION_SECOND)
         .action(this, errorAction);
   }
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    QuestionPayload payloadSecondAnswer = (QuestionPayload) stateContext.getExtendedState()
+    QuestionPayload payloadFirstAnswer = (QuestionPayload) stateContext.getExtendedState()
         .getVariables().get("dataPayload");
-    String id = payloadSecondAnswer.getUser();
+    String id = payloadFirstAnswer.getUser();
     User stateEntity = stateMachineRepository.findByUserID(id).get();
-    stateEntity.setSecondAnswerAboutRules(payloadSecondAnswer.getAnswer());
+    stateEntity.setFirstAnswerAboutRules(payloadFirstAnswer.getAnswer());
     stateMachineRepository.save(stateEntity);
-    messageService.sendBlocksMessage(messageService.getUserById(id), thirdQuestion);
+    messageService.sendBlocksMessage(messageService.getUserById(id), secondQuestion);
   }
 }

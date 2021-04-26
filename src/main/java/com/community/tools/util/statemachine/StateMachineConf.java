@@ -1,8 +1,6 @@
-package com.community.tools.util.statemachie;
+package com.community.tools.util.statemachine;
 
-import static com.community.tools.util.statemachie.State.NEW_USER;
-
-import com.community.tools.util.statemachie.actions.Transition;
+import com.community.tools.util.statemachine.actions.Transition;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -30,7 +28,7 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
   @Override
   public void configure(final StateMachineStateConfigurer<State, Event> states)
       throws Exception {
-    states.withStates().initial(NEW_USER).states(EnumSet.allOf(State.class));
+    states.withStates().initial(State.NEW_USER).states(EnumSet.allOf(State.class));
   }
 
   @Override

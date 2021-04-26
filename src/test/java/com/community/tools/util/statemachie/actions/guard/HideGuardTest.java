@@ -6,14 +6,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackHandlerService;
-import com.community.tools.service.slack.SlackService;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.actions.guard.HideGuard;
-import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
+import com.community.tools.util.statemachine.actions.guard.HideGuard;
+import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
 import java.io.IOException;
@@ -56,7 +56,7 @@ public class HideGuardTest {
   @MockBean
   private GitHubService gitHubService;
   @MockBean
-  private SlackService slackSer;
+  private MessageService messageService;
   @Mock
   private ExtendedState extendedState;
   @Mock
@@ -70,7 +70,7 @@ public class HideGuardTest {
   public void setUp() throws Exception {
     Field slackService = HideGuard.class.getDeclaredField("slackService");
     slackService.setAccessible(true);
-    slackService.set(hideGuard, slackSer);
+    slackService.set(hideGuard, messageService);
 
     Field repoService = HideGuard.class.getDeclaredField("gitHubService");
     repoService.setAccessible(true);
@@ -87,8 +87,8 @@ public class HideGuardTest {
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
 
-    when(slackSer.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
-    when(slackSer.sendPrivateMessage("Горб Юра",
+    when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
+    when(messageService.sendPrivateMessage("Горб Юра",
             "Okay! Let me check your nick, " + mockData.get("gitNick"))).thenReturn("");
 
     when(gitHubService.getUserByLoginInGitHub("likeRewca")).thenReturn(user);
@@ -97,8 +97,8 @@ public class HideGuardTest {
     assertTrue(hideGuard.evaluate(stateContext));
 
     verify(stateContext, times(2)).getExtendedState();
-    verify(slackSer, times(1)).getUserById("U0191K2V20K");
-    verify(slackSer, times(1))
+    verify(messageService, times(1)).getUserById("U0191K2V20K");
+    verify(messageService, times(1))
             .sendPrivateMessage("Горб Юра", "Okay! Let me check your nick, "
                     + mockData.get("gitNick"));
     verify(gitHubService, times(1)).getUserByLoginInGitHub("likeRewca");
@@ -114,23 +114,23 @@ public class HideGuardTest {
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
 
-    when(slackSer.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
-    when(slackSer.sendPrivateMessage("Горб Юра",
+    when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
+    when(messageService.sendPrivateMessage("Горб Юра",
             "Okay! Let me check your nick, " + mockData.get("gitNick"))).thenReturn("");
 
     when(gitHubService.getUserByLoginInGitHub("likeRewca")).thenThrow(IOException.class);
 
-    when(slackSer.sendPrivateMessage("Горб Юра",
+    when(messageService.sendPrivateMessage("Горб Юра",
             "Sry but looks like you are not registered on Github :worried:")).thenReturn("");
 
     assertFalse(hideGuard.evaluate(stateContext));
 
     verify(stateContext, times(2)).getExtendedState();
-    verify(slackSer, times(2)).getUserById("U0191K2V20K");
-    verify(slackSer, times(1))
+    verify(messageService, times(2)).getUserById("U0191K2V20K");
+    verify(messageService, times(1))
             .sendPrivateMessage("Горб Юра", "Okay! Let me check your nick, "
                     + mockData.get("gitNick"));
-    verify(slackSer, times(1)).sendPrivateMessage("Горб Юра",
+    verify(messageService, times(1)).sendPrivateMessage("Горб Юра",
             "Sry but looks like you are not registered on Github :worried:");
     verify(gitHubService, times(1)).getUserByLoginInGitHub("likeRewca");
   }

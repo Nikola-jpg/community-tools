@@ -1,7 +1,7 @@
 package com.community.tools.service;
 
 import com.community.tools.model.User;
-import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 
 import java.awt.Color;
 import java.awt.Graphics;

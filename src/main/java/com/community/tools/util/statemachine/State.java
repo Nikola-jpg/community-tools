@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie;
+package com.community.tools.util.statemachine;
 
 
 public enum State {

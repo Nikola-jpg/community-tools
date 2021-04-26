@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie;
+package com.community.tools.util.statemachine;
 
 public enum Event {
   ADD_GIT_NAME, GET_THE_FIRST_TASK, GET_THE_NEW_TASK,

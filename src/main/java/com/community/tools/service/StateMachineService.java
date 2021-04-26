@@ -1,18 +1,18 @@
 package com.community.tools.service;
 
-import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
-import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.Event.QUESTION_FIRST;
-import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
-import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.State.NEW_USER;
+import static com.community.tools.util.statemachine.Event.ADD_GIT_NAME;
+import static com.community.tools.util.statemachine.Event.GET_THE_FIRST_TASK;
+import static com.community.tools.util.statemachine.Event.QUESTION_FIRST;
+import static com.community.tools.util.statemachine.State.AGREED_LICENSE;
+import static com.community.tools.util.statemachine.State.GOT_THE_FIRST_TASK;
+import static com.community.tools.util.statemachine.State.NEW_USER;
 
 import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.Payload;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
+import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

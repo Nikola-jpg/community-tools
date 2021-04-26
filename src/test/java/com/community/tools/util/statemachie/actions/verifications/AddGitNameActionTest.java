@@ -8,16 +8,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.community.tools.model.User;
+import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.service.slack.SlackHandlerService;
-import com.community.tools.service.slack.SlackService;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.actions.transitions.verifications.AddGitNameActionTransition;
-import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
+import com.community.tools.util.statemachine.actions.transitions.verifications.AddGitNameActionTransition;
+import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -55,7 +55,7 @@ public class AddGitNameActionTest {
   @Mock
   private GitHubService gitHubService;
   @Mock
-  private SlackService slackSer;
+  private MessageService messageService;
   @Mock
   private SlackHandlerService slackHandlerService;
   @Mock
@@ -88,7 +88,7 @@ public class AddGitNameActionTest {
 
     Field messageService = AddGitNameActionTransition.class.getDeclaredField("messageService");
     messageService.setAccessible(true);
-    messageService.set(addGitNameAction, slackSer);
+    messageService.set(addGitNameAction, this.messageService);
 
     ReflectionTestUtils.setField(addGitNameAction, "congratsAvailableNick",
         "Hurray! Your nick is available. Nice to meet you :smile:");
@@ -118,20 +118,20 @@ public class AddGitNameActionTest {
     when(team.getName()).thenReturn("trainees");
     doNothing().when(team).add(user);
 
-    when(slackSer.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
-    when(slackSer.sendPrivateMessage("Горб Юра",
+    when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
+    when(messageService.sendPrivateMessage("Горб Юра",
         "Hurray! Your nick is available. Nice to meet you :smile:")).thenReturn("");
-    when(slackSer.sendMessageToConversation(anyString(), anyString())).thenReturn("");
+    when(messageService.sendMessageToConversation(anyString(), anyString())).thenReturn("");
 
     addGitNameAction.execute(stateContext);
     verify(stateContext, times(4)).getExtendedState();
     verify(gitHubService, times(2)).getUserByLoginInGitHub("likeRewca");
     verify(gitHubConnectService, times(2)).getGitHubRepository();
-    verify(slackSer, times(5)).getUserById("U0191K2V20K");
-    verify(slackSer, times(2))
+    verify(messageService, times(5)).getUserById("U0191K2V20K");
+    verify(messageService, times(2))
         .sendPrivateMessage("Горб Юра",
             "Hurray! Your nick is available. Nice to meet you :smile:");
-    verify(slackSer, times(2)).sendMessageToConversation(anyString(), anyString());
+    verify(messageService, times(2)).sendMessageToConversation(anyString(), anyString());
   }
 
 
@@ -159,8 +159,8 @@ public class AddGitNameActionTest {
     when(team.getName()).thenReturn("trainees");
     doThrow(IOException.class).when(team).add(user);
 
-    when(slackSer.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
-    when(slackSer.sendPrivateMessage("Горб Юра",
+    when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
+    when(messageService.sendPrivateMessage("Горб Юра",
         "Something went wrong when adding to role. You need to contact the admin!"))
         .thenReturn("");
 
@@ -168,13 +168,13 @@ public class AddGitNameActionTest {
     verify(stateContext, times(2)).getExtendedState();
     verify(gitHubService, times(1)).getUserByLoginInGitHub("likeRewca");
     verify(gitHubConnectService, times(1)).getGitHubRepository();
-    verify(slackSer, times(3)).getUserById("U0191K2V20K");
-    verify(slackSer, times(1))
+    verify(messageService, times(3)).getUserById("U0191K2V20K");
+    verify(messageService, times(1))
         .sendPrivateMessage("Горб Юра",
             "Hurray! Your nick is available. Nice to meet you :smile:");
-    verify(slackSer, times(1))
+    verify(messageService, times(1))
         .sendPrivateMessage("Горб Юра",
             "Something went wrong when adding to role. You need to contact the admin!");
-    verify(slackSer, times(1)).sendMessageToConversation(anyString(), anyString());
+    verify(messageService, times(1)).sendMessageToConversation(anyString(), anyString());
   }
 }

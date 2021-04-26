@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie.jpa;
+package com.community.tools.util.statemachine.jpa;
 
 import com.community.tools.model.User;
 
