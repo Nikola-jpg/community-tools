@@ -9,6 +9,7 @@ import static com.community.tools.util.statemachie.State.NEW_USER;
 
 import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubService;
+import com.community.tools.service.payload.Payload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
@@ -51,8 +52,9 @@ public class StateMachineService {
 
   /**
    * Check Slack`s user and Github login.
+   *
    * @param nickName GitHub login
-   * @param userId Slack`s userId
+   * @param userId   Slack`s userId
    * @throws Exception Exception
    */
   public void agreeForGitHubNickName(String nickName, String userId) throws Exception {
@@ -62,10 +64,10 @@ public class StateMachineService {
 
     if (machine.getState().getId() == AGREED_LICENSE) {
       messageService.sendPrivateMessage(user,
-              checkNickName + nickName);
+          checkNickName + nickName);
 
       boolean nicknameMatch = gitHubService.getGitHubAllUsers().stream()
-              .anyMatch(e -> e.getLogin().equals(nickName));
+          .anyMatch(e -> e.getLogin().equals(nickName));
       if (nicknameMatch) {
 
         machine.sendEvent(ADD_GIT_NAME);
@@ -88,6 +90,7 @@ public class StateMachineService {
 
   /**
    * Check action from Slack`s user.
+   *
    * @param action action
    * @param userId Slack`s userId
    * @throws Exception Exception
@@ -121,7 +124,8 @@ public class StateMachineService {
   }
 
   /**
-   *  Restore machine by Slack`s userId.
+   * Restore machine by Slack`s userId.
+   *
    * @param id Slack`s userId
    * @return StateMachine
    * @throws Exception Exception
@@ -135,6 +139,7 @@ public class StateMachineService {
 
   /**
    * Restore machine by GitHub Login.
+   *
    * @param nick GitHub login
    * @return StateMachine
    */
@@ -156,8 +161,9 @@ public class StateMachineService {
 
   /**
    * Persist machine for User by userId.
+   *
    * @param machine StateMachine
-   * @param id Slack`s userId
+   * @param id      Slack`s userId
    */
   public void persistMachine(StateMachine<State, Event> machine, String id) {
     try {
@@ -169,6 +175,7 @@ public class StateMachineService {
 
   /**
    * Persist machine for new User by userId.
+   *
    * @param id Slack`s userId
    * @throws Exception Exception
    */
@@ -179,5 +186,17 @@ public class StateMachineService {
     machine.getExtendedState().getVariables().put("mentor", "NO_MENTOR");
     machine.start();
     persister.persist(machine, id);
+  }
+
+  /**
+   * Method to start the action.
+   *
+   * @param payload - payload that stores data to execute Actions
+   * @param event   - event for StateMachine
+   */
+  public void doAction(StateMachine<State, Event> machine, Payload payload, Event event) {
+    machine.getExtendedState().getVariables().put("dataPayload", payload);
+    machine.sendEvent(event);
+    persistMachine(machine, payload.getId());
   }
 }

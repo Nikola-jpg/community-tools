@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie.actions;
+package com.community.tools.util.statemachie.actions.verifications;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -10,23 +10,23 @@ import static org.mockito.Mockito.when;
 import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
+import com.community.tools.service.payload.Payload;
+import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.service.slack.SlackHandlerService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.actions.transitions.verifications.AddGitNameActionTransition;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
 import lombok.SneakyThrows;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -36,7 +36,6 @@ import org.kohsuke.github.GHUser;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.StateMachine;
@@ -46,7 +45,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class AddGitNameActionTest {
 
   @InjectMocks
-  private AddGitNameAction addGitNameAction;
+  private AddGitNameActionTransition addGitNameAction;
   @Mock
   private StateMachineRepository repository;
   @Mock
@@ -72,34 +71,36 @@ public class AddGitNameActionTest {
 
   /**
    * This method init fields in the AddGitNameAction.
+   *
    * @throws Exception Exception
    */
   @BeforeAll
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
 
-    Field repoField = AddGitNameAction.class.getDeclaredField("gitHubConnectService");
+    Field repoField = AddGitNameActionTransition.class.getDeclaredField("gitHubConnectService");
     repoField.setAccessible(true);
     repoField.set(addGitNameAction, gitHubConnectService);
 
-    Field repoService = AddGitNameAction.class.getDeclaredField("gitHubService");
+    Field repoService = AddGitNameActionTransition.class.getDeclaredField("gitHubService");
     repoService.setAccessible(true);
     repoService.set(addGitNameAction, gitHubService);
 
-    Field slackService = AddGitNameAction.class.getDeclaredField("slackService");
-    slackService.setAccessible(true);
-    slackService.set(addGitNameAction, slackSer);
+    Field messageService = AddGitNameActionTransition.class.getDeclaredField("messageService");
+    messageService.setAccessible(true);
+    messageService.set(addGitNameAction, slackSer);
 
     ReflectionTestUtils.setField(addGitNameAction, "congratsAvailableNick",
-            "Hurray! Your nick is available. Nice to meet you :smile:");
+        "Hurray! Your nick is available. Nice to meet you :smile:");
     ReflectionTestUtils.setField(addGitNameAction, "channel", "test_3");
   }
 
   @Test
   public void executeTest() throws Exception {
     Map<Object, Object> mockData = new HashMap<>();
-    mockData.put("id", "U0191K2V20K");
-    mockData.put("gitNick", "likeRewca");
+
+    Payload payload = new VerificationPayload("U0191K2V20K", "likeRewca");
+    mockData.put("dataPayload", payload);
 
     Set<GHTeam> mockSet = new HashSet<>();
     mockSet.add(team);
@@ -119,7 +120,7 @@ public class AddGitNameActionTest {
 
     when(slackSer.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
     when(slackSer.sendPrivateMessage("Горб Юра",
-            "Hurray! Your nick is available. Nice to meet you :smile:")).thenReturn("");
+        "Hurray! Your nick is available. Nice to meet you :smile:")).thenReturn("");
     when(slackSer.sendMessageToConversation(anyString(), anyString())).thenReturn("");
 
     addGitNameAction.execute(stateContext);
@@ -128,8 +129,8 @@ public class AddGitNameActionTest {
     verify(gitHubConnectService, times(2)).getGitHubRepository();
     verify(slackSer, times(5)).getUserById("U0191K2V20K");
     verify(slackSer, times(2))
-            .sendPrivateMessage("Горб Юра",
-                    "Hurray! Your nick is available. Nice to meet you :smile:");
+        .sendPrivateMessage("Горб Юра",
+            "Hurray! Your nick is available. Nice to meet you :smile:");
     verify(slackSer, times(2)).sendMessageToConversation(anyString(), anyString());
   }
 
@@ -138,8 +139,9 @@ public class AddGitNameActionTest {
   @Test
   public void shouldGetExceptionWhenAddingToRole() throws IOException {
     Map<Object, Object> mockData = new HashMap<>();
-    mockData.put("id", "U0191K2V20K");
-    mockData.put("gitNick", "likeRewca");
+
+    Payload payload = new VerificationPayload("U0191K2V20K", "likeRewca");
+    mockData.put("dataPayload", payload);
 
     Set<GHTeam> mockSet = new HashSet<>();
     mockSet.add(team);
@@ -159,8 +161,8 @@ public class AddGitNameActionTest {
 
     when(slackSer.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
     when(slackSer.sendPrivateMessage("Горб Юра",
-            "Something went wrong when adding to role. You need to contact the admin!"))
-            .thenReturn("");
+        "Something went wrong when adding to role. You need to contact the admin!"))
+        .thenReturn("");
 
     addGitNameAction.execute(stateContext);
     verify(stateContext, times(2)).getExtendedState();
@@ -168,11 +170,11 @@ public class AddGitNameActionTest {
     verify(gitHubConnectService, times(1)).getGitHubRepository();
     verify(slackSer, times(3)).getUserById("U0191K2V20K");
     verify(slackSer, times(1))
-            .sendPrivateMessage("Горб Юра",
-                    "Hurray! Your nick is available. Nice to meet you :smile:");
+        .sendPrivateMessage("Горб Юра",
+            "Hurray! Your nick is available. Nice to meet you :smile:");
     verify(slackSer, times(1))
-            .sendPrivateMessage("Горб Юра",
-                    "Something went wrong when adding to role. You need to contact the admin!");
+        .sendPrivateMessage("Горб Юра",
+            "Something went wrong when adding to role. You need to contact the admin!");
     verify(slackSer, times(1)).sendMessageToConversation(anyString(), anyString());
   }
 }
