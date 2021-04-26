@@ -10,8 +10,8 @@ import static org.mockito.Mockito.when;
 import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
-import com.community.tools.service.payload.CheckLoginPayload;
 import com.community.tools.service.payload.Payload;
+import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.service.slack.SlackHandlerService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
@@ -99,7 +99,7 @@ public class AddGitNameActionTest {
   public void executeTest() throws Exception {
     Map<Object, Object> mockData = new HashMap<>();
 
-    Payload payload = new CheckLoginPayload("U0191K2V20K", "likeRewca");
+    Payload payload = new VerificationPayload("U0191K2V20K", "likeRewca");
     mockData.put("dataPayload", payload);
 
     Set<GHTeam> mockSet = new HashSet<>();
@@ -140,7 +140,7 @@ public class AddGitNameActionTest {
   public void shouldGetExceptionWhenAddingToRole() throws IOException {
     Map<Object, Object> mockData = new HashMap<>();
 
-    Payload payload = new CheckLoginPayload("U0191K2V20K", "likeRewca");
+    Payload payload = new VerificationPayload("U0191K2V20K", "likeRewca");
     mockData.put("dataPayload", payload);
 
     Set<GHTeam> mockSet = new HashSet<>();

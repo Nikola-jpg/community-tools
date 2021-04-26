@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AgreedLicensePayload extends Payload {
+public class VerificationPayload extends Payload {
 
   private String gitNick;
 
@@ -17,7 +17,7 @@ public class AgreedLicensePayload extends Payload {
    * @param id      - usersId
    * @param gitNick - nick in Git
    */
-  public AgreedLicensePayload(String id, String gitNick) {
+  public VerificationPayload(String id, String gitNick) {
     super(id);
     this.gitNick = gitNick;
   }

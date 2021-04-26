@@ -3,11 +3,10 @@ package com.community.tools.service.slack;
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
-import com.community.tools.service.payload.AgreedLicensePayload;
-import com.community.tools.service.payload.CheckLoginPayload;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.service.payload.SinglePayload;
+import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
@@ -141,7 +140,7 @@ public class SlackHandlerService {
               break;
             case AGREED_LICENSE:
               gitNick = messageEvent.getText();
-              payload = new AgreedLicensePayload(id, gitNick);
+              payload = new VerificationPayload(id, gitNick);
               event = Event.LOGIN_CONFIRMATION;
               break;
             case CHECK_LOGIN:
@@ -152,7 +151,7 @@ public class SlackHandlerService {
               } else {
                 message = notThatMessage;
               }
-              payload = new CheckLoginPayload(id, gitNick);
+              payload = new VerificationPayload(id, gitNick);
               break;
             case ADDED_GIT:
               payload = new SinglePayload(id);

@@ -6,7 +6,7 @@ import static com.community.tools.util.statemachie.State.CHECK_LOGIN;
 
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
-import com.community.tools.service.payload.AgreedLicensePayload;
+import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.Transition;
@@ -44,7 +44,7 @@ public class VerificationLoginActionTransition implements Transition {
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    AgreedLicensePayload payload = (AgreedLicensePayload) stateContext.getExtendedState()
+    VerificationPayload payload = (VerificationPayload) stateContext.getExtendedState()
         .getVariables()
         .get("dataPayload");
     String id = payload.getId();

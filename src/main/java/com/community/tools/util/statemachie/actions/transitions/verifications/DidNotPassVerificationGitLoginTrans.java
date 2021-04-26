@@ -5,7 +5,7 @@ import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
 import static com.community.tools.util.statemachie.State.CHECK_LOGIN;
 
 import com.community.tools.service.MessageService;
-import com.community.tools.service.payload.CheckLoginPayload;
+import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.Transition;
@@ -39,8 +39,8 @@ public class DidNotPassVerificationGitLoginTrans implements Transition {
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    CheckLoginPayload payload = (CheckLoginPayload) stateContext.getExtendedState().getVariables()
-        .get("dataPayload");
+    VerificationPayload payload = (VerificationPayload) stateContext.getExtendedState()
+        .getVariables().get("dataPayload");
     String user = payload.getId();
     messageService.sendPrivateMessage(messageService.getUserById(user),
         answeredNoDuringVerification);
