@@ -1,5 +1,9 @@
 package com.community.tools.model;
 
+import com.google.common.base.Splitter;
+import java.util.Map;
+import java.util.stream.Stream;
+
 public class Messages {
 
   //messages for bot
@@ -71,13 +75,13 @@ public class Messages {
       + " of those who have completed an internship and found a job :sunglasses: ";
   public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_7 = "`Please use the trades to"
       + " respond to messages.`";
-  public static final String TASKS_FOR_USERS = "checkstyle, primitives, boxing, valueref,"
-      + " equals/hashcode, patform, bytecode, gc, exceptions, classpath, generics, inner/classes,"
-      + " override/overload, strings, gamelife";
-  public static final String POINTS_FOR_TASK = "{'checkstyle':1, 'primitives':2, 'boxing':2,"
-      + " 'valueref':3, 'equals/hashcode':3, 'platform':3, 'bytecode':2, 'gc':4, 'exceptions':4,"
-      + " 'classpath':3, 'generics':5, 'inner/classes':5, 'override/overload':4, 'strings':5,"
-      + " 'gamelife':10}";
+  public static final String[] TASKS_FOR_USERS = {"checkstyle", "primitives", "boxing", "valueref",
+      "equals/hashcode", "patform", "bytecode", "gc", "exceptions", "classpath", "generics",
+      "inner/classes", "override/overload", "strings", "gamelife"};
+  public static final Map<String, String> POINTS_FOR_TASK = Splitter.on(", ").
+      withKeyValueSeparator(":").split("checkstyle:1, primitives:2, boxing:2, valueref:3, "
+      + "equals/hashcode:3, platform:3, bytecode:2, gc:4, exceptions:4, classpath:3, generics:5, "
+      + "inner/classes:5, override/overload:4, strings:5, gamelife:10");
   public static final String NO_ACTIVITY_MESSAGE = "There was no activity last week :pensive:";
 
 }

@@ -2,14 +2,12 @@ package com.community.tools.service.discord;
 
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
-import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.service.payload.SinglePayload;
 import com.community.tools.service.payload.VerificationPayload;
-import com.community.tools.service.slack.MessagesToSlack;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
@@ -32,11 +30,10 @@ public class DiscordEventListener extends ListenerAdapter {
   private StateMachineService stateMachineService;
   @Autowired
   private StateMachineRepository stateMachineRepository;
-  @Autowired
-  private BlockService blockService;
 
   @Override
   public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+
     try {
       String user = event.getUser().getId();
       User stateEntity = new User();
@@ -46,9 +43,7 @@ public class DiscordEventListener extends ListenerAdapter {
       stateMachineService.persistMachineForNewUser(user);
       messageService.sendPrivateMessage(event.getUser().getName(), Messages.WELCOME);
       messageService
-          .sendBlocksMessage(event.getUser().getName(),
-              blockService.createBlockMessage(MessagesToSlack.MESSAGE_ABOUT_RULES,
-                  MessagesToDiscord.MESSAGE_ABOUT_RULES));
+          .sendBlocksMessage(event.getUser().getName(), MessagesToDiscord.MESSAGE_ABOUT_RULES);
     } catch (Exception exception) {
       throw new RuntimeException(exception);
     }
@@ -58,7 +53,15 @@ public class DiscordEventListener extends ListenerAdapter {
 
   @Override
   public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
+    if (event.getAuthor().isBot()) {
+      return;
+    }
     try {
+      if (event.getMessage().getContentRaw().equalsIgnoreCase("reset") && true) {
+      //if (event.getText().equals("reset") && testModeSwitcher) {
+        resetUser(event.getAuthor().getId());
+      }
+
       String id = event.getAuthor().getId();
       StateMachine<State, Event> machine = stateMachineService.restoreMachine(id);
       String userForQuestion = machine.getExtendedState().getVariables().get("id").toString();
@@ -136,5 +139,23 @@ public class DiscordEventListener extends ListenerAdapter {
 
   }
 
+  /**
+   * Reset User with Discord id.
+   *
+   * @param id Discord id
+   * @throws Exception Exception
+   */
+  public void resetUser(String id) throws Exception {
 
+    User stateEntity = new User();
+    stateEntity.setUserID(id);
+    stateMachineRepository.save(stateEntity);
+    stateMachineService.persistMachineForNewUser(id);
+
+    String user = messageService.getUserById(id);
+    messageService.sendPrivateMessage(user,
+        Messages.WELCOME);
+    messageService
+        .sendBlocksMessage(user, MessagesToDiscord.MESSAGE_ABOUT_RULES);
+  }
 }

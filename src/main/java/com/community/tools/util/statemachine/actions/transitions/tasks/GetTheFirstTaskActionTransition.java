@@ -4,8 +4,11 @@ import static com.community.tools.util.statemachine.Event.GET_THE_FIRST_TASK;
 import static com.community.tools.util.statemachine.State.ADDED_GIT;
 import static com.community.tools.util.statemachine.State.GOT_THE_FIRST_TASK;
 
+import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
+import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.payload.SinglePayload;
+import com.community.tools.service.slack.MessagesToSlack;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
@@ -26,6 +29,9 @@ public class GetTheFirstTaskActionTransition implements Transition {
   private MessageService messageService;
 
   @Autowired
+  private BlockService blockService;
+
+  @Autowired
   private Action<State, Event> errorAction;
 
   @Override
@@ -44,6 +50,8 @@ public class GetTheFirstTaskActionTransition implements Transition {
     SinglePayload payload = (SinglePayload) stateContext.getExtendedState().getVariables()
         .get("dataPayload");
     String user = payload.getId();
-    messageService.sendBlocksMessage(messageService.getUserById(user), getFirstTask);
+    messageService.sendBlocksMessage(messageService.getUserById(user),
+        blockService.createBlockMessage(
+        MessagesToSlack.GET_FIRST_TASK, MessagesToDiscord.GET_FIRST_TASK));
   }
 }

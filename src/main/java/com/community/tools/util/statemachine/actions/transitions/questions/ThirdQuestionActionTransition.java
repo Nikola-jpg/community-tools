@@ -1,8 +1,11 @@
 package com.community.tools.util.statemachine.actions.transitions.questions;
 
 import com.community.tools.model.User;
+import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
+import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.payload.QuestionPayload;
+import com.community.tools.service.slack.MessagesToSlack;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
@@ -22,6 +25,9 @@ public class ThirdQuestionActionTransition implements Transition {
 
   @Autowired
   private MessageService messageService;
+
+  @Autowired
+  private BlockService blockService;
 
   @Autowired
   private Action<State, Event> errorAction;
@@ -48,6 +54,8 @@ public class ThirdQuestionActionTransition implements Transition {
     User stateEntity = stateMachineRepository.findByUserID(id).get();
     stateEntity.setSecondAnswerAboutRules(payloadSecondAnswer.getAnswer());
     stateMachineRepository.save(stateEntity);
-    messageService.sendBlocksMessage(messageService.getUserById(id), thirdQuestion);
+    messageService.sendBlocksMessage(messageService.getUserById(id),
+        blockService.createBlockMessage(
+        MessagesToSlack.THIRD_QUESTION, MessagesToDiscord.THIRD_QUESTION));
   }
 }

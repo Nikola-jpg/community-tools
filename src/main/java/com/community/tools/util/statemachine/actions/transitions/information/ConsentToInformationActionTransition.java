@@ -1,8 +1,11 @@
 package com.community.tools.util.statemachine.actions.transitions.information;
 
 import com.community.tools.model.User;
+import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
+import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.payload.QuestionPayload;
+import com.community.tools.service.slack.MessagesToSlack;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
@@ -32,6 +35,9 @@ public class ConsentToInformationActionTransition implements Transition {
   @Autowired
   private StateMachineRepository stateMachineRepository;
 
+  @Autowired
+  private BlockService blockService;
+
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     QuestionPayload payloadThirdAnswer = (QuestionPayload) stateContext.getExtendedState()
@@ -41,8 +47,12 @@ public class ConsentToInformationActionTransition implements Transition {
     stateEntity.setThirdAnswerAboutRules(payloadThirdAnswer.getAnswer());
     stateMachineRepository.save(stateEntity);
     messageService
-        .sendBlocksMessage(messageService.getUserById(id), messageAboutSeveralInfoChannel);
-    messageService.sendBlocksMessage(messageService.getUserById(id), addGitName);
+        .sendBlocksMessage(messageService.getUserById(id), blockService.createBlockMessage(
+            MessagesToSlack.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL,
+            MessagesToDiscord.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL));
+    messageService.sendBlocksMessage(messageService.getUserById(id),
+        blockService.createBlockMessage(MessagesToSlack.ADD_GIT_NAME,
+            MessagesToDiscord.ADD_GIT_NAME));
   }
 
   @Override

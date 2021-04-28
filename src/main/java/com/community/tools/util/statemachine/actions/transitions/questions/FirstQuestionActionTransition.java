@@ -1,7 +1,10 @@
 package com.community.tools.util.statemachine.actions.transitions.questions;
 
+import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
+import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.payload.SinglePayload;
+import com.community.tools.service.slack.MessagesToSlack;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
@@ -22,6 +25,9 @@ public class FirstQuestionActionTransition implements Transition {
   private MessageService messageService;
 
   @Autowired
+  private BlockService blockService;
+
+  @Autowired
   private Action<State, Event> errorAction;
 
   @Override
@@ -29,7 +35,9 @@ public class FirstQuestionActionTransition implements Transition {
     SinglePayload payload = (SinglePayload) stateContext.getExtendedState().getVariables()
         .get("dataPayload");
     String id = payload.getId();
-    messageService.sendBlocksMessage(messageService.getUserById(id), firstQuestion);
+    messageService.sendBlocksMessage(messageService.getUserById(id),
+        blockService.createBlockMessage(
+        MessagesToSlack.FIRST_QUESTION, MessagesToDiscord.FIRST_QUESTION));
   }
 
   @Override
