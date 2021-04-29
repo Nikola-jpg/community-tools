@@ -151,7 +151,8 @@ public class SlackHandlerService {
               } else {
                 message = notThatMessage;
               }
-              payload = new VerificationPayload(id, gitNick);
+              payload = (VerificationPayload) machine.getExtendedState()
+                  .getVariables().get("dataPayload");
               break;
             case ADDED_GIT:
               payload = new SinglePayload(id);

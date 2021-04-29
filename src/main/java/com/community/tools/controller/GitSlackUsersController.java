@@ -7,12 +7,14 @@ import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.GitHubService;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.model.User.Profile;
+import com.github.seratch.jslack.api.model.view.ViewState.Value;
 import com.github.seratch.jslack.app_backend.interactive_messages.payload.BlockActionPayload;
 import com.github.seratch.jslack.common.json.GsonFactory;
 import com.google.gson.Gson;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -85,4 +87,22 @@ public class GitSlackUsersController {
     stateMachineService.checkActionsFromButton(pl.getActions()
             .get(0).getValue(),pl.getUser().getId());
   }
+
+//  /**
+//   * Endpoint /sack/action. Method POST
+//   * @param payload JSON of BlockActionPayload
+//   * @throws Exception Exception
+//   */
+//  @ApiOperation(value = "Deserializes Slack payload and sends message to user")
+//  @ApiImplicitParam(name = "payload", dataType = "string", paramType = "query",
+//      required = true, value = "payload")
+//  @RequestMapping(value = "/slack/action/radio_buttons", method = RequestMethod.POST)
+//  public void radioButton(@RequestParam(name = "payload") String payload) {
+//
+//    Gson snakeCase = GsonFactory.createSnakeCase();
+//    BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
+//
+//    Map<String, Map<String, Value>> values = pl.getView().getState().getValues();
+//
+//  }
 }
