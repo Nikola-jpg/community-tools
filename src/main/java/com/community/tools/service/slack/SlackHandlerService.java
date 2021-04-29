@@ -114,7 +114,6 @@ public class SlackHandlerService {
           String userForQuestion = machine.getExtendedState().getVariables().get("id").toString();
 
           String message = defaultMessage;
-          String gitNick = "";
           Event event = null;
           Payload payload = null;
           switch (machine.getState().getId()) {
@@ -139,7 +138,7 @@ public class SlackHandlerService {
               event = Event.CONSENT_TO_INFORMATION;
               break;
             case AGREED_LICENSE:
-              gitNick = messageEvent.getText();
+              String gitNick = messageEvent.getText();
               payload = new VerificationPayload(id, gitNick);
               event = Event.LOGIN_CONFIRMATION;
               break;
@@ -151,7 +150,8 @@ public class SlackHandlerService {
               } else {
                 message = notThatMessage;
               }
-              payload = new VerificationPayload(id, gitNick);
+              payload = (VerificationPayload) machine.getExtendedState().getVariables()
+                  .get("dataPayload");
               break;
             case ADDED_GIT:
               payload = new SinglePayload(id);
