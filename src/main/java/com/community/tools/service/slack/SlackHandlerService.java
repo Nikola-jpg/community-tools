@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -49,7 +50,9 @@ public class SlackHandlerService {
   @Value("${testModeSwitcher}")
   private Boolean testModeSwitcher;
 
-  private final MessageService messageService;
+  @Autowired
+  @Qualifier("slackService")
+  private MessageService messageService;
   private final StateMachineService stateMachineService;
   @Autowired
   private StateMachineRepository stateMachineRepository;

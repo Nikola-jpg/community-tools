@@ -26,7 +26,7 @@ public class Messages {
       + " finishing your set of tasks. Make your last task, send it and wait for the review."
       + " Also you can help your colleagues on their journey :hugging_face:";
   public static final String USERS_AGREE_MESSAGE = "I agree";
-  public static final String WELCOME = "Welcome to the club buddy :dealwithit:";
+  public static final String WELCOME = "Welcome to the club buddy :handshake:";
   public static final String ADD_GIT_NAME = "So, that's it. You've read through all our rules."
       + " \n If you're ready to accept this challenge enter your GitHub nickname.";
   public static final String NO_ONE_CASE = "NO ONE CASE";
@@ -78,8 +78,8 @@ public class Messages {
   public static final String[] TASKS_FOR_USERS = {"checkstyle", "primitives", "boxing", "valueref",
       "equals/hashcode", "patform", "bytecode", "gc", "exceptions", "classpath", "generics",
       "inner/classes", "override/overload", "strings", "gamelife"};
-  public static final Map<String, String> POINTS_FOR_TASK = Splitter.on(", ").
-      withKeyValueSeparator(":").split("checkstyle:1, primitives:2, boxing:2, valueref:3, "
+  public static final Map<String, String> POINTS_FOR_TASK = Splitter.on(", ")
+      .withKeyValueSeparator(":").split("checkstyle:1, primitives:2, boxing:2, valueref:3, "
       + "equals/hashcode:3, platform:3, bytecode:2, gc:4, exceptions:4, classpath:3, generics:5, "
       + "inner/classes:5, override/overload:4, strings:5, gamelife:10");
   public static final String NO_ACTIVITY_MESSAGE = "There was no activity last week :pensive:";

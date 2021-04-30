@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,23 @@ public class GitHubHookService {
   private String opened;
   @Value("${generalInformationChannel}")
   private String channel;
+  //@Autowired
+  //private MessageService messageService;
+
   @Autowired
-  private MessageService messageService;
+  private Map<String, MessageService> messageServiceMap;
+
+  @Value("${currentMessageService}")
+  private String currentMessageService;
+
+  /**
+   * Selected current message service.
+   * @return current message service
+   */
+  public MessageService getMessageService() {
+    return messageServiceMap.get(currentMessageService);
+  }
+
   @Autowired
   private GitHubGiveNewTask gitHubGiveNewTask;
   @Autowired
@@ -63,7 +79,7 @@ public class GitHubHookService {
           throw new RuntimeException(e);
         }
       } else {
-        messageService.sendMessageToConversation(channel,
+        getMessageService().sendMessageToConversation(channel,
                   "User " + user
                           + " created a pull request \n url: " + url);
       }

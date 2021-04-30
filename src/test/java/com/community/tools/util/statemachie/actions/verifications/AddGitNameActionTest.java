@@ -35,6 +35,7 @@ import org.kohsuke.github.GHTeam;
 import org.kohsuke.github.GHUser;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateContext;
@@ -56,6 +57,8 @@ public class AddGitNameActionTest {
   private GitHubService gitHubService;
   @Mock
   private MessageService messageService;
+  @Mock
+  private Map<String, MessageService> messageServiceMap;
   @Mock
   private SlackHandlerService slackHandlerService;
   @Mock
@@ -93,6 +96,7 @@ public class AddGitNameActionTest {
     ReflectionTestUtils.setField(addGitNameAction, "congratsAvailableNick",
         "Hurray! Your nick is available. Nice to meet you :smile:");
     ReflectionTestUtils.setField(addGitNameAction, "channel", "test_3");
+    ReflectionTestUtils.setField(addGitNameAction, "currentMessageService", "discordService");
   }
 
   @Test
@@ -109,6 +113,7 @@ public class AddGitNameActionTest {
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
+    when(messageServiceMap.get(anyString())).thenReturn(messageService);
 
     when(repository.findByUserID("U0191K2V20K")).thenReturn(Optional.of(entity));
 

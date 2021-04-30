@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -27,8 +28,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PublishWeekStatsService {
 
-  private final GitHubService ghEventService;
-  private final MessageService messageService;
+  @Autowired
+  private GitHubService ghEventService;
+  //private final MessageService messageService;
 
   @Value("${importantInformationChannel}")
   private String channel;
@@ -38,6 +40,20 @@ public class PublishWeekStatsService {
 
   @Value("${noActivityMessage}")
   private String noActivityMessage;
+
+  @Autowired
+  private Map<String, MessageService> messageServiceMap;
+
+  @Value("${currentMessageService}")
+  private String currentMessageService;
+
+  /**
+   * Selected current message service.
+   * @return current message service
+   */
+  public MessageService getMessageService() {
+    return messageServiceMap.get(currentMessageService);
+  }
 
   /**
    * Publish statistics of Events for last week. Statistic sends every Monday.
@@ -56,7 +72,7 @@ public class PublishWeekStatsService {
     List<EventData> events = ghEventService.getEvents(startDate, endDate);
     StringBuilder messageBuilder = new StringBuilder();
     if (events.size() == 0) {
-      messageService.sendMessageToConversation(channel, noActivityMessage);
+      getMessageService().sendMessageToConversation(channel, noActivityMessage);
       System.out.println(events);
     } else {
       Map<String, List<EventData>> sortedMapGroupByActors = new HashMap<>();
@@ -99,7 +115,7 @@ public class PublishWeekStatsService {
                 messageBuilder.append("\"}]}");
               });
       messageBuilder.append("]");
-      messageService.sendBlockMessageToConversation(channel, messageBuilder.toString());
+      getMessageService().sendBlockMessageToConversation(channel, messageBuilder.toString());
     }
   }
 
@@ -121,7 +137,7 @@ public class PublishWeekStatsService {
             + "\", \"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"%s"
             + "\",\"alt_text\": \"inspiration\"}]", url, img);
 
-    messageService.sendBlockMessageToConversation(channel, message);
+    getMessageService().sendBlockMessageToConversation(channel, message);
   }
 
   private String emojiGen(Event type) {

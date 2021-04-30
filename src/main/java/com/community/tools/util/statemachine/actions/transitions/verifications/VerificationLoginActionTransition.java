@@ -7,6 +7,7 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import java.io.IOException;
+import java.util.Map;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +23,25 @@ public class VerificationLoginActionTransition implements Transition {
   private Action<State, Event> errorAction;
   @Value("${askAboutProfile}")
   private String askAboutProfile;
-  @Autowired
-  private MessageService messageService;
+  //@Autowired
+  //private MessageService messageService;
+
   @Autowired
   private GitHubService gitHubService;
+
+  @Autowired
+  private Map<String, MessageService> messageServiceMap;
+
+  @Value("${currentMessageService}")
+  private String currentMessageService;
+
+  /**
+   * Selected current message service.
+   * @return current message service
+   */
+  public MessageService getMessageService() {
+    return messageServiceMap.get(currentMessageService);
+  }
 
   @Override
   public void configure(
@@ -47,7 +63,7 @@ public class VerificationLoginActionTransition implements Transition {
     String nickname = payload.getGitNick();
     try {
       GHUser userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
-      messageService.sendPrivateMessage(messageService.getUserById(id),
+      getMessageService().sendPrivateMessage(getMessageService().getUserById(id),
           askAboutProfile + "\n" + userGitLogin.getHtmlUrl().toString());
 
     } catch (IOException e) {

@@ -35,7 +35,6 @@ public class DiscordConfig {
           .setBulkDeleteSplittingEnabled(false)
           .setCompression(Compression.NONE)
           .setActivity(Activity.playing("Discord"))
-          .addEventListeners(new DiscordEventListener())
           .build();
       jda.awaitReady();
       return jda;

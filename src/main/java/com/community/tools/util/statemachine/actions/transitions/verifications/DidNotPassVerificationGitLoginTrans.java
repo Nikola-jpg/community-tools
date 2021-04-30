@@ -5,6 +5,7 @@ import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -19,8 +20,22 @@ public class DidNotPassVerificationGitLoginTrans implements Transition {
   private Action<State, Event> errorAction;
   @Value("${answeredNoDuringVerification}")
   private String answeredNoDuringVerification;
+  //@Autowired
+  //private MessageService messageService;
+
   @Autowired
-  private MessageService messageService;
+  private Map<String, MessageService> messageServiceMap;
+
+  @Value("${currentMessageService}")
+  private String currentMessageService;
+
+  /**
+   * Selected current message service.
+   * @return current message service
+   */
+  public MessageService getMessageService() {
+    return messageServiceMap.get(currentMessageService);
+  }
 
   @Override
   public void configure(
@@ -38,7 +53,7 @@ public class DidNotPassVerificationGitLoginTrans implements Transition {
     VerificationPayload payload = (VerificationPayload) stateContext.getExtendedState()
         .getVariables().get("dataPayload");
     String user = payload.getId();
-    messageService.sendPrivateMessage(messageService.getUserById(user),
+    getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
         answeredNoDuringVerification);
   }
 }

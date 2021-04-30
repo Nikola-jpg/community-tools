@@ -13,11 +13,14 @@ import com.google.gson.Gson;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHPerson;
 import org.kohsuke.github.GHUser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,8 +36,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class GitSlackUsersController {
 
   private final StateMachineService stateMachineService;
-  private final MessageService messageService;
+  //private final MessageService messageService;
+
+  @Autowired
+  private Map<String, MessageService> messageServiceMap;
+
+  @Value("${currentMessageService}")
+  private String currentMessageService;
+
   private final GitHubService gitService;
+
+
+  /**
+   * Selected current message service.
+   * @return current message service
+   */
+  public MessageService getMessageService() {
+    return messageServiceMap.get(currentMessageService);
+  }
 
   /**
    * Endpoint /git. Method GET.
@@ -59,7 +78,7 @@ public class GitSlackUsersController {
   @ApiOperation(value = "Returns list of slack users that work with the bot")
   @GetMapping(value = "/slack", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getSlackAllUsers() {
-    Set<User> allSlackUsers = messageService.getAllUsers();
+    Set<User> allSlackUsers = getMessageService().getAllUsers();
 
     List<String> listSlackUsersName = allSlackUsers.stream()
         .map(User::getProfile)

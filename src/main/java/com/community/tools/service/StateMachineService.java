@@ -13,6 +13,7 @@ import com.community.tools.service.payload.Payload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,7 +49,22 @@ public class StateMachineService {
   private StateMachinePersister<State, Event, String> persister;
 
   private final GitHubService gitHubService;
-  private final MessageService messageService;
+  //private final MessageService messageService;
+
+  @Autowired
+  private Map<String, MessageService> messageServiceMap;
+
+  @Value("${currentMessageService}")
+  private String currentMessageService;
+
+  /**
+   * Selected current message service.
+   * @return current message service
+   */
+  public MessageService getMessageService() {
+    return messageServiceMap.get(currentMessageService);
+  }
+
 
   /**
    * Check Slack`s user and Github login.
@@ -58,12 +74,12 @@ public class StateMachineService {
    * @throws Exception Exception
    */
   public void agreeForGitHubNickName(String nickName, String userId) throws Exception {
-    String user = messageService.getUserById(userId);
+    String user = getMessageService().getUserById(userId);
 
     StateMachine<State, Event> machine = restoreMachine(userId);
 
     if (machine.getState().getId() == AGREED_LICENSE) {
-      messageService.sendPrivateMessage(user,
+      getMessageService().sendPrivateMessage(user,
           checkNickName + nickName);
 
       boolean nicknameMatch = gitHubService.getGitHubAllUsers().stream()
@@ -79,11 +95,11 @@ public class StateMachineService {
         stateMachineRepository.save(stateEntity);
 
       } else {
-        messageService.sendPrivateMessage(user, failedCheckNickName);
+        getMessageService().sendPrivateMessage(user, failedCheckNickName);
       }
 
     } else {
-      messageService.sendPrivateMessage(user, doNotUnderstandWhatTodo);
+      getMessageService().sendPrivateMessage(user, doNotUnderstandWhatTodo);
 
     }
   }
@@ -97,28 +113,28 @@ public class StateMachineService {
    */
   public void checkActionsFromButton(String action, String userId) throws Exception {
     StateMachine<State, Event> machine = restoreMachine(userId);
-    String user = messageService.getUserById(userId);
+    String user = getMessageService().getUserById(userId);
     switch (action) {
       case "AGREE_LICENSE":
         if (machine.getState().getId() == NEW_USER) {
           machine.sendEvent(QUESTION_FIRST);
           persistMachine(machine, userId);
         } else {
-          messageService.sendBlocksMessage(user, notThatMessage);
+          getMessageService().sendBlocksMessage(user, notThatMessage);
         }
         break;
       case "theEnd":
 
         if (machine.getState().getId() == GOT_THE_FIRST_TASK) {
           machine.sendEvent(GET_THE_FIRST_TASK);
-          messageService
+          getMessageService()
               .sendPrivateMessage(user, "that was the end, congrats");
         } else {
-          messageService.sendBlocksMessage(user, notThatMessage);
+          getMessageService().sendBlocksMessage(user, notThatMessage);
         }
         break;
       default:
-        messageService.sendBlocksMessage(user, noOneCase);
+        getMessageService().sendBlocksMessage(user, noOneCase);
 
     }
   }

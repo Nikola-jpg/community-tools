@@ -8,6 +8,7 @@ import com.community.tools.service.slack.MessagesToSlack;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -21,8 +22,8 @@ public class FirstQuestionActionTransition implements Transition {
   @Value("${firstQuestion}")
   private String firstQuestion;
 
-  @Autowired
-  private MessageService messageService;
+  //@Autowired
+  //private MessageService messageService;
 
   @Autowired
   private BlockService blockService;
@@ -30,12 +31,26 @@ public class FirstQuestionActionTransition implements Transition {
   @Autowired
   private Action<State, Event> errorAction;
 
+  @Autowired
+  private Map<String, MessageService> messageServiceMap;
+
+  @Value("${currentMessageService}")
+  private String currentMessageService;
+
+  /**
+   * Selected current message service.
+   * @return current message service
+   */
+  public MessageService getMessageService() {
+    return messageServiceMap.get(currentMessageService);
+  }
+
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     SinglePayload payload = (SinglePayload) stateContext.getExtendedState().getVariables()
         .get("dataPayload");
     String id = payload.getId();
-    messageService.sendBlocksMessage(messageService.getUserById(id),
+    getMessageService().sendBlocksMessage(getMessageService().getUserById(id),
         blockService.createBlockMessage(
         MessagesToSlack.FIRST_QUESTION, MessagesToDiscord.FIRST_QUESTION));
   }

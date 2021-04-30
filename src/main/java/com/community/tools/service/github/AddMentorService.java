@@ -9,6 +9,7 @@ import com.community.tools.util.statemachine.State;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import java.io.IOException;
 
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateMachine;
@@ -22,8 +23,22 @@ public class AddMentorService {
   private StateMachineService stateMachineService;
   @Autowired
   private MentorsRepository mentorsRepository;
+  //@Autowired
+  //private MessageService messageService;
+
   @Autowired
-  private MessageService messageService;
+  private Map<String, MessageService> messageServiceMap;
+
+  @Value("${currentMessageService}")
+  private String currentMessageService;
+
+  /**
+   * Selected current message service.
+   * @return current message service
+   */
+  public MessageService getMessageService() {
+    return messageServiceMap.get(currentMessageService);
+  }
 
   /**
    * Add Mentor to the trainee, which make pull request.
@@ -53,7 +68,7 @@ public class AddMentorService {
    * @param url  Url of pull request
    */
   public void sendNotifyWithMentor(String user, String url) throws IOException, SlackApiException {
-    messageService
+    getMessageService()
         .sendMessageToConversation(channel, "User " + user
          + " created a pull request \n url: " + url
          + "\n Please check it : <@" + mentorsRepository

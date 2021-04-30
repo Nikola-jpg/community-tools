@@ -10,6 +10,7 @@ import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import java.io.IOException;
+import java.util.Map;
 import lombok.SneakyThrows;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +29,29 @@ public class AddGitNameActionTransition implements Transition {
   private String congratsAvailableNick;
   @Value("${generalInformationChannel}")
   private String channel;
-  @Autowired
-  private MessageService messageService;
+  //@Autowired
+  //private MessageService messageService;
+
   @Autowired
   private StateMachineRepository stateMachineRepository;
   @Autowired
   private GitHubConnectService gitHubConnectService;
   @Autowired
   private GitHubService gitHubService;
+
+  @Autowired
+  private Map<String, MessageService> messageServiceMap;
+
+  @Value("${currentMessageService}")
+  private String currentMessageService;
+
+  /**
+   * Selected current message service.
+   * @return current message service
+   */
+  public MessageService getMessageService() {
+    return messageServiceMap.get(currentMessageService);
+  }
 
   @Override
   public void configure(
@@ -69,18 +85,18 @@ public class AddGitNameActionTransition implements Transition {
           .stream().filter(e -> e.getName().equals("trainees")).findFirst()
           .get().add(userGitLogin);
     } catch (IOException e) {
-      messageService.sendPrivateMessage(messageService.getUserById(user),
+      getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
           "Something went wrong when adding to role. You need to contact the admin!");
     }
-    messageService.sendPrivateMessage(messageService.getUserById(user), congratsAvailableNick);
-    messageService.sendMessageToConversation(channel,
+    getMessageService().sendPrivateMessage(getMessageService().getUserById(user), congratsAvailableNick);
+    getMessageService().sendMessageToConversation(channel,
         generalInformationAboutUserToChannel(user, userGitLogin)
             + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
     stateContext.getExtendedState().getVariables().put("gitNick", nickname);
   }
 
   private String generalInformationAboutUserToChannel(String slackName, GHUser user) {
-    return messageService.getUserById(slackName) + " - " + user.getLogin();
+    return getMessageService().getUserById(slackName) + " - " + user.getLogin();
   }
 
   private String sendUserAnswersToChannel(String firstAnswer, String secondAnswer,

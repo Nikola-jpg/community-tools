@@ -7,6 +7,7 @@ import com.community.tools.util.statemachine.State;
 
 import java.io.IOException;
 
+import java.util.Map;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,23 +24,38 @@ public class HideGuard implements Guard<State, Event> {
   private String failedNickName;
   @Value("${addGitName}")
   private String addGitName;
-  @Autowired
-  private MessageService messageService;
+  //@Autowired
+  //private MessageService messageService;
+
   @Autowired
   private GitHubService gitHubService;
+
+  @Autowired
+  private Map<String, MessageService> messageServiceMap;
+
+  @Value("${currentMessageService}")
+  private String currentMessageService;
+
+  /**
+   * Selected current message service.
+   * @return current message service
+   */
+  public MessageService getMessageService() {
+    return messageServiceMap.get(currentMessageService);
+  }
 
   @SneakyThrows
   @Override
   public boolean evaluate(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
     String nickName = stateContext.getExtendedState().getVariables().get("gitNick").toString();
-    messageService.sendPrivateMessage(messageService.getUserById(user),
+    getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
           checkNickName + nickName);
     boolean nicknameMatch = false;
     try {
       nicknameMatch = gitHubService.getUserByLoginInGitHub(nickName).getLogin().equals(nickName);
     } catch (IOException e) {
-      messageService.sendPrivateMessage(messageService.getUserById(user), failedNickName);
+      getMessageService().sendPrivateMessage(getMessageService().getUserById(user), failedNickName);
     }
     return nicknameMatch;
   }

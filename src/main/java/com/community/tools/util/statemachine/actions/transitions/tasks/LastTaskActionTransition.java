@@ -6,6 +6,7 @@ import com.community.tools.service.MessageService;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -26,8 +27,22 @@ public class LastTaskActionTransition implements Transition {
   @Value("${lastTask}")
   private String lastTask;
 
+  //@Autowired
+  //private MessageService messageService;
+
   @Autowired
-  private MessageService messageService;
+  private Map<String, MessageService> messageServiceMap;
+
+  @Value("${currentMessageService}")
+  private String currentMessageService;
+
+  /**
+   * Selected current message service.
+   * @return current message service
+   */
+  public MessageService getMessageService() {
+    return messageServiceMap.get(currentMessageService);
+  }
 
   @Override
   public void configure(
@@ -44,6 +59,6 @@ public class LastTaskActionTransition implements Transition {
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    messageService.sendPrivateMessage(messageService.getUserById(user), lastTask);
+    getMessageService().sendPrivateMessage(getMessageService().getUserById(user), lastTask);
   }
 }

@@ -2,6 +2,7 @@ package com.community.tools.util.statemachie.actions.guard;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.kohsuke.github.GHUser;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.statemachine.ExtendedState;
@@ -56,7 +58,10 @@ public class HideGuardTest {
   @MockBean
   private GitHubService gitHubService;
   @MockBean
+  @Qualifier("slackService")
   private MessageService messageService;
+  @Mock
+  private Map<String, MessageService> messageServiceMap;
   @Mock
   private ExtendedState extendedState;
   @Mock
@@ -86,6 +91,7 @@ public class HideGuardTest {
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
+    when(messageServiceMap.get(anyString())).thenReturn(messageService);
 
     when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
     when(messageService.sendPrivateMessage("Горб Юра",

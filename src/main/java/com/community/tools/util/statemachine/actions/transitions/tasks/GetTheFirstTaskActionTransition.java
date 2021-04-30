@@ -12,6 +12,7 @@ import com.community.tools.service.slack.MessagesToSlack;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -25,14 +26,28 @@ public class GetTheFirstTaskActionTransition implements Transition {
   @Value("${getFirstTask}")
   private String getFirstTask;
 
-  @Autowired
-  private MessageService messageService;
+  //@Autowired
+  //private MessageService messageService;
 
   @Autowired
   private BlockService blockService;
 
   @Autowired
   private Action<State, Event> errorAction;
+
+  @Autowired
+  private Map<String, MessageService> messageServiceMap;
+
+  @Value("${currentMessageService}")
+  private String currentMessageService;
+
+  /**
+   * Selected current message service.
+   * @return current message service
+   */
+  public MessageService getMessageService() {
+    return messageServiceMap.get(currentMessageService);
+  }
 
   @Override
   public void configure(
@@ -50,7 +65,7 @@ public class GetTheFirstTaskActionTransition implements Transition {
     SinglePayload payload = (SinglePayload) stateContext.getExtendedState().getVariables()
         .get("dataPayload");
     String user = payload.getId();
-    messageService.sendBlocksMessage(messageService.getUserById(user),
+    getMessageService().sendBlocksMessage(getMessageService().getUserById(user),
         blockService.createBlockMessage(
         MessagesToSlack.GET_FIRST_TASK, MessagesToDiscord.GET_FIRST_TASK));
   }

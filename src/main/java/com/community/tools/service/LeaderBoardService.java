@@ -17,6 +17,7 @@ import javax.swing.JEditorPane;
 
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -30,8 +31,22 @@ public class LeaderBoardService {
   @Autowired
   TemplateEngine templateEngine;
 
+  //@Autowired
+  //MessageService messageService;
+
   @Autowired
-  MessageService messageService;
+  private Map<String, MessageService> messageServiceMap;
+
+  @Value("${currentMessageService}")
+  private String currentMessageService;
+
+  /**
+   * Selected current message service.
+   * @return current message service
+   */
+  public MessageService getMessageService() {
+    return messageServiceMap.get(currentMessageService);
+  }
 
 
   /**
@@ -79,7 +94,7 @@ public class LeaderBoardService {
    */
   public List<User> addSlackNameToUser() {
     List<User> list = stateMachineRepository.findAll();
-    Set<com.github.seratch.jslack.api.model.User> slackUsers = messageService.getAllUsers();
+    Set<com.github.seratch.jslack.api.model.User> slackUsers = getMessageService().getAllUsers();
     Map<String, String> map = slackUsers.stream()
             .filter(u -> u.getRealName() != null)
             .collect(Collectors.toMap(user -> user.getId(), user -> user.getRealName()));

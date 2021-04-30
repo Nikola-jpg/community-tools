@@ -3,20 +3,30 @@ package com.community.tools.service.discord;
 import com.community.tools.service.MessageService;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Primary
+//@Primary
 public class DiscordService implements MessageService {
 
   private final JDA jda;
+
+  @Autowired
+  private DiscordEventListener discordEventListener;
+
+  @PostConstruct
+  private void postConstruct() {
+    jda.addEventListener(discordEventListener);
+  }
 
   /**
    * Send private message with messageText to username.
