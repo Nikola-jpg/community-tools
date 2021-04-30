@@ -1,5 +1,6 @@
 package com.community.tools.util.statemachine.actions.transitions.verifications;
 
+import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubConnectService;
@@ -29,8 +30,6 @@ public class AddGitNameActionTransition implements Transition {
   private String congratsAvailableNick;
   @Value("${generalInformationChannel}")
   private String channel;
-  //@Autowired
-  //private MessageService messageService;
 
   @Autowired
   private StateMachineRepository stateMachineRepository;
@@ -86,9 +85,10 @@ public class AddGitNameActionTransition implements Transition {
           .get().add(userGitLogin);
     } catch (IOException e) {
       getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
-          "Something went wrong when adding to role. You need to contact the admin!");
+          Messages.WRONG_ADDING_TO_ROLE);
     }
-    getMessageService().sendPrivateMessage(getMessageService().getUserById(user), congratsAvailableNick);
+    getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
+        congratsAvailableNick);
     getMessageService().sendMessageToConversation(channel,
         generalInformationAboutUserToChannel(user, userGitLogin)
             + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));

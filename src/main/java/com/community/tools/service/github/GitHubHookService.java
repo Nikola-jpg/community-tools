@@ -25,8 +25,6 @@ public class GitHubHookService {
   private String opened;
   @Value("${generalInformationChannel}")
   private String channel;
-  //@Autowired
-  //private MessageService messageService;
 
   @Autowired
   private Map<String, MessageService> messageServiceMap;

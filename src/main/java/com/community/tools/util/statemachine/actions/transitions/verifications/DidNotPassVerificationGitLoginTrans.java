@@ -20,8 +20,6 @@ public class DidNotPassVerificationGitLoginTrans implements Transition {
   private Action<State, Event> errorAction;
   @Value("${answeredNoDuringVerification}")
   private String answeredNoDuringVerification;
-  //@Autowired
-  //private MessageService messageService;
 
   @Autowired
   private Map<String, MessageService> messageServiceMap;

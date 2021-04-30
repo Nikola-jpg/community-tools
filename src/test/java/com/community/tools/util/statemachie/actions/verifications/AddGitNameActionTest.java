@@ -89,9 +89,14 @@ public class AddGitNameActionTest {
     repoService.setAccessible(true);
     repoService.set(addGitNameAction, gitHubService);
 
-    Field messageService = AddGitNameActionTransition.class.getDeclaredField("messageService");
-    messageService.setAccessible(true);
-    messageService.set(addGitNameAction, this.messageService);
+    //Field messageService = AddGitNameActionTransition.class.getDeclaredField("messageService");
+    //messageService.setAccessible(true);
+    //messageService.set(addGitNameAction, this.messageService);
+
+    Field messageServiceMap = AddGitNameActionTransition.class
+        .getDeclaredField("messageServiceMap");
+    messageServiceMap.setAccessible(true);
+    messageServiceMap.set(addGitNameAction, this.messageServiceMap);
 
     ReflectionTestUtils.setField(addGitNameAction, "congratsAvailableNick",
         "Hurray! Your nick is available. Nice to meet you :smile:");
@@ -155,6 +160,7 @@ public class AddGitNameActionTest {
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
+    when(messageServiceMap.get(anyString())).thenReturn(messageService);
 
     when(repository.findByUserID("U0191K2V20K")).thenReturn(Optional.of(entity));
 

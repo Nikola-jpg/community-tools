@@ -27,9 +27,6 @@ public class ConsentToInformationActionTransition implements Transition {
   @Value("${addGitName}")
   private String addGitName;
 
-  //@Autowired
-  //private MessageService messageService;
-
   @Autowired
   private Action<State, Event> errorAction;
 

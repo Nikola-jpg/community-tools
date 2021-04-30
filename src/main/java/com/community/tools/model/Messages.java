@@ -56,6 +56,8 @@ public class Messages {
       + " please answer a few questions.";
   public static final String MESSAGE_ABOUT_RULES_4 = "`Let me know when you are ready"
       + " (write \"ready\").`";
+  public static final String WRONG_ADDING_TO_ROLE = "Something went wrong when adding to role."
+      + " You need to contact the admin!";
 
 
 

@@ -31,9 +31,6 @@ public class LeaderBoardService {
   @Autowired
   TemplateEngine templateEngine;
 
-  //@Autowired
-  //MessageService messageService;
-
   @Autowired
   private Map<String, MessageService> messageServiceMap;
 

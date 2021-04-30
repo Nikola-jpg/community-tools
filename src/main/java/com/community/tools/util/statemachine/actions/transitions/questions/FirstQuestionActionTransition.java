@@ -22,9 +22,6 @@ public class FirstQuestionActionTransition implements Transition {
   @Value("${firstQuestion}")
   private String firstQuestion;
 
-  //@Autowired
-  //private MessageService messageService;
-
   @Autowired
   private BlockService blockService;
 

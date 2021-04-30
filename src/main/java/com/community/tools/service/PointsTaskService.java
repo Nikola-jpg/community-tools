@@ -27,9 +27,6 @@ public class PointsTaskService {
   @Value("#{${pointsForTask}}")
   private Map<String, Integer> pointsForTask;
 
-  //@Autowired
-  //private MessageService messageService;
-
   @Autowired
   StateMachineService stateMachineService;
 
@@ -97,7 +94,8 @@ public class PointsTaskService {
    * @param id Slack User Id
    */
   public void sendAbilityReviewMess(String id) {
-    getMessageService().sendBlocksMessage(getMessageService().getUserById(id), abilityReviewMessage);
+    getMessageService().sendBlocksMessage(getMessageService().getUserById(id),
+        abilityReviewMessage);
   }
 
   /**
@@ -106,6 +104,7 @@ public class PointsTaskService {
    */
   public void sendMessageWhichDescribesZeroPoints(String id, String pullName) {
     String messageDescribesZero = zeroPointsMessage.replace("pull_name", pullName);
-    getMessageService().sendPrivateMessage(getMessageService().getUserById(id), messageDescribesZero);
+    getMessageService().sendPrivateMessage(getMessageService().getUserById(id),
+        messageDescribesZero);
   }
 }

@@ -30,7 +30,6 @@ public class PublishWeekStatsService {
 
   @Autowired
   private GitHubService ghEventService;
-  //private final MessageService messageService;
 
   @Value("${importantInformationChannel}")
   private String channel;

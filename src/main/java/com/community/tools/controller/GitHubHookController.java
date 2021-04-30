@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/gitHook")
 public class GitHubHookController {
 
-  @Value("${GITHUB_SECRET_TOKEN}")
+  @Value("${github.secret.token}")
   private String secret;
   @Autowired
   private GitHubHookService gitHubHookService;

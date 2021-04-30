@@ -23,8 +23,6 @@ public class AddMentorService {
   private StateMachineService stateMachineService;
   @Autowired
   private MentorsRepository mentorsRepository;
-  //@Autowired
-  //private MessageService messageService;
 
   @Autowired
   private Map<String, MessageService> messageServiceMap;

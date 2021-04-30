@@ -27,9 +27,6 @@ public class LastTaskActionTransition implements Transition {
   @Value("${lastTask}")
   private String lastTask;
 
-  //@Autowired
-  //private MessageService messageService;
-
   @Autowired
   private Map<String, MessageService> messageServiceMap;
 

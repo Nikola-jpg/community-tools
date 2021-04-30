@@ -3,7 +3,6 @@ package com.community.tools.controller;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.model.EventData;
-import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -26,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 public class GitHubController {
-  //private final MessageService messageService;
+
   private final GitHubService gitHubService;
 
   /**

@@ -23,8 +23,6 @@ public class VerificationLoginActionTransition implements Transition {
   private Action<State, Event> errorAction;
   @Value("${askAboutProfile}")
   private String askAboutProfile;
-  //@Autowired
-  //private MessageService messageService;
 
   @Autowired
   private GitHubService gitHubService;

@@ -16,20 +16,16 @@ import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-//@Primary
 public class SlackService implements MessageService {
 
   @Value("${slack.token}")
   private String token;
   @Value("${slack.webhook}")
   private String slackWebHook;
-
-  private String text;
 
   /**
    * Send private message with messageText to username.

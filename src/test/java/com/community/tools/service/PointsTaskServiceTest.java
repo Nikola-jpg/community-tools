@@ -41,9 +41,6 @@ class PointsTaskServiceTest {
   private PointsTaskService pointsTaskService;
 
   @Mock
-  private MessageService messageService;
-
-  @Mock
   StateMachineService stateMachineService;
 
   @Mock

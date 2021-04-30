@@ -36,7 +36,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class GitSlackUsersController {
 
   private final StateMachineService stateMachineService;
-  //private final MessageService messageService;
 
   @Autowired
   private Map<String, MessageService> messageServiceMap;

@@ -26,9 +26,6 @@ public class GetTheFirstTaskActionTransition implements Transition {
   @Value("${getFirstTask}")
   private String getFirstTask;
 
-  //@Autowired
-  //private MessageService messageService;
-
   @Autowired
   private BlockService blockService;
 

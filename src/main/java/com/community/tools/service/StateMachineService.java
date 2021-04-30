@@ -49,7 +49,6 @@ public class StateMachineService {
   private StateMachinePersister<State, Event, String> persister;
 
   private final GitHubService gitHubService;
-  //private final MessageService messageService;
 
   @Autowired
   private Map<String, MessageService> messageServiceMap;

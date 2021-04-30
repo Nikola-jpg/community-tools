@@ -42,7 +42,8 @@ class PublishWeekStatsServiceTest {
   public void initMocks() {
     MockitoAnnotations.initMocks(this);
     ReflectionTestUtils.setField(publishWeekStatsService, "channel", "general");
-    ReflectionTestUtils.setField(publishWeekStatsService, "currentMessageService", "discordService");
+    ReflectionTestUtils.setField(publishWeekStatsService, "currentMessageService",
+        "discordService");
   }
 
   @Test

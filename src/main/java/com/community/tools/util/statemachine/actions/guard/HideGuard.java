@@ -24,8 +24,6 @@ public class HideGuard implements Guard<State, Event> {
   private String failedNickName;
   @Value("${addGitName}")
   private String addGitName;
-  //@Autowired
-  //private MessageService messageService;
 
   @Autowired
   private GitHubService gitHubService;

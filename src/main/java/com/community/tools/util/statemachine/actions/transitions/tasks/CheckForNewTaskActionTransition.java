@@ -23,9 +23,6 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 @WithStateMachine
 public class CheckForNewTaskActionTransition implements Transition {
 
-  //@Autowired
-  //private MessageService messageService;
-
   @Autowired
   private BlockService blockService;
 

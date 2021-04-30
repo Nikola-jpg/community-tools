@@ -71,7 +71,6 @@ public class DiscordEventListener extends ListenerAdapter {
         String userForQuestion = machine.getExtendedState().getVariables().get("id").toString();
 
         String message = Messages.DEFAULT_MESSAGE;
-        //String gitNick = "";
         Event stateMachineEvent = null;
         Payload payload = null;
 
@@ -109,7 +108,6 @@ public class DiscordEventListener extends ListenerAdapter {
             } else {
               message = Messages.NOT_THAT_MESSAGE;
             }
-            //payload = new VerificationPayload(id, gitNick);
             payload = (VerificationPayload) machine.getExtendedState().getVariables()
                 .get("dataPayload");
             break;

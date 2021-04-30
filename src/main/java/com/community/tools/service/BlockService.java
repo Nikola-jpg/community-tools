@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BlockService {
 
-  //private final MessageService messageService;
-
   @Autowired
   private Map<String, MessageService> messageServiceMap;
 
