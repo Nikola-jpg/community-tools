@@ -1,7 +1,9 @@
 package com.community.tools.service;
 
 import com.community.tools.model.User;
+import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.github.jpa.MentorsRepository;
+import com.community.tools.service.slack.MessagesToSlack;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
@@ -37,6 +39,9 @@ public class PointsTaskService {
   StateMachineRepository stateMachineRepository;
 
   final int numberPullsAbilityReview = 3;
+
+  @Autowired
+  private BlockService blockService;
 
   @Autowired
   private Map<String, MessageService> messageServiceMap;
@@ -95,7 +100,8 @@ public class PointsTaskService {
    */
   public void sendAbilityReviewMess(String id) {
     getMessageService().sendBlocksMessage(getMessageService().getUserById(id),
-        abilityReviewMessage);
+        blockService.createBlockMessage(MessagesToSlack.ABILITY_REVIEW_MESSAGE,
+            MessagesToDiscord.ABILITY_REVIEW_MESSAGE));
   }
 
   /**

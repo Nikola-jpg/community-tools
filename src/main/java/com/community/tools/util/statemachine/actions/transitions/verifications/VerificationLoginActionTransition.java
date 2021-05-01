@@ -1,5 +1,6 @@
 package com.community.tools.util.statemachine.actions.transitions.verifications;
 
+import com.community.tools.model.Messages;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.VerificationPayload;
@@ -62,7 +63,7 @@ public class VerificationLoginActionTransition implements Transition {
     try {
       GHUser userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
       getMessageService().sendPrivateMessage(getMessageService().getUserById(id),
-          askAboutProfile + "\n" + userGitLogin.getHtmlUrl().toString());
+          Messages.ASK_ABOUT_PROFILE + "\n" + userGitLogin.getHtmlUrl().toString());
 
     } catch (IOException e) {
       throw new RuntimeException(e);

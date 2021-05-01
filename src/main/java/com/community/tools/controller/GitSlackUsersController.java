@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHPerson;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,21 +39,11 @@ public class GitSlackUsersController {
   private final StateMachineService stateMachineService;
 
   @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
+  @Qualifier("slackService")
+  private MessageService messageService;
 
   private final GitHubService gitService;
 
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
 
   /**
    * Endpoint /git. Method GET.
@@ -77,7 +68,7 @@ public class GitSlackUsersController {
   @ApiOperation(value = "Returns list of slack users that work with the bot")
   @GetMapping(value = "/slack", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getSlackAllUsers() {
-    Set<User> allSlackUsers = getMessageService().getAllUsers();
+    Set<User> allSlackUsers = messageService.getAllUsers();
 
     List<String> listSlackUsersName = allSlackUsers.stream()
         .map(User::getProfile)

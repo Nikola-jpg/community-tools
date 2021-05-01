@@ -1,5 +1,6 @@
 package com.community.tools.util.statemachine.actions.guard;
 
+import com.community.tools.model.Messages;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.util.statemachine.Event;
@@ -48,12 +49,13 @@ public class HideGuard implements Guard<State, Event> {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
     String nickName = stateContext.getExtendedState().getVariables().get("gitNick").toString();
     getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
-          checkNickName + nickName);
+        Messages.CHECK_NICK_NAME + nickName);
     boolean nicknameMatch = false;
     try {
       nicknameMatch = gitHubService.getUserByLoginInGitHub(nickName).getLogin().equals(nickName);
     } catch (IOException e) {
-      getMessageService().sendPrivateMessage(getMessageService().getUserById(user), failedNickName);
+      getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
+          Messages.FAILED_NICK_NAME);
     }
     return nicknameMatch;
   }

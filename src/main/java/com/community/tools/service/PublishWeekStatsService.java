@@ -2,6 +2,7 @@ package com.community.tools.service;
 
 import com.community.tools.model.Event;
 import com.community.tools.model.EventData;
+import com.community.tools.model.Messages;
 import com.community.tools.service.github.GitHubService;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -39,6 +41,9 @@ public class PublishWeekStatsService {
 
   @Value("${noActivityMessage}")
   private String noActivityMessage;
+
+  @Autowired
+  private BlockService blockService;
 
   @Autowired
   private Map<String, MessageService> messageServiceMap;
@@ -71,7 +76,7 @@ public class PublishWeekStatsService {
     List<EventData> events = ghEventService.getEvents(startDate, endDate);
     StringBuilder messageBuilder = new StringBuilder();
     if (events.size() == 0) {
-      getMessageService().sendMessageToConversation(channel, noActivityMessage);
+      getMessageService().sendMessageToConversation(channel, Messages.NO_ACTIVITY_MESSAGE);
       System.out.println(events);
     } else {
       Map<String, List<EventData>> sortedMapGroupByActors = new HashMap<>();
@@ -114,7 +119,13 @@ public class PublishWeekStatsService {
                 messageBuilder.append("\"}]}");
               });
       messageBuilder.append("]");
-      getMessageService().sendBlockMessageToConversation(channel, messageBuilder.toString());
+      getMessageService().sendBlockMessageToConversation(channel,
+          blockService.createBlockMessage(messageBuilder.toString(),
+              new EmbedBuilder()
+                  .addField("","Statistic: ", false)
+                  .addField("", messageBuilder.toString(), false)
+                  .build()
+          ));
     }
   }
 
@@ -136,7 +147,14 @@ public class PublishWeekStatsService {
             + "\", \"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"%s"
             + "\",\"alt_text\": \"inspiration\"}]", url, img);
 
-    getMessageService().sendBlockMessageToConversation(channel, message);
+    getMessageService().sendBlockMessageToConversation(channel,
+        blockService.createBlockMessage(message,
+            new EmbedBuilder()
+                .addField("","Рейтинг этой недели доступен по ссылке: ", false )
+                .addField("", url, false)
+                .addField("", img, true)
+                .build()
+        ));
   }
 
   private String emojiGen(Event type) {

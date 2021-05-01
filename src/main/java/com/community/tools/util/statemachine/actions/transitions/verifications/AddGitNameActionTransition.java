@@ -88,7 +88,7 @@ public class AddGitNameActionTransition implements Transition {
           Messages.WRONG_ADDING_TO_ROLE);
     }
     getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
-        congratsAvailableNick);
+        Messages.CONGRATS_AVAILABLE_NICK);
     getMessageService().sendMessageToConversation(channel,
         generalInformationAboutUserToChannel(user, userGitLogin)
             + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));

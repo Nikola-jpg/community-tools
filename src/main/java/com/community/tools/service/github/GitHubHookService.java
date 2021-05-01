@@ -27,6 +27,16 @@ public class GitHubHookService {
   private String channel;
 
   @Autowired
+  private GitHubGiveNewTask gitHubGiveNewTask;
+  @Autowired
+  private AddMentorService addMentorService;
+  @Autowired
+  private StateMachineService stateMachineService;
+  @Autowired
+  private KarmaService karmaService;
+  @Autowired
+  private PointsTaskService pointsTaskService;
+  @Autowired
   private Map<String, MessageService> messageServiceMap;
 
   @Value("${currentMessageService}")
@@ -39,17 +49,6 @@ public class GitHubHookService {
   public MessageService getMessageService() {
     return messageServiceMap.get(currentMessageService);
   }
-
-  @Autowired
-  private GitHubGiveNewTask gitHubGiveNewTask;
-  @Autowired
-  private AddMentorService addMentorService;
-  @Autowired
-  private StateMachineService stateMachineService;
-  @Autowired
-  private KarmaService karmaService;
-  @Autowired
-  private PointsTaskService pointsTaskService;
 
   /**
    * Methid receive data from Github and check it.

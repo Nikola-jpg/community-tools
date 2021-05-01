@@ -1,5 +1,6 @@
 package com.community.tools.util.statemachine.actions.transitions.verifications;
 
+import com.community.tools.model.Messages;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
@@ -52,6 +53,6 @@ public class DidNotPassVerificationGitLoginTrans implements Transition {
         .getVariables().get("dataPayload");
     String user = payload.getId();
     getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
-        answeredNoDuringVerification);
+        Messages.ANSWERED_NO_DURING_VERIFICATION);
   }
 }

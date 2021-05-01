@@ -58,6 +58,7 @@ public class Messages {
       + " (write \"ready\").`";
   public static final String WRONG_ADDING_TO_ROLE = "Something went wrong when adding to role."
       + " You need to contact the admin!";
+  public static final String CONGRATS = "That was The End, Congrats";
 
 
 
@@ -78,7 +79,7 @@ public class Messages {
   public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_7 = "`Please use the trades to"
       + " respond to messages.`";
   public static final String[] TASKS_FOR_USERS = {"checkstyle", "primitives", "boxing", "valueref",
-      "equals/hashcode", "patform", "bytecode", "gc", "exceptions", "classpath", "generics",
+      "equals/hashcode", "platform", "bytecode", "gc", "exceptions", "classpath", "generics",
       "inner/classes", "override/overload", "strings", "gamelife"};
   public static final Map<String, String> POINTS_FOR_TASK = Splitter.on(", ")
       .withKeyValueSeparator(":").split("checkstyle:1, primitives:2, boxing:2, valueref:3, "

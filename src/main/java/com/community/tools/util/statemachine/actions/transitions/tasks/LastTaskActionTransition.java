@@ -2,6 +2,7 @@ package com.community.tools.util.statemachine.actions.transitions.tasks;
 
 import static com.community.tools.util.statemachine.Event.LAST_TASK;
 
+import com.community.tools.model.Messages;
 import com.community.tools.service.MessageService;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
@@ -56,6 +57,6 @@ public class LastTaskActionTransition implements Transition {
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    getMessageService().sendPrivateMessage(getMessageService().getUserById(user), lastTask);
+    getMessageService().sendPrivateMessage(getMessageService().getUserById(user), Messages.LAST_TASK);
   }
 }

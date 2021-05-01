@@ -7,9 +7,12 @@ import static com.community.tools.util.statemachine.State.AGREED_LICENSE;
 import static com.community.tools.util.statemachine.State.GOT_THE_FIRST_TASK;
 import static com.community.tools.util.statemachine.State.NEW_USER;
 
+import com.community.tools.model.Messages;
 import com.community.tools.model.User;
+import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.Payload;
+import com.community.tools.service.slack.MessagesToSlack;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
@@ -49,6 +52,9 @@ public class StateMachineService {
   private StateMachinePersister<State, Event, String> persister;
 
   private final GitHubService gitHubService;
+
+  @Autowired
+  private BlockService blockService;
 
   @Autowired
   private Map<String, MessageService> messageServiceMap;
@@ -119,7 +125,8 @@ public class StateMachineService {
           machine.sendEvent(QUESTION_FIRST);
           persistMachine(machine, userId);
         } else {
-          getMessageService().sendBlocksMessage(user, notThatMessage);
+          getMessageService().sendBlocksMessage(user, blockService.createBlockMessage(
+              MessagesToSlack.NOT_THAT_MESSAGE, MessagesToDiscord.NOT_THAT_MESSAGE));
         }
         break;
       case "theEnd":
@@ -127,13 +134,15 @@ public class StateMachineService {
         if (machine.getState().getId() == GOT_THE_FIRST_TASK) {
           machine.sendEvent(GET_THE_FIRST_TASK);
           getMessageService()
-              .sendPrivateMessage(user, "that was the end, congrats");
+              .sendPrivateMessage(user, Messages.CONGRATS);
         } else {
-          getMessageService().sendBlocksMessage(user, notThatMessage);
+          getMessageService().sendBlocksMessage(user, blockService.createBlockMessage(
+              MessagesToSlack.NOT_THAT_MESSAGE, MessagesToDiscord.NOT_THAT_MESSAGE));
         }
         break;
       default:
-        getMessageService().sendBlocksMessage(user, noOneCase);
+        getMessageService().sendBlocksMessage(user, blockService.createBlockMessage(
+            MessagesToSlack.NO_ONE_CASE, MessagesToDiscord.NO_ONE_CASE));
 
     }
   }
