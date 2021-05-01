@@ -3,10 +3,19 @@ package com.community.tools.model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Table(name = "task")
 public class Task {
 
   @Id
@@ -15,10 +24,13 @@ public class Task {
 
   private Integer taskNumber;
 
-  private String nameTask;
-
   private Integer estimateId;
 
   private String userId;
 
+//  public Task(Integer taskNumber, Integer estimateId, String userId) {
+//    this.taskNumber = taskNumber;
+//    this.estimateId = estimateId;
+//    this.userId = userId;
+//  }
 }

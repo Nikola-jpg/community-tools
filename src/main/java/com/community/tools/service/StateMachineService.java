@@ -12,7 +12,11 @@ import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.actions.error.ErrorAction;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+import com.github.seratch.jslack.api.model.view.ViewState;
+import java.util.Map;
+import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +28,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class StateMachineService {
+
+  private static final Logger logger = Logger.getLogger(StateMachineService.class.getName());
 
   @Autowired
   private StateMachineRepository stateMachineRepository;
@@ -46,6 +52,8 @@ public class StateMachineService {
   private StateMachineFactory<State, Event> factory;
   @Autowired
   private StateMachinePersister<State, Event, String> persister;
+  @Autowired
+  private EstimateTaskService estimateTaskService;
 
   private final GitHubService gitHubService;
   private final MessageService messageService;
@@ -109,7 +117,6 @@ public class StateMachineService {
         break;
       case "radio_buttons-action":
       case "theEnd":
-
         if (machine.getState().getId() == GOT_THE_NEXT_TASK) {
           machine.sendEvent(GET_THE_FIRST_TASK);
           messageService
@@ -199,5 +206,13 @@ public class StateMachineService {
     machine.getExtendedState().getVariables().put("dataPayload", payload);
     machine.sendEvent(event);
     persistMachine(machine, payload.getId());
+  }
+
+  public void estimate(Map<String, Map<String, ViewState.Value>> values, String userId)
+      throws Exception{
+    StateMachine<State, Event> machine = restoreMachine(userId);
+    Integer taskNumber = (Integer) machine.getExtendedState().getVariables().get("taskNumber");
+    logger.info("////////////////////values =======>>>" + values);
+//    estimateTaskService.saveEstimate(userId, taskNumber, values.get(0).toString());
   }
 }
