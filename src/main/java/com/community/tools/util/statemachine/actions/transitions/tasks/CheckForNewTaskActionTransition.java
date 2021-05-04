@@ -69,6 +69,8 @@ public class CheckForNewTaskActionTransition implements Transition {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
     getMessageService().sendBlocksMessage(getMessageService().getUserById(user),
         blockService.createBlockMessage(taskMessage,
-            new EmbedBuilder().addField("", tasksList.get(i), false).build()));
+            new EmbedBuilder()
+                .addField("", Messages.NEXT_TASK + tasksList.get(i), false)
+                .build()));
   }
 }

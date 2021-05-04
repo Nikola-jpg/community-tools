@@ -31,6 +31,21 @@ public class MessagesToSlack {
       + " \"type\": \"mrkdwn\", \"text\": \"" + Messages.MESSAGE_ABOUT_RULES_3 + "\"} }, {"
       + "\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\",\"text\": \""
       + Messages.MESSAGE_ABOUT_RULES_4 + "\"}]}]";
+  public static final String STATISTIC = "[{\"type\": \"header\",\"text\": {"
+      + "\"type\":\"plain_text\",\"text\": \"Statistic:\"}},{\"type\": \"context\",\"elements\":"
+      + " [{\"type\": \"mrkdwn\",\"text\": \"";
+  public static final String ACTIVITY = "\"}]},{\"type\": \"header\",\"text\": {"
+      + "\"type\": \"plain_text\",\"text\": \"Activity:\"}}";
+  public static final String FINISH_PUBLISH_WEEK_STATS = ",{\"type\": \"context\",\"elements\":"
+      + " [{\"type\": \"mrkdwn\",\"text\": \"*";
+  public static final String LINK_PUBLISH_WEEK_STATS = "[{\"type\": \"section\", \"text\": "
+      + "{\"type\": \"mrkdwn\",\"text\": \"Рейтинг этой недели доступен по ссылке: \"},"
+      + "\"accessory\": {\"type\": \"button\",\"text\": {\"type\": \"plain_text\",\"text\": "
+      + "\":loudspeaker:\",\"emoji\": true},\"value\": \"click_me_123\", \"url\": \"%s\","
+      + "\"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"%s\","
+      + "\"alt_text\": \"inspiration\"}]";
+  public static final String CHECK_NEXT_TASK = "[{\"type\": \"section\",\"text\":"
+      + " {\"type\": \"mrkdwn\",\"text\": \"" + Messages.NEXT_TASK;
 
   //Information channels message
   public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL = "[{\"type\": \"header\","

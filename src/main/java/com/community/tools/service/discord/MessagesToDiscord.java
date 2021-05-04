@@ -33,7 +33,7 @@ public class MessagesToDiscord {
       .build();
   public static final MessageEmbed MESSAGE_ABOUT_RULES = new EmbedBuilder()
       .addField("", Messages.MESSAGE_ABOUT_RULES_1, false)
-      .addField("", Messages.MESSAGE_ABOUT_RULES_2, false)
+      .addField("", "[Rules](" + Messages.MESSAGE_ABOUT_RULES_2 + ")", false)
       .addField("", Messages.MESSAGE_ABOUT_RULES_3, false)
       .addField("", Messages.MESSAGE_ABOUT_RULES_4, false)
       .build();

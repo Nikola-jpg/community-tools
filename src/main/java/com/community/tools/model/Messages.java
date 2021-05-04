@@ -87,4 +87,7 @@ public class Messages {
       + "inner/classes:5, override/overload:4, strings:5, gamelife:10");
   public static final String NO_ACTIVITY_MESSAGE = "There was no activity last week :pensive:";
 
+  public static final String NEXT_TASK = "Here is your next "
+      + "<https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
+
 }
