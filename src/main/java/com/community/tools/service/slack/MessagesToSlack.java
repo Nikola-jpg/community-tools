@@ -6,7 +6,8 @@ public class MessagesToSlack {
 
   //messages for bot
   public static final String GET_FIRST_TASK = "[{\"type\": \"section\",\"text\": {"
-      + "\"type\":\"mrkdwn\",\"text\": \"" + Messages.GET_FIRST_TASK + "\"}}]";
+      + "\"type\":\"mrkdwn\",\"text\": \"" + Messages.GET_FIRST_TASK + " <"
+      + Messages.LINK_FIRST_TASK + "|TASK>. gl\"}}]";
   public static final String ADD_GIT_NAME = "[{\"type\": \"section\",\"text\": {"
       + "\"type\":\"mrkdwn\",\"text\": \"" + Messages.ADD_GIT_NAME + "\"}}]";
   public static final String NO_ONE_CASE = "[{\"type\": \"divider\"},{\"type\": \"section\","

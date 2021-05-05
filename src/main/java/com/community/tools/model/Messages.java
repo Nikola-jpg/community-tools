@@ -19,9 +19,9 @@ public class Messages {
       + " to our team in Git :worried:";
   public static final String FAILED_NICK_NAME = "Sry but looks like you are not registered"
       + " on Github :worried:";
-  public static final String GET_FIRST_TASK = "This is your first"
-      + " <https://github.com/Broscorp-net/traineeship/"
-      + "tree/master/module1/src/main/java/net/broscorp/checkstyle|TASK>. gl";
+  public static final String GET_FIRST_TASK = "This is your first";
+  public static final String LINK_FIRST_TASK = "https://github.com/Broscorp-net/traineeship/tree/"
+      + "master/module1/src/main/java/net/broscorp/checkstyle";
   public static final String LAST_TASK = "You are so cool! :tada: Just one step away from"
       + " finishing your set of tasks. Make your last task, send it and wait for the review."
       + " Also you can help your colleagues on their journey :hugging_face:";
