@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TaskStatus</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        .tdposition{
+            text-align: center;
+        }
+
+        .readyForReview{
+            background: #008672;
+        }
+
+        .changesRequest{
+            background: #d73a4a;
+        }
+
+        .done{
+            background: #3bbf5a;
+        }
+
+        .pullRequest{
+            background: #f6f8fa;
+        }
+
+        p.vertical{
+            -webkit-transform: rotate(-90deg);
+            -moz-transform: rotate(-90deg);
+            -ms-transform: rotate(-90deg);
+            -o-transform: rotate(-90deg);
+            transform: rotate(-90deg);
+        }
+
+    </style>
+</head>
+
+<body>
+<div  class="container">
+
+    <h1 style="text-align: center;">TaskStatus</h1>
+    <div class="row justify-content-center col table-responsive">
+        <table id="taskStatus" class="table">
+            <thead>
+            <tr>
+                <th class="tdposition">#</th>
+                <th class="tdposition">
+                    <a th:href="@{/taskstatus/{platformName}(platformName = ${'platformName'})}">SlackName/DiscordName</a>
+                </th>
+                <th class="tdposition">
+                    <a th:href="@{/taskstatus/{gitName}(gitName = ${'gitName'})}">GitName</a>
+                </th>
+                <th class="tdposition">
+                    <a th:href="@{/taskstatus/{completedTask}(completedTask = ${'completedTask'})}">Completed tasks</a>
+                </th>
+                <th class="tdposition"
+                    th:each="task : ${taskList}"
+                    th:text="${task}">
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr th:each="entity, rowStat: ${taskStatusList}"
+                th:style="${rowStat.odd} ? 'background-color: #F0F8FF;' : 'background-color: #FFFFFF;'">
+
+                <td th:text="${rowStat.count}"></td>
+                <td th:text="${entity.getLoginPlatform()}"></td>
+                <td th:text="${entity.getLoginGithub()}"></td>
+                <td th:text="${entity.getCompletedTasks()}"></td>
+                <th:block  th:each="task : ${taskList}">
+                    <td th:each="taskStatus : ${entity.getTaskStatus()}"
+                        th:if="${task.equals(taskStatus.getKey())}"
+                    th:class="${taskStatus.getValue()}">
+
+                    </td>
+
+                </th:block>
+
+
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
