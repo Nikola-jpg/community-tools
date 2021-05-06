@@ -8,7 +8,6 @@ import lombok.Data;
  * @author Hryhorii Perets
  */
 @Data
-@AllArgsConstructor
 public class UserTaskStatus {
 
   private String loginPlatform;

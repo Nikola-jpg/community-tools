@@ -22,8 +22,7 @@ public class GitHubConnectService {
   public GitHub getGitHubConnection() {
     GitHub gitHub;
     try {
-      //gitHub = GitHub.connectUsingOAuth(token);
-      gitHub = GitHub.connectAnonymously();
+      gitHub = GitHub.connectUsingOAuth(token);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

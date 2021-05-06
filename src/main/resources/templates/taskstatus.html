@@ -22,11 +22,11 @@
             text-align: center;
         }
 
-        .readyForReview{
+        .readyforreview{
             background: #008672;
         }
 
-        .changesRequest{
+        .changesrequested{
             background: #d73a4a;
         }
 
@@ -34,7 +34,7 @@
             background: #3bbf5a;
         }
 
-        .pullRequest{
+        .pullrequest{
             background: #f6f8fa;
         }
 
@@ -84,9 +84,8 @@
                 <td th:text="${entity.getCompletedTasks()}"></td>
                 <th:block  th:each="task : ${taskList}">
                     <td th:each="taskStatus : ${entity.getTaskStatus()}"
-                        th:if="${task.equals(taskStatus.getKey())}"
+                        th:if="${task.equalsIgnoreCase(taskStatus.getKey())}"
                     th:class="${taskStatus.getValue()}">
-
                     </td>
 
                 </th:block>
