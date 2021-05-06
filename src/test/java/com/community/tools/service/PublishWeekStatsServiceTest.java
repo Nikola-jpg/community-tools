@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import java.util.Map;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -38,12 +39,15 @@ class PublishWeekStatsServiceTest {
   @Mock
   private Map<String, MessageService> messageServiceMap;
 
+  @Mock
+  private BlockService blockService;
+
   @BeforeAll
   public void initMocks() {
     MockitoAnnotations.initMocks(this);
     ReflectionTestUtils.setField(publishWeekStatsService, "channel", "general");
     ReflectionTestUtils.setField(publishWeekStatsService, "currentMessageService",
-        "discordService");
+        "slackService");
   }
 
   @Test
@@ -69,6 +73,7 @@ class PublishWeekStatsServiceTest {
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
     Mockito.when(messageServiceMap.get(anyString())).thenReturn(messageService);
+    Mockito.when(blockService.createBlockMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();
@@ -112,6 +117,7 @@ class PublishWeekStatsServiceTest {
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
     Mockito.when(messageServiceMap.get(anyString())).thenReturn(messageService);
+    Mockito.when(blockService.createBlockMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();
@@ -158,6 +164,7 @@ class PublishWeekStatsServiceTest {
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
     Mockito.when(messageServiceMap.get(anyString())).thenReturn(messageService);
+    Mockito.when(blockService.createBlockMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();

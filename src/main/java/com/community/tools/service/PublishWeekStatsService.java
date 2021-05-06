@@ -75,6 +75,7 @@ public class PublishWeekStatsService {
 
     List<EventData> events = ghEventService.getEvents(startDate, endDate);
     StringBuilder messageBuilder = new StringBuilder();
+    EmbedBuilder embedBuilder = new EmbedBuilder();
     if (events.size() == 0) {
       getMessageService().sendMessageToConversation(channel, Messages.NO_ACTIVITY_MESSAGE);
       System.out.println(events);
@@ -83,6 +84,7 @@ public class PublishWeekStatsService {
       events.stream().filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
               .forEach(ed -> sortedMapGroupByActors.put(ed.getActorLogin(), new ArrayList<>()));
 
+      embedBuilder.addField("", "Statistic: ", false);
       messageBuilder.append("[{\"type\": \"header\",\t\"text\": {\"type\":"
               + " \"plain_text\",\"text\": \"Statistic:\"}},"
               + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"");
@@ -99,7 +101,10 @@ public class PublishWeekStatsService {
                         .append(emojiGen(entry.getKey()));
                 messageBuilder.append(":  ");
                 messageBuilder.append(entry.getValue().size());
+                embedBuilder.addField("", getTypeTitleBold(entry.getKey())
+                    + emojiGen(entry.getKey()) + ": " + entry.getValue().size(), false);
               });
+      embedBuilder.addField("", "Activity: ", false);
       messageBuilder.append("\"\t}]},{\"type\": \"header\",\"text\": "
               + "{\"type\": \"plain_text\",\"text\": \"Activity:\"}}");
       sortedMapGroupByActors.entrySet().stream()
@@ -109,23 +114,27 @@ public class PublishWeekStatsService {
               .forEach(name -> {
                 StringBuilder authorsActivMessage = new StringBuilder();
                 name.getValue()
-                        .forEach(eventData -> authorsActivMessage
-                                .append(emojiGen(eventData.getType())));
+                        .forEach(eventData -> { authorsActivMessage
+                                .append(emojiGen(eventData.getType()));
+                          embedBuilder.addField("",
+                              emojiGen(eventData.getType()),false); }
+                  );
+
                 messageBuilder.append(",{\"type\": \"context\",\n"
                         + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*");
+
                 messageBuilder.append(name.getKey());
                 messageBuilder.append("*: ");
                 messageBuilder.append(authorsActivMessage);
                 messageBuilder.append("\"}]}");
+                embedBuilder.addField("", name.getKey() + "*: "
+                    + authorsActivMessage,false);
               });
       messageBuilder.append("]");
       getMessageService().sendBlockMessageToConversation(channel,
           blockService.createBlockMessage(messageBuilder.toString(),
-              new EmbedBuilder()
-                  .addField("","Statistic: ", false)
-                  .addField("", messageBuilder.toString(), false)
-                  .build()
-          ));
+              embedBuilder.build()));
+
     }
   }
 
@@ -150,7 +159,7 @@ public class PublishWeekStatsService {
     getMessageService().sendBlockMessageToConversation(channel,
         blockService.createBlockMessage(message,
             new EmbedBuilder()
-                .addField("","Рейтинг этой недели доступен по ссылке: ", false )
+                .addField("","Рейтинг этой недели доступен по ссылке: ", false)
                 .addField("", url, false)
                 .addField("", img, true)
                 .build()

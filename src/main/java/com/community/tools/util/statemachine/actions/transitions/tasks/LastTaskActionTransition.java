@@ -57,6 +57,7 @@ public class LastTaskActionTransition implements Transition {
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    getMessageService().sendPrivateMessage(getMessageService().getUserById(user), Messages.LAST_TASK);
+    getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
+        Messages.LAST_TASK);
   }
 }

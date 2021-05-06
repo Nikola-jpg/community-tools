@@ -36,6 +36,8 @@ public class BlockService {
         }
         break;
       }
+      default:
+        throw new UnsupportedOperationException("This message block is not supported.");
     }
     throw new UnsupportedOperationException("This message block is not supported.");
   }
