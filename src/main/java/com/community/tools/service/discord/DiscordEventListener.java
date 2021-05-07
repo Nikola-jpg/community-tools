@@ -62,7 +62,7 @@ public class DiscordEventListener extends ListenerAdapter {
     if (!event.getAuthor().isBot()) {
       try {
         if (event.getMessage().getContentRaw().equalsIgnoreCase("reset")
-            && !testModeSwitcher) {
+            && testModeSwitcher) {
           resetUser(event.getAuthor().getId());
         }
 

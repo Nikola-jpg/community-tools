@@ -7,7 +7,7 @@ public class MessagesToSlack {
   //messages for bot
   public static final String GET_FIRST_TASK = "[{\"type\": \"section\",\"text\": {"
       + "\"type\":\"mrkdwn\",\"text\": \"" + Messages.GET_FIRST_TASK + " <"
-      + Messages.LINK_FIRST_TASK + "|TASK>. gl\"}}]";
+      + Messages.LINK_FIRST_TASK + "|TASK> :link:\"}}]";
   public static final String ADD_GIT_NAME = "[{\"type\": \"section\",\"text\": {"
       + "\"type\":\"mrkdwn\",\"text\": \"" + Messages.ADD_GIT_NAME + "\"}}]";
   public static final String NO_ONE_CASE = "[{\"type\": \"divider\"},{\"type\": \"section\","
@@ -28,7 +28,7 @@ public class MessagesToSlack {
   public static final String MESSAGE_ABOUT_RULES = "[{ \"type\": \"section\", \"text\": {"
       + " \"type\": \"mrkdwn\", \"text\": \"" + Messages.MESSAGE_ABOUT_RULES_1 + "\" }}, {"
       + " \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \""
-      + Messages.MESSAGE_ABOUT_RULES_2 + "|Rules>\" } }, { \"type\": \"section\", \"text\": {"
+      + Messages.MESSAGE_ABOUT_RULES_2 + "|Rules> :link:\" } }, { \"type\": \"section\", \"text\": {"
       + " \"type\": \"mrkdwn\", \"text\": \"" + Messages.MESSAGE_ABOUT_RULES_3 + "\"} }, {"
       + "\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\",\"text\": \""
       + Messages.MESSAGE_ABOUT_RULES_4 + "\"}]}]";

@@ -9,7 +9,7 @@ public class MessagesToDiscord {
   //messages for bot
   public static final MessageEmbed GET_FIRST_TASK = new EmbedBuilder()
       .addField("", Messages.GET_FIRST_TASK + " [TASK]("
-          + Messages.LINK_FIRST_TASK + ")", false)
+          + Messages.LINK_FIRST_TASK + ") :link:", false)
       .build();
   public static final MessageEmbed ADD_GIT_NAME = new EmbedBuilder()
       .addField("", Messages.ADD_GIT_NAME, false)
@@ -34,7 +34,7 @@ public class MessagesToDiscord {
       .build();
   public static final MessageEmbed MESSAGE_ABOUT_RULES = new EmbedBuilder()
       .addField("", Messages.MESSAGE_ABOUT_RULES_1, false)
-      .addField("", "[Rules](" + Messages.MESSAGE_ABOUT_RULES_2 + ")", false)
+      .addField("", "[Rules](" + Messages.MESSAGE_ABOUT_RULES_2 + ") :link:", false)
       .addField("", Messages.MESSAGE_ABOUT_RULES_3, false)
       .addField("", Messages.MESSAGE_ABOUT_RULES_4, false)
       .build();
