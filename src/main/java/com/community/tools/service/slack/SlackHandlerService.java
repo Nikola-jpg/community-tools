@@ -144,7 +144,7 @@ public class SlackHandlerService {
               break;
             case CHECK_LOGIN:
               if (messageEvent.getText().equals("yes")) {
-                event = Event.ADD_GIT_NAME;
+                event = Event.ADD_GIT_NAME_AND_FIRST_TASK;
               } else if (messageEvent.getText().equals("no")) {
                 event = Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
               } else {
@@ -152,10 +152,6 @@ public class SlackHandlerService {
               }
               payload = (VerificationPayload) machine.getExtendedState().getVariables()
                   .get("dataPayload");
-              break;
-            case ADDED_GIT:
-              payload = new SinglePayload(id);
-              event = Event.GET_THE_FIRST_TASK;
               break;
             default:
               event = null;

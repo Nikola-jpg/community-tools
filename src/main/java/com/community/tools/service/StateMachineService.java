@@ -1,10 +1,10 @@
 package com.community.tools.service;
 
-import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
+import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME_AND_FIRST_TASK;
 import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
 import static com.community.tools.util.statemachie.Event.QUESTION_FIRST;
 import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
-import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
 import static com.community.tools.util.statemachie.State.NEW_USER;
 
 import com.community.tools.model.User;
@@ -70,8 +70,7 @@ public class StateMachineService {
           .anyMatch(e -> e.getLogin().equals(nickName));
       if (nicknameMatch) {
 
-        machine.sendEvent(ADD_GIT_NAME);
-        machine.sendEvent(GET_THE_FIRST_TASK);
+        machine.sendEvent(ADD_GIT_NAME_AND_FIRST_TASK);
         persistMachine(machine, userId);
 
         User stateEntity = stateMachineRepository.findByUserID(userId).get();
@@ -108,8 +107,7 @@ public class StateMachineService {
         }
         break;
       case "theEnd":
-
-        if (machine.getState().getId() == GOT_THE_FIRST_TASK) {
+        if (machine.getState().getId() == GOT_THE_TASK) {
           machine.sendEvent(GET_THE_FIRST_TASK);
           messageService
               .sendPrivateMessage(user, "that was the end, congrats");

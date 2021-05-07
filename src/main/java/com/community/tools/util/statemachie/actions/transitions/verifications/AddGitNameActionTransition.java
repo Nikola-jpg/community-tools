@@ -1,8 +1,8 @@
 package com.community.tools.util.statemachie.actions.transitions.verifications;
 
-import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
-import static com.community.tools.util.statemachie.State.ADDED_GIT;
+import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME_AND_FIRST_TASK;
 import static com.community.tools.util.statemachie.State.CHECK_LOGIN;
+import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
 
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
@@ -28,10 +28,12 @@ public class AddGitNameActionTransition implements Transition {
 
   @Autowired
   private Action<State, Event> errorAction;
-  @Value("${congratsAvailableNick}")
-  private String congratsAvailableNick;
   @Value("${generalInformationChannel}")
   private String channel;
+  @Value("${getFirstTask}")
+  private String getFirstTask;
+  @Value("${errorWithAddingGitName}")
+  private String errorWithAddingGitName;
   @Autowired
   private MessageService messageService;
   @Autowired
@@ -47,8 +49,8 @@ public class AddGitNameActionTransition implements Transition {
     transitions
         .withExternal()
         .source(CHECK_LOGIN)
-        .target(ADDED_GIT)
-        .event(ADD_GIT_NAME)
+        .target(GOT_THE_TASK)
+        .event(ADD_GIT_NAME_AND_FIRST_TASK)
         .action(this, errorAction);
   }
 
@@ -73,13 +75,13 @@ public class AddGitNameActionTransition implements Transition {
           .stream().filter(e -> e.getName().equals("trainees")).findFirst()
           .get().add(userGitLogin);
     } catch (IOException e) {
-      messageService.sendPrivateMessage(messageService.getUserById(user),
-          "Something went wrong when adding to role. You need to contact the admin!");
+      messageService.sendBlocksMessage(messageService.getUserById(user),
+          errorWithAddingGitName);
     }
-    messageService.sendPrivateMessage(messageService.getUserById(user), congratsAvailableNick);
     messageService.sendMessageToConversation(channel,
         generalInformationAboutUserToChannel(user, userGitLogin)
             + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
+    messageService.sendBlocksMessage(messageService.getUserById(user), getFirstTask);
     stateContext.getExtendedState().getVariables().put("gitNick", nickname);
   }
 
