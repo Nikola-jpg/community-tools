@@ -12,7 +12,6 @@ import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.actions.error.ErrorAction;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import com.github.seratch.jslack.api.model.view.ViewState;
 import java.util.Map;
@@ -54,6 +53,9 @@ public class StateMachineService {
   private StateMachinePersister<State, Event, String> persister;
   @Autowired
   private EstimateTaskService estimateTaskService;
+
+  @Autowired
+  GiveNewTaskService giveNewTask;
 
   private final GitHubService gitHubService;
   private final MessageService messageService;
@@ -103,7 +105,8 @@ public class StateMachineService {
    * @param userId Slack`s userId
    * @throws Exception Exception
    */
-  public void checkActionsFromButton(String action, String userId) throws Exception {
+  public void checkActionsFromButton(String action, String userId,
+      Map<String, Map<String, ViewState.Value>> val) throws Exception {
     StateMachine<State, Event> machine = restoreMachine(userId);
     String user = messageService.getUserById(userId);
     switch (action) {
@@ -116,6 +119,9 @@ public class StateMachineService {
         }
         break;
       case "radio_buttons-action":
+        logger.info("action =======>>>" + "radio_buttons-action");
+        estimate(val, userId);
+        break;
       case "theEnd":
         if (machine.getState().getId() == GOT_THE_NEXT_TASK) {
           machine.sendEvent(GET_THE_FIRST_TASK);
@@ -208,11 +214,33 @@ public class StateMachineService {
     persistMachine(machine, payload.getId());
   }
 
+  /**
+   * Method to start the action by userGitNick.
+   *
+   * @param userGitNick - gitNick users
+   * @param event       - event for StateMachine
+   */
+  public void doAction(String userGitNick, Event event) {
+    StateMachine<State, Event> machine = restoreMachineByNick(userGitNick);
+    machine.sendEvent(event);
+    persistMachine(machine, getIdByNick(userGitNick));
+  }
+
+  /**
+   * Method for action 'radio_buttons-action'.
+   *
+   * @param values - answer for button
+   * @param userId - id users
+   */
   public void estimate(Map<String, Map<String, ViewState.Value>> values, String userId)
-      throws Exception{
+      throws Exception {
     StateMachine<State, Event> machine = restoreMachine(userId);
     Integer taskNumber = (Integer) machine.getExtendedState().getVariables().get("taskNumber");
-    logger.info("////////////////////values =======>>>" + values);
-//    estimateTaskService.saveEstimate(userId, taskNumber, values.get(0).toString());
+    logger.info("/taskNumber =======>>>" + taskNumber);
+    logger.info("/values =======>>>" + values);
+    logger.info("/values.get(0) =======>>>" + values.get(0).toString());
+    giveNewTask.giveNewTask(stateMachineRepository.findByUserID(userId).get().getGitName());
   }
+
+
 }

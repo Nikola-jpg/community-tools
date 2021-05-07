@@ -1,6 +1,5 @@
-package com.community.tools.service.github;
+package com.community.tools.service;
 
-import com.community.tools.service.StateMachineService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,7 @@ import org.springframework.statemachine.persist.StateMachinePersister;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GitHubGiveNewTask {
+public class GiveNewTaskService {
 
   @Value("${git.number.of.tasks}")
   private Integer numberOfTasks;

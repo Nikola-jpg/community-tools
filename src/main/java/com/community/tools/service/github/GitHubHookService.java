@@ -1,5 +1,7 @@
 package com.community.tools.service.github;
 
+import static com.community.tools.util.statemachie.Event.SEND_ESTIMATE_TASK;
+
 import com.community.tools.service.MessageService;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
@@ -27,8 +29,6 @@ public class GitHubHookService {
   private String channel;
   @Autowired
   private MessageService messageService;
-  @Autowired
-  private GitHubGiveNewTask gitHubGiveNewTask;
   @Autowired
   private AddMentorService addMentorService;
   @Autowired
@@ -161,7 +161,7 @@ public class GitHubHookService {
   private void giveNewTaskIfPrOpened(JSONObject json) {
     if (json.get("action").toString().equals(opened)) {
       String user = json.getJSONObject("sender").getString("login");
-      gitHubGiveNewTask.giveNewTask(user);
+      stateMachineService.doAction(user, SEND_ESTIMATE_TASK);
     }
   }
 }

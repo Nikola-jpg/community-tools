@@ -40,10 +40,11 @@ public class GitSlackUsersController {
 
   /**
    * Endpoint /git. Method GET.
+   *
    * @return ResponseEntity with Status.OK and List of all users in GH repository
    */
   @ApiOperation(value = "Returns list of github logins"
-          + " of Broscorp-net/traineeship collaborators")
+      + " of Broscorp-net/traineeship collaborators")
   @GetMapping(value = "/git", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getGitHubAllUsers() {
     Set<GHUser> gitHubAllUsers = gitService.getGitHubAllUsers();
@@ -56,6 +57,7 @@ public class GitSlackUsersController {
 
   /**
    * Endpoint /slack. Method GET.
+   *
    * @return ResponseEntity with Status.OK and List of all users in Slack repository
    */
   @ApiOperation(value = "Returns list of slack users that work with the bot")
@@ -72,6 +74,7 @@ public class GitSlackUsersController {
 
   /**
    * Endpoint /sack/action. Method POST
+   *
    * @param payload JSON of BlockActionPayload
    * @throws Exception Exception
    */
@@ -83,26 +86,9 @@ public class GitSlackUsersController {
 
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
+    Map<String, Map<String, Value>> values = pl.getView().getState().getValues();
 
     stateMachineService.checkActionsFromButton(pl.getActions()
-            .get(0).getValue(),pl.getUser().getId());
+        .get(0).getValue(), pl.getUser().getId(), values);
   }
-
-//  /**
-//   * Endpoint /sack/action. Method POST
-//   * @param payload JSON of BlockActionPayload
-//   * @throws Exception Exception
-//   */
-//  @ApiOperation(value = "Deserializes Slack payload and sends message to user")
-//  @ApiImplicitParam(name = "payload", dataType = "string", paramType = "query",
-//      required = true, value = "payload")
-//  @RequestMapping(value = "/slack/action/radio_buttons", method = RequestMethod.POST)
-//  public void radioButton(@RequestParam(name = "payload") String payload) {
-//
-//    Gson snakeCase = GsonFactory.createSnakeCase();
-//    BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
-//
-//    Map<String, Map<String, Value>> values = pl.getView().getState().getValues();
-//
-//  }
 }

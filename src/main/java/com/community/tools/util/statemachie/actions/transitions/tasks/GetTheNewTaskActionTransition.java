@@ -52,8 +52,6 @@ public class GetTheNewTaskActionTransition implements Transition {
         "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Here is your next <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/"
             + tasksList.get(i) + "|TASK>.\"}}]";
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-
-    messageService.sendBlocksMessage(messageService.getUserById(user), messageForEstimateTheTask);
     messageService.sendBlocksMessage(messageService.getUserById(user), taskMessage);
   }
 }

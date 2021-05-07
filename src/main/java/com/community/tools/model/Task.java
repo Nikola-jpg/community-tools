@@ -27,10 +27,4 @@ public class Task {
   private Integer estimateId;
 
   private String userId;
-
-//  public Task(Integer taskNumber, Integer estimateId, String userId) {
-//    this.taskNumber = taskNumber;
-//    this.estimateId = estimateId;
-//    this.userId = userId;
-//  }
 }
