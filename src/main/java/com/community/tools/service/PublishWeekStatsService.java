@@ -99,7 +99,7 @@ public class PublishWeekStatsService {
                 messageBuilder.append("\n");
                 messageBuilder.append(getTypeTitleBold(entry.getKey()))
                         .append(emojiGen(entry.getKey()));
-                messageBuilder.append(":  ");
+                messageBuilder.append(": ");
                 messageBuilder.append(entry.getValue().size());
                 embedBuilder.addField("", getTypeTitleBold(entry.getKey())
                     + emojiGen(entry.getKey()) + ": " + entry.getValue().size(), false);

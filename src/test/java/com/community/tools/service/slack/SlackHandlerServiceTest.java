@@ -3,7 +3,6 @@ package com.community.tools.service.slack;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.community.tools.model.Messages;
-import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.payload.Payload;
@@ -12,23 +11,17 @@ import com.community.tools.service.payload.SinglePayload;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
-import javax.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
-@Transactional
 @TestPropertySource(locations = "/application-test.properties")
 class SlackHandlerServiceTest {
 

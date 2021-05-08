@@ -34,7 +34,7 @@ public class MessagesToSlack {
       + Messages.MESSAGE_ABOUT_RULES_4 + "\"}]}]";
   public static final String STATISTIC = "[{\"type\": \"header\",\t\"text\": {"
       + "\"type\":\"plain_text\",\"text\": \"Statistic:\"}},{\"type\": \"context\",\"elements\":"
-      + " [{\"type\": \"mrkdwn\",\"text\": \"\n";
+      + " [{\"type\": \"mrkdwn\",\"text\": \"";
   public static final String ACTIVITY = "\"\t}]},{\"type\": \"header\",\"text\": {"
       + "\"type\": \"plain_text\",\"text\": \"Activity:\"}}";
   public static final String FINISH_PUBLISH_WEEK_STATS = ",{\"type\": \"context\",\n\"elements\":"
