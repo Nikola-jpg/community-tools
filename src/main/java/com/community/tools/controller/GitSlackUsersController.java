@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHPerson;
@@ -33,6 +34,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("app")
 public class GitSlackUsersController {
+
+  private static final Logger logger = Logger
+      .getLogger(GitSlackUsersController.class.getName());
 
   private final StateMachineService stateMachineService;
   private final MessageService messageService;
@@ -86,8 +90,9 @@ public class GitSlackUsersController {
 
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
-    Map<String, Map<String, Value>> values = pl.getView().getState().getValues();
 
+    Map<String, Map<String, Value>> values = pl.getView().getState().getValues();
+    logger.info("url: /app/slack/action/" + values.toString());
     stateMachineService.checkActionsFromButton(pl.getActions()
         .get(0).getValue(), pl.getUser().getId(), values);
   }

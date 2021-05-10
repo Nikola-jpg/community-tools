@@ -11,8 +11,5 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
   @Override
   <S extends Task> S save(S s);
 
-  @Override
-  Optional<Task> findById(Integer integer);
-
   Task findByUserIdAndTaskNumber(String userId, Integer taskNumber);
 }

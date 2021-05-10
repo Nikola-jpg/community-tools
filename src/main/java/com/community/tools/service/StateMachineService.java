@@ -237,8 +237,9 @@ public class StateMachineService {
     StateMachine<State, Event> machine = restoreMachine(userId);
     Integer taskNumber = (Integer) machine.getExtendedState().getVariables().get("taskNumber");
     logger.info("/taskNumber =======>>>" + taskNumber);
-    logger.info("/values =======>>>" + values);
-    logger.info("/values.get(0) =======>>>" + values.get(0).toString());
+    logger.info("/values =======>>>" + values.toString());
+    logger.info("/values.get(0) =======>>>" + values.get("0").toString());
+    logger.info("/values.get(0) =======>>>" + values.get("0").get("0").toString());
     giveNewTask.giveNewTask(stateMachineRepository.findByUserID(userId).get().getGitName());
   }
 

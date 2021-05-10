@@ -11,18 +11,25 @@ public class EstimateTaskService {
   @Autowired
   TaskRepository taskRepository;
 
-  public void saveEstimate(String userId, Integer taskNumber, String estimateId){
+  /**
+   * Save estimate task in database.
+   *
+   * @param userId     - id users
+   * @param taskNumber - taskNumber for saving
+   * @param estimateId - id estimate
+   */
+  public void saveEstimateTask(String userId, Integer taskNumber, String estimateId) {
     Task task = taskRepository.findByUserIdAndTaskNumber(userId, taskNumber);
-    if(task == null) {
-      Task newTask = Task.builder()
+    if (task == null) {
+      task = Task.builder()
           .userId(userId)
           .taskNumber(taskNumber)
           .estimateId(Integer.parseInt(estimateId))
           .build();
-      taskRepository.save(newTask);
     } else {
       task.setEstimateId(Integer.parseInt(estimateId));
     }
+    taskRepository.save(task);
   }
 
 }

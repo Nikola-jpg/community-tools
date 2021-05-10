@@ -1,8 +1,8 @@
 package com.community.tools.util.statemachie.actions.transitions.tasks;
 
+import static com.community.tools.util.statemachie.Event.SEND_ESTIMATE_TASK;
 import static com.community.tools.util.statemachie.State.ESTIMATE_THE_TASK;
 import static com.community.tools.util.statemachie.State.GOT_THE_NEXT_TASK;
-import static com.community.tools.util.statemachie.Event.SEND_ESTIMATE_TASK;
 
 import com.community.tools.service.MessageService;
 import com.community.tools.util.statemachie.Event;

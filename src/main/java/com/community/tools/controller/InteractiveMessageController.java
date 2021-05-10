@@ -1,6 +1,5 @@
 package com.community.tools.controller;
 
-import com.community.tools.service.StateMachineService;
 import com.github.seratch.jslack.api.model.view.ViewState.Value;
 import com.github.seratch.jslack.app_backend.interactive_messages.payload.BlockActionPayload;
 import com.github.seratch.jslack.common.json.GsonFactory;
@@ -21,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/")
 public class InteractiveMessageController {
 
-  private static final Logger logger = Logger.getLogger(InteractiveMessageController.class.getName());
+  private static final Logger logger = Logger
+      .getLogger(InteractiveMessageController.class.getName());
+
   /**
    * Endpoint /. Method POST
    *
@@ -37,6 +38,6 @@ public class InteractiveMessageController {
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
     Map<String, Map<String, Value>> values = pl.getView().getState().getValues();
-    logger.info(values.toString());
+    logger.info("url: /" + values.toString());
   }
 }
