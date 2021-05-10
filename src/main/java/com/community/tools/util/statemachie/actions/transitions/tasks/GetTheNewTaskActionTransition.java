@@ -26,9 +26,6 @@ public class GetTheNewTaskActionTransition implements Transition {
   @Value("${tasksForUsers}")
   private String[] tasksForUsers;
 
-  @Value("${estimateTheTask}")
-  private String messageForEstimateTheTask;
-
   @Autowired
   private Action<State, Event> errorAction;
 

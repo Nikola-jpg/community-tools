@@ -36,7 +36,6 @@ public class EstimateTaskTransition implements Transition {
         .target(GOT_THE_NEXT_TASK)
         .event(SEND_ESTIMATE_TASK)
         .action(this, errorAction);
-
   }
 
   @Override

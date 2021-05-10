@@ -35,7 +35,7 @@ public class GetTheFirstTaskActionTransition implements Transition {
     transitions
         .withExternal()
         .source(ADDED_GIT)
-        .target(ESTIMATE_THE_TASK)//put ESTIMATING_TASK
+        .target(ESTIMATE_THE_TASK)
         .event(GET_THE_FIRST_TASK)
         .action(this, errorAction);
   }
