@@ -4,9 +4,6 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-/**
- * @author Hryhorii Perets
- */
 @Data
 public class UserTaskStatus {
 
@@ -17,6 +14,10 @@ public class UserTaskStatus {
   private int completedTasks;
 
   private Map<String, String> taskStatus;
+
+  public void addCompletedTask() {
+    completedTasks++;
+  }
 
 
 }

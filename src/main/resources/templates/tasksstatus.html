@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>TaskStatus</title>
+    <title>TasksStatus</title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -52,38 +52,38 @@
 <body>
 <div  class="container">
 
-    <h1 style="text-align: center;">TaskStatus</h1>
+    <h1 style="text-align: center;">TasksStatus</h1>
     <div class="row justify-content-center col table-responsive">
         <table id="taskStatus" class="table">
             <thead>
             <tr>
                 <th class="tdposition">#</th>
                 <th class="tdposition">
-                    <a th:href="@{/taskstatus/{platformName}(platformName = ${'platformName'})}">SlackName/DiscordName</a>
+                    <a th:href="@{/tasksstatus/{platformName}(platformName = ${'platformName'})}">SlackName/DiscordName</a>
                 </th>
                 <th class="tdposition">
-                    <a th:href="@{/taskstatus/{gitName}(gitName = ${'gitName'})}">GitName</a>
+                    <a th:href="@{/tasksstatus/{gitName}(gitName = ${'gitName'})}">GitName</a>
                 </th>
                 <th class="tdposition">
-                    <a th:href="@{/taskstatus/{completedTask}(completedTask = ${'completedTask'})}">Completed tasks</a>
+                    <a th:href="@{/tasksstatus/{completedTask}(completedTask = ${'completedTask'})}">Completed tasks</a>
                 </th>
                 <th class="tdposition"
-                    th:each="task : ${taskList}"
+                    th:each="task : ${tasksForUsers}"
                     th:text="${task}">
                 </th>
             </tr>
             </thead>
             <tbody>
 
-            <tr th:each="entity, rowStat: ${taskStatusList}"
+            <tr th:each="user, rowStat: ${userTaskStatuses}"
                 th:style="${rowStat.odd} ? 'background-color: #F0F8FF;' : 'background-color: #FFFFFF;'">
 
                 <td th:text="${rowStat.count}"></td>
-                <td th:text="${entity.getLoginPlatform()}"></td>
-                <td th:text="${entity.getLoginGithub()}"></td>
-                <td th:text="${entity.getCompletedTasks()}"></td>
-                <th:block  th:each="task : ${taskList}">
-                    <td th:each="taskStatus : ${entity.getTaskStatus()}"
+                <td th:text="${user.getLoginPlatform()}"></td>
+                <td th:text="${user.getLoginGithub()}"></td>
+                <td th:text="${user.getCompletedTasks()}"></td>
+                <th:block  th:each="task : ${tasksForUsers}">
+                    <td th:each="taskStatus : ${user.getTaskStatus()}"
                         th:if="${task.equalsIgnoreCase(taskStatus.getKey())}"
                     th:class="${taskStatus.getValue()}">
                     </td>
