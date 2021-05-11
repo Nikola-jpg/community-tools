@@ -121,7 +121,7 @@ public class SlackHandlerService {
               if (messageEvent.getText().equals("ready")) {
                 payload = new SinglePayload(id);
                 event = Event.QUESTION_FIRST;
-              } else {
+              } else if (!messageEvent.getText().equals("reset")) {
                 message = notThatMessage;
               }
               break;
@@ -159,7 +159,7 @@ public class SlackHandlerService {
           }
 
           if (event == null) {
-            messageService.sendPrivateMessage(
+            messageService.sendBlocksMessage(
                 messageService.getUserById(messageEvent.getUser()),
                 message);
           } else {
