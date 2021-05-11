@@ -18,13 +18,17 @@ public class GitHubGiveNewTask {
   @Autowired
   private StateMachineService stateMachineService;
 
-  public void giveNewTask(String user){
+  /**
+   * Give new Task to the trainee. Checks for the last task.
+   * @param user GitHub login of trainee
+   */
+  public void giveNewTask(String user) {
     try {
-      StateMachine<State, Event> machine =stateMachineService.restoreMachineByNick(user);
+      StateMachine<State, Event> machine = stateMachineService.restoreMachineByNick(user);
       machine.sendEvent(Event.GET_THE_NEW_TASK);
-      if((Integer)machine.getExtendedState().getVariables().get("taskNumber") ==  numberOfTasks){
+      if (machine.getExtendedState().getVariables().get("taskNumber") ==  numberOfTasks) {
         machine.sendEvent(Event.LAST_TASK);
-      }else{
+      } else {
         machine.sendEvent(Event.CHANGE_TASK);
       }
       persister.persist(machine,stateMachineService.getIdByNick(user));

@@ -1,25 +1,21 @@
 package com.community.tools.util.statemachie;
 
-import static com.community.tools.util.statemachie.Event.*;
-import static com.community.tools.util.statemachie.State.*;
+import static com.community.tools.util.statemachie.State.NEW_USER;
 
-import com.community.tools.util.statemachie.actions.*;
+import com.community.tools.util.statemachie.actions.Transition;
 
 import java.util.EnumSet;
+import java.util.List;
 
-import com.community.tools.util.statemachie.actions.questions.FirstQuestionAction;
-import com.community.tools.util.statemachie.actions.questions.SecondQuestionAction;
-import com.community.tools.util.statemachie.actions.questions.ThirdQuestionAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.statemachine.action.Action;
+import org.springframework.statemachine.StateMachineException;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.EnumStateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineConfigurationConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
-import org.springframework.statemachine.guard.Guard;
 import org.springframework.statemachine.persist.DefaultStateMachinePersister;
 
 @Configuration
@@ -27,7 +23,9 @@ import org.springframework.statemachine.persist.DefaultStateMachinePersister;
 public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, Event> {
 
   @Autowired
-  StateMachinePersister persister;
+  private StateMachinePersister persister;
+  @Autowired
+  List<Transition> transitionList;
 
   @Override
   public void configure(final StateMachineStateConfigurer<State, Event> states)
@@ -42,168 +40,18 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
     config
         .withConfiguration()
         .autoStartup(true)
-        .listener(new StateMachineApplicationListeer());
+        .listener(new StateMachineApplicationListener());
   }
 
   @Override
-  public void configure(final StateMachineTransitionConfigurer<State, Event> transitions)
-      throws Exception {
-    transitions
-        .withExternal()
-        .source(GREETING_MESSAGE)
-        .target(FIRST_QUESTION)
-        .event(QUESTION_FIRST)
-        .action(firstQuestionAction(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(FIRST_QUESTION)
-        .target(SECOND_QUESTION)
-        .event(QUESTION_SECOND)
-        .action(secondQuestionAction(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(SECOND_QUESTION)
-        .target(THIRD_QUESTION)
-        .event(QUESTION_THIRD)
-        .action(thirdQuestionAction(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(THIRD_QUESTION)
-        .target(INFORMATION_CHANNELS)
-        .event(CHANNELS_INFORMATION)
-        .action(informationChannelsAction(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(INFORMATION_CHANNELS)
-        .target(AGREED_LICENSE)
-        .event(AGREE_LICENSE)
-        .action(agreeLicenseAction(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(AGREED_LICENSE)
-        .target(CHECK_LOGIN)
-        .event(LOGIN_CONFIRMATION)
-        .guard(hideGuard())
-        .action(verificationLoginAction(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(CHECK_LOGIN)
-        .target(AGREED_LICENSE)
-        .event(DID_NOT_PASS_VERIFICATION_GIT_LOGIN)
-        .action(didntPassVerificationGitLogin(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(CHECK_LOGIN)
-        .target(ADDED_GIT)
-        .event(ADD_GIT_NAME)
-        .action(addGitNameAction(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(ADDED_GIT)
-        .target(GOT_THE_FIRST_TASK)
-        .event(GET_THE_FIRST_TASK)
-        .action(getTheFirstTaskAction(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(GOT_THE_FIRST_TASK)
-        .target(CHECK_FOR_NEW_TASK)
-        .event(GET_THE_NEW_TASK)
-        .action(checkForNewTaskAction(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(CHECK_FOR_NEW_TASK)
-        .target(GOT_THE_FIRST_TASK)
-        .event(CHANGE_TASK)
-        .action(changeTaskAction(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(CHECK_FOR_NEW_TASK)
-        .target(CONGRATS_LAST_TASK)
-        .event(LAST_TASK)
-        .guard(lastTaskGuard())
-        .action(lastTaskAction(), errorAction());
-  }
-
-  @Bean
-  public Action <State, Event> didntPassVerificationGitLogin(){ return new DidNotPassVerificationGitLogin(); }
-
-  @Bean
-  public Action<State, Event> verificationLoginAction() { return new VerificationLoginAction(); }
-
-  @Bean
-  public Action<State, Event> firstQuestionAction() {
-    return new FirstQuestionAction();
-  }
-
-  @Bean
-  public Action<State, Event> secondQuestionAction() {
-    return new SecondQuestionAction();
-  }
-
-  @Bean
-  public Action<State, Event> thirdQuestionAction() {
-    return new ThirdQuestionAction();
-  }
-
-  @Bean
-  Action<State, Event> informationChannelsAction() {
-    return new ChannelInformationAction();
-  }
-
-  @Bean
-  public Action<State, Event> agreeLicenseAction() {
-    return new AgreeLicenseAction();
-  }
-
-  @Bean
-  public Action<State, Event> addGitNameAction() {
-    return new AddGitNameAction();
-  }
-
-  @Bean
-  public Action<State, Event> getTheFirstTaskAction() {
-    return new GetTheFirstTaskAction();
-  }
-
-  @Bean
-  public Action<State, Event> checkForNewTaskAction() {
-    return new CheckForNewTaskAction();
-  }
-
-  @Bean
-  public Action<State, Event> changeTaskAction() {
-    return new ChangeTaskAction();
-  }
-
-  @Bean
-  public Action<State, Event> lastTaskAction() {
-    return new LastTaskAction();
-  }
-
-  @Bean
-  public Action<State, Event> errorAction() {
-    return new ErrorAction();
-  }
-
-  @Bean
-  public Guard<State, Event> hideGuard() {
-    return new HideGuard();
-  }
-
-  @Bean
-  public Guard<State, Event> lastTaskGuard() {
-    return new LastTaskGuard();
+  public void configure(final StateMachineTransitionConfigurer<State, Event> transitions) {
+    transitionList.forEach(transition -> {
+      try {
+        transition.configure(transitions);
+      } catch (Exception e) {
+        throw new StateMachineException("Transition configure exception");
+      }
+    });
   }
 
   @Bean

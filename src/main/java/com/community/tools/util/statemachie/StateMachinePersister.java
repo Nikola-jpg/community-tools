@@ -72,7 +72,7 @@ public class StateMachinePersister implements
     Kryo kryo = kryoThreadLocal.get();
     ByteArrayInputStream in = new ByteArrayInputStream(data);
     return (StateMachineContext<State, Event>) kryo
-        .readClassAndObject(new Input(in));
+            .readClassAndObject(new Input(in));
   }
 
 }

@@ -11,9 +11,15 @@ import org.apache.commons.codec.binary.Hex;
 @Slf4j
 public final class GithubAuthChecker {
 
-  final static String HMAC_SHA1 = "HmacSHA1";
+  static final String HMAC_SHA1 = "HmacSHA1";
   final Mac mac;
 
+  /**
+   * Constructor of GithubAuthChecker.
+   * @param secret secret Key
+   * @throws NoSuchAlgorithmException NoSuchAlgorithmException
+   * @throws InvalidKeyException InvalidKeyException
+   */
   public GithubAuthChecker(String secret)
       throws NoSuchAlgorithmException, InvalidKeyException {
     mac = Mac.getInstance(HMAC_SHA1);
@@ -22,7 +28,7 @@ public final class GithubAuthChecker {
   }
 
   /**
-   * Checks a github signature against its payload
+   * Checks a github signature against its payload.
    *
    * @param signature A X-Hub-Signature header value ("sha1=[...]")
    * @param payload   The signed HTTP request body
