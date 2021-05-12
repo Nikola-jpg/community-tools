@@ -13,15 +13,14 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.statemachine.StateMachine;
-import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
-@TestPropertySource(locations = "/application-test.properties")
 class DiscordEventListenerTest {
 
   @Autowired
@@ -43,7 +42,8 @@ class DiscordEventListenerTest {
   }
 
   @Test
-  void onPrivateMessageReceived() throws Exception{
+  @DisplayName("Should on private message received ")
+  void shouldOnPrivateMessageReceived() throws Exception{
     String id = "830117510543441930";
     discordEventListener.resetUser("830117510543441930");
     StateMachine<State, Event> machine = stateMachineService
@@ -60,7 +60,7 @@ class DiscordEventListenerTest {
           if (true) {
             payload = new SinglePayload(id);
             stateMachineEvent = Event.QUESTION_FIRST;
-          } else if (!"reset".equalsIgnoreCase("reset")) {
+          } else {
             message = Messages.NOT_THAT_MESSAGE;
           }
           break;
