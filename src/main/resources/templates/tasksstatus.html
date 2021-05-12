@@ -82,13 +82,18 @@
                 <td th:text="${user.getLoginPlatform()}"></td>
                 <td th:text="${user.getLoginGithub()}"></td>
                 <td th:text="${user.getCompletedTasks()}"></td>
-                <th:block  th:each="task : ${tasksForUsers}">
-                    <td th:each="taskStatus : ${user.getTaskStatus()}"
-                        th:if="${task.equalsIgnoreCase(taskStatus.getKey())}"
-                    th:class="${taskStatus.getValue()}">
-                    </td>
+                <th:block th:each="task, numberTask: ${tasksForUsers}" >
+                          <th:block th:each="title, numberTitle: ${user.getTaskStatus().keySet()}">
+                              <th:block th:if="${title.equalsIgnoreCase(task)}" >
+
+                                  <td th:class="${user.getTaskStatus().get(title)}"></td>
+
+                              </th:block>
+                          </th:block>
 
                 </th:block>
+
+
 
 
             </tr>
