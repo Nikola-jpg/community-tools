@@ -1,4 +1,4 @@
-package com.community.tools.service.slack;
+package com.community.tools.service.discord;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,21 +20,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.test.context.TestPropertySource;
 
-
 @SpringBootTest
 @TestPropertySource(locations = "/application-test.properties")
-class SlackHandlerServiceTest {
+class DiscordEventListenerTest {
+
+  @Autowired
+  private DiscordEventListener discordEventListener;
 
   @Autowired
   private StateMachineService stateMachineService;
 
   @Autowired
-  private SlackHandlerService slackHandlerService;
-
-  @Autowired
-  @Qualifier("slackService")
+  @Qualifier("discordService")
   private MessageService messageService;
-
 
   @BeforeEach
   void setUp() {
@@ -45,49 +43,49 @@ class SlackHandlerServiceTest {
   }
 
   @Test
-  public void testStateMachineSlack() throws Exception {
-    String id = "U01QY5TJ71V";
-  slackHandlerService.resetUser("U01QY5TJ71V");
+  void onPrivateMessageReceived() throws Exception{
+    String id = "830117510543441930";
+    discordEventListener.resetUser("830117510543441930");
     StateMachine<State, Event> machine = stateMachineService
         .restoreMachine(id);
 
     String userForQuestion = machine.getExtendedState().getVariables().get("id").toString();
 
     String message = Messages.DEFAULT_MESSAGE;
-    Event event = null;
+    Event stateMachineEvent = null;
     Payload payload = null;
     for (int i = 0; i < 7; i++) {
       switch (machine.getState().getId()) {
         case NEW_USER:
           if (true) {
             payload = new SinglePayload(id);
-            event = Event.QUESTION_FIRST;
-          } else {
+            stateMachineEvent = Event.QUESTION_FIRST;
+          } else if (!"reset".equalsIgnoreCase("reset")) {
             message = Messages.NOT_THAT_MESSAGE;
           }
           break;
         case FIRST_QUESTION:
           payload = new QuestionPayload(id, "First", userForQuestion);
-          event = Event.QUESTION_SECOND;
+          stateMachineEvent = Event.QUESTION_SECOND;
           break;
         case SECOND_QUESTION:
           payload = new QuestionPayload(id, "Second", userForQuestion);
-          event = Event.QUESTION_THIRD;
+          stateMachineEvent = Event.QUESTION_THIRD;
           break;
         case THIRD_QUESTION:
           payload = new QuestionPayload(id, "Third", userForQuestion);
-          event = Event.CONSENT_TO_INFORMATION;
+          stateMachineEvent = Event.CONSENT_TO_INFORMATION;
           break;
         case AGREED_LICENSE:
-          String gitNick = "GrPerets";
+          String gitNick = "nperets";
           payload = new VerificationPayload(id, gitNick);
-          event = Event.LOGIN_CONFIRMATION;
+          stateMachineEvent = Event.LOGIN_CONFIRMATION;
           break;
         case CHECK_LOGIN:
           if ("yes".equals("yes")) {
-            event = Event.ADD_GIT_NAME;
+            stateMachineEvent = Event.ADD_GIT_NAME;
           } else if ("no".equals("no")) {
-            event = Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
+            stateMachineEvent = Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
           } else {
             message = Messages.NOT_THAT_MESSAGE;
           }
@@ -96,21 +94,20 @@ class SlackHandlerServiceTest {
           break;
         case ADDED_GIT:
           payload = new SinglePayload(id);
-          event = Event.GET_THE_FIRST_TASK;
+          stateMachineEvent = Event.GET_THE_FIRST_TASK;
           break;
         default:
-          event = null;
+          stateMachineEvent = null;
           payload = null;
       }
-      if (event == null) {
+      if (stateMachineEvent == null) {
         messageService.sendPrivateMessage(
             messageService.getUserById(id),
             message);
       } else {
         stateMachineService
-            .doAction(machine, payload, event);
+            .doAction(machine, payload, stateMachineEvent);
       }
     }
   }
-
 }
