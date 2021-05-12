@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class UserTaskStatus {
+public class UserTasksStatus {
 
   private String loginPlatform;
 

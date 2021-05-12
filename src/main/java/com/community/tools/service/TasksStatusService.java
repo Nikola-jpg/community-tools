@@ -1,7 +1,5 @@
 package com.community.tools.service;
 
-import com.community.tools.dto.UserTaskStatus;
-import com.community.tools.model.EventData;
 import com.community.tools.service.github.GitHubConnectService;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,17 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.kohsuke.github.GHEventInfo;
-import org.kohsuke.github.GHEventPayload.IssueComment;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHPullRequest;
-import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class TaskStatusService {
+public class TasksStatusService {
 
   private final GitHubConnectService gitHubConnectService;
   private final MessageService messageService;

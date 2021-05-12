@@ -75,7 +75,7 @@
             </thead>
             <tbody>
 
-            <tr th:each="user, rowStat: ${userTaskStatuses}"
+            <tr th:each="user, rowStat: ${userTasksStatuses}"
                 th:style="${rowStat.odd} ? 'background-color: #F0F8FF;' : 'background-color: #FFFFFF;'">
 
                 <td th:text="${rowStat.count}"></td>
