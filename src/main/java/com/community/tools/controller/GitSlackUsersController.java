@@ -96,7 +96,7 @@ public class GitSlackUsersController {
       required = true, value = "payload")
   @RequestMapping(value = "/slack/action", method = RequestMethod.POST)
   public void action(@RequestParam(name = "payload") String payload) throws Exception {
-
+    logger.info("payload: " + payload);
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
     String action = pl.getActions().get(0).getValue();
