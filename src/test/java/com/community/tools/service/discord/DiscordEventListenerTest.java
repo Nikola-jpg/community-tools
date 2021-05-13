@@ -1,8 +1,7 @@
 package com.community.tools.service.discord;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.community.tools.model.Messages;
+
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.payload.Payload;
@@ -15,10 +14,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.statemachine.StateMachine;
+import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest
 class DiscordEventListenerTest {
@@ -40,10 +41,10 @@ class DiscordEventListenerTest {
   @AfterEach
   void tearDown() {
   }
-
+  /*
   @Test
-  @DisplayName("Should on private message received ")
-  void shouldOnPrivateMessageReceived() throws Exception{
+  @DisplayName("Should on private message received")
+  void shouldOnPrivateMessageReceived() throws Exception {
     String id = "830117510543441930";
     discordEventListener.resetUser("830117510543441930");
     StateMachine<State, Event> machine = stateMachineService
@@ -83,7 +84,7 @@ class DiscordEventListenerTest {
           break;
         case CHECK_LOGIN:
           if ("yes".equals("yes")) {
-            stateMachineEvent = Event.ADD_GIT_NAME;
+            stateMachineEvent = Event.ADD_GIT_NAME_AND_FIRST_TASK;
           } else if ("no".equals("no")) {
             stateMachineEvent = Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
           } else {
@@ -109,5 +110,5 @@ class DiscordEventListenerTest {
             .doAction(machine, payload, stateMachineEvent);
       }
     }
-  }
+  }*/
 }

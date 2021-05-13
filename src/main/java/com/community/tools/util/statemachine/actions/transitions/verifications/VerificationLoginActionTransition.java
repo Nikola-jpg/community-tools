@@ -1,16 +1,18 @@
-package com.community.tools.util.statemachie.actions.transitions.verifications;
+package com.community.tools.util.statemachine.actions.transitions.verifications;
 
-import static com.community.tools.util.statemachie.Event.LOGIN_CONFIRMATION;
-import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
-import static com.community.tools.util.statemachie.State.CHECK_LOGIN;
+import static com.community.tools.util.statemachine.Event.LOGIN_CONFIRMATION;
+import static com.community.tools.util.statemachine.State.AGREED_LICENSE;
+import static com.community.tools.util.statemachine.State.CHECK_LOGIN;
 
+import com.community.tools.model.Messages;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.VerificationPayload;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.actions.Transition;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
+import com.community.tools.util.statemachine.actions.Transition;
 import java.io.IOException;
+import java.util.Map;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,10 +28,23 @@ public class VerificationLoginActionTransition implements Transition {
   private Action<State, Event> errorAction;
   @Value("${askAboutProfile}")
   private String askAboutProfile;
-  @Autowired
-  private MessageService messageService;
+
   @Autowired
   private GitHubService gitHubService;
+
+  @Autowired
+  private Map<String, MessageService> messageServiceMap;
+
+  @Value("${currentMessageService}")
+  private String currentMessageService;
+
+  /**
+   * Selected current message service.
+   * @return current message service
+   */
+  public MessageService getMessageService() {
+    return messageServiceMap.get(currentMessageService);
+  }
 
   @Override
   public void configure(
@@ -51,8 +66,8 @@ public class VerificationLoginActionTransition implements Transition {
     String nickname = payload.getGitNick();
     try {
       GHUser userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
-      messageService.sendPrivateMessage(messageService.getUserById(id),
-          askAboutProfile + "\n" + userGitLogin.getHtmlUrl().toString());
+      getMessageService().sendPrivateMessage(getMessageService().getUserById(id),
+          Messages.ASK_ABOUT_PROFILE + "\n" + userGitLogin.getHtmlUrl().toString());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

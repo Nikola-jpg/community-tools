@@ -1,6 +1,8 @@
-package com.community.tools.util.statemachie.actions.verifications;
+package com.community.tools.util.statemachine.actions.verifications;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -8,16 +10,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.community.tools.model.User;
+import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.service.slack.SlackHandlerService;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.actions.transitions.verifications.AddGitNameActionTransition;
-import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
+import com.community.tools.util.statemachine.actions.transitions.verifications.AddGitNameActionTransition;
+import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -57,6 +60,10 @@ public class AddGitNameActionTest {
   @Mock
   private MessageService messageService;
   @Mock
+  private Map<String, MessageService> messageServiceMap;
+  @Mock
+  private BlockService blockService;
+  @Mock
   private SlackHandlerService slackHandlerService;
   @Mock
   private StateMachine<State, Event> machine;
@@ -90,13 +97,24 @@ public class AddGitNameActionTest {
     repoService.setAccessible(true);
     repoService.set(addGitNameAction, gitHubService);
 
-    Field messageService = AddGitNameActionTransition.class.getDeclaredField("messageService");
-    messageService.setAccessible(true);
-    messageService.set(addGitNameAction, this.messageService);
+    //Field messageService = AddGitNameActionTransition.class.getDeclaredField("messageService");
+    //messageService.setAccessible(true);
+    //messageService.set(addGitNameAction, this.messageService);
+
+    Field blockService = AddGitNameActionTransition.class.getDeclaredField("blockService");
+    blockService.setAccessible(true);
+    blockService.set(addGitNameAction, this.blockService);
+
+    Field messageServiceMap = AddGitNameActionTransition.class
+        .getDeclaredField("messageServiceMap");
+    messageServiceMap.setAccessible(true);
+    messageServiceMap.set(addGitNameAction, this.messageServiceMap);
+
     ReflectionTestUtils.setField(addGitNameAction, "channel", "test_3");
     ReflectionTestUtils.setField(addGitNameAction, "getFirstTask", getFirstTask);
     ReflectionTestUtils
         .setField(addGitNameAction, "errorWithAddingGitName", errorWithAddingGitName);
+    ReflectionTestUtils.setField(addGitNameAction, "currentMessageService", "slackService");
   }
 
   @Test
@@ -113,7 +131,8 @@ public class AddGitNameActionTest {
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
-
+    when(messageServiceMap.get(anyString())).thenReturn(messageService);
+    when(blockService.createBlockMessage(anyString(), any())).thenReturn(getFirstTask);
     when(repository.findByUserID("U0191K2V20K")).thenReturn(Optional.of(entity));
 
     when(gitHubService.getUserByLoginInGitHub("likeRewca")).thenReturn(user);
@@ -155,7 +174,10 @@ public class AddGitNameActionTest {
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
-
+    when(messageServiceMap.get(anyString())).thenReturn(messageService);
+    when(blockService.createBlockMessage(eq(errorWithAddingGitName), any()))
+        .thenReturn(errorWithAddingGitName);
+    when(blockService.createBlockMessage(eq(getFirstTask), any())).thenReturn(getFirstTask);
     when(repository.findByUserID("U0191K2V20K")).thenReturn(Optional.of(entity));
 
     when(gitHubService.getUserByLoginInGitHub("likeRewca")).thenReturn(user);
@@ -166,8 +188,9 @@ public class AddGitNameActionTest {
 
     when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
     when(messageService.sendBlocksMessage("Горб Юра",
-        errorWithAddingGitName))
-        .thenReturn("");
+        errorWithAddingGitName)).thenReturn("");
+    when(messageService.sendBlocksMessage("Горб Юра",
+        getFirstTask)).thenReturn("");
 
     addGitNameAction.execute(stateContext);
     verify(stateContext, times(2)).getExtendedState();
@@ -178,6 +201,7 @@ public class AddGitNameActionTest {
         .sendBlocksMessage("Горб Юра",
             errorWithAddingGitName);
     verify(messageService, times(1)).sendMessageToConversation(anyString(), anyString());
+
     verify(messageService, times(1))
         .sendBlocksMessage("Горб Юра",
             getFirstTask);

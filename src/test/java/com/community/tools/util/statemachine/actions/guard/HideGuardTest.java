@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie.actions.guard;
+package com.community.tools.util.statemachine.actions.guard;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

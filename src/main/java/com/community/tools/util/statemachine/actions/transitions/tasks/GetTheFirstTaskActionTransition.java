@@ -1,14 +1,18 @@
-package com.community.tools.util.statemachie.actions.transitions.tasks;
+package com.community.tools.util.statemachine.actions.transitions.tasks;
 
-import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.State.ADDED_GIT;
-import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
+import static com.community.tools.util.statemachine.Event.GET_THE_FIRST_TASK;
+import static com.community.tools.util.statemachine.State.ADDED_GIT;
+import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
 
+import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
+import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.payload.SinglePayload;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.actions.Transition;
+import com.community.tools.service.slack.MessagesToSlack;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
+import com.community.tools.util.statemachine.actions.Transition;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -23,10 +27,24 @@ public class GetTheFirstTaskActionTransition implements Transition {
   private String getFirstTask;
 
   @Autowired
-  private MessageService messageService;
+  private BlockService blockService;
 
   @Autowired
   private Action<State, Event> errorAction;
+
+  @Autowired
+  private Map<String, MessageService> messageServiceMap;
+
+  @Value("${currentMessageService}")
+  private String currentMessageService;
+
+  /**
+   * Selected current message service.
+   * @return current message service
+   */
+  public MessageService getMessageService() {
+    return messageServiceMap.get(currentMessageService);
+  }
 
   @Override
   public void configure(
@@ -44,6 +62,8 @@ public class GetTheFirstTaskActionTransition implements Transition {
     SinglePayload payload = (SinglePayload) stateContext.getExtendedState().getVariables()
         .get("dataPayload");
     String user = payload.getId();
-    messageService.sendBlocksMessage(messageService.getUserById(user), getFirstTask);
+    getMessageService().sendBlocksMessage(getMessageService().getUserById(user),
+        blockService.createBlockMessage(
+            MessagesToSlack.GET_FIRST_TASK, MessagesToDiscord.GET_FIRST_TASK));
   }
 }

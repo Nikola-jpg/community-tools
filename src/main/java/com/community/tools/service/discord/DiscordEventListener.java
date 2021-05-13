@@ -64,71 +64,74 @@ public class DiscordEventListener extends ListenerAdapter {
         if (event.getMessage().getContentRaw().equalsIgnoreCase("reset")
             && testModeSwitcher) {
           resetUser(event.getAuthor().getId());
-        }
-
-        String id = event.getAuthor().getId();
-        StateMachine<State, Event> machine = stateMachineService.restoreMachine(id);
-        String userForQuestion = machine.getExtendedState().getVariables().get("id").toString();
-
-        String message = Messages.DEFAULT_MESSAGE;
-        Event stateMachineEvent = null;
-        Payload payload = null;
-
-        switch (machine.getState().getId()) {
-          case NEW_USER:
-            if (event.getMessage().getContentRaw().equalsIgnoreCase("ready")) {
-              payload = new SinglePayload(id);
-              stateMachineEvent = Event.QUESTION_FIRST;
-            } else {
-              message = Messages.NOT_THAT_MESSAGE;
-            }
-            break;
-          case FIRST_QUESTION:
-            payload = new QuestionPayload(id, event.getMessage().getContentRaw(), userForQuestion);
-            stateMachineEvent = Event.QUESTION_SECOND;
-            break;
-          case SECOND_QUESTION:
-            payload = new QuestionPayload(id, event.getMessage().getContentRaw(), userForQuestion);
-            stateMachineEvent = Event.QUESTION_THIRD;
-            break;
-          case THIRD_QUESTION:
-            payload = new QuestionPayload(id, event.getMessage().getContentRaw(), userForQuestion);
-            stateMachineEvent = Event.CONSENT_TO_INFORMATION;
-            break;
-          case AGREED_LICENSE:
-            String gitNick = event.getMessage().getContentRaw();
-            payload = new VerificationPayload(id, gitNick);
-            stateMachineEvent = Event.LOGIN_CONFIRMATION;
-            break;
-          case CHECK_LOGIN:
-            if (event.getMessage().getContentRaw().equalsIgnoreCase("yes")) {
-              stateMachineEvent = Event.ADD_GIT_NAME;
-            } else if (event.getMessage().getContentRaw().equalsIgnoreCase("no")) {
-              stateMachineEvent = Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
-            } else {
-              message = Messages.NOT_THAT_MESSAGE;
-            }
-            payload = (VerificationPayload) machine.getExtendedState().getVariables()
-                .get("dataPayload");
-            break;
-          case ADDED_GIT:
-            payload = new SinglePayload(id);
-            stateMachineEvent = Event.GET_THE_FIRST_TASK;
-            break;
-          default:
-            stateMachineEvent = null;
-            payload = null;
-        }
-
-        if (stateMachineEvent == null) {
-          messageService.sendPrivateMessage(
-              messageService.getUserById(event.getAuthor().getId()),
-              message);
         } else {
-          stateMachineService
-              .doAction(machine, payload, stateMachineEvent);
-        }
 
+          String id = event.getAuthor().getId();
+          StateMachine<State, Event> machine = stateMachineService.restoreMachine(id);
+          String userForQuestion = machine.getExtendedState().getVariables().get("id").toString();
+
+          String message = Messages.DEFAULT_MESSAGE;
+          Event stateMachineEvent = null;
+          Payload payload = null;
+
+          switch (machine.getState().getId()) {
+            case NEW_USER:
+              if (event.getMessage().getContentRaw().equalsIgnoreCase("ready")) {
+                payload = new SinglePayload(id);
+                stateMachineEvent = Event.QUESTION_FIRST;
+              } else {
+                message = Messages.NOT_THAT_MESSAGE;
+              }
+              break;
+            case FIRST_QUESTION:
+              payload = new QuestionPayload(id, event.getMessage().getContentRaw(),
+                  userForQuestion);
+              stateMachineEvent = Event.QUESTION_SECOND;
+              break;
+            case SECOND_QUESTION:
+              payload = new QuestionPayload(id, event.getMessage().getContentRaw(),
+                  userForQuestion);
+              stateMachineEvent = Event.QUESTION_THIRD;
+              break;
+            case THIRD_QUESTION:
+              payload = new QuestionPayload(id, event.getMessage().getContentRaw(),
+                  userForQuestion);
+              stateMachineEvent = Event.CONSENT_TO_INFORMATION;
+              break;
+            case AGREED_LICENSE:
+              String gitNick = event.getMessage().getContentRaw();
+              payload = new VerificationPayload(id, gitNick);
+              stateMachineEvent = Event.LOGIN_CONFIRMATION;
+              break;
+            case CHECK_LOGIN:
+              if (event.getMessage().getContentRaw().equalsIgnoreCase("yes")) {
+                stateMachineEvent = Event.ADD_GIT_NAME_AND_FIRST_TASK;
+              } else if (event.getMessage().getContentRaw().equalsIgnoreCase("no")) {
+                stateMachineEvent = Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
+              } else {
+                message = Messages.NOT_THAT_MESSAGE;
+              }
+              payload = (VerificationPayload) machine.getExtendedState().getVariables()
+                  .get("dataPayload");
+              break;
+            case ADDED_GIT:
+              payload = new SinglePayload(id);
+              stateMachineEvent = Event.GET_THE_FIRST_TASK;
+              break;
+            default:
+              stateMachineEvent = null;
+              payload = null;
+          }
+
+          if (stateMachineEvent == null) {
+            messageService.sendPrivateMessage(
+                messageService.getUserById(event.getAuthor().getId()),
+                message);
+          } else {
+            stateMachineService
+                .doAction(machine, payload, stateMachineEvent);
+          }
+        }
       } catch (Exception exception) {
         throw new RuntimeException("Impossible to answer request with id = "
             + event.getAuthor().getId(), exception);

@@ -8,6 +8,7 @@ public class MessagesToDiscord {
 
   //messages for bot
   public static final MessageEmbed GET_FIRST_TASK = new EmbedBuilder()
+      .addField("", Messages.CONGRATS_AVAILABLE_NICK, false)
       .addField("", Messages.GET_FIRST_TASK + " [TASK]("
           + Messages.LINK_FIRST_TASK + ") :link:", false)
       .build();
