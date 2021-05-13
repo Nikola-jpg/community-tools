@@ -1,17 +1,19 @@
-package com.community.tools.util.statemachine.actions.transitions.verifications;
+package com.community.tools.util.statemachie.actions.transitions.verifications;
 
-import com.community.tools.model.Messages;
+import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME_AND_FIRST_TASK;
+import static com.community.tools.util.statemachie.State.CHECK_LOGIN;
+import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
+
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.VerificationPayload;
-import com.community.tools.util.statemachine.Event;
-import com.community.tools.util.statemachine.State;
-import com.community.tools.util.statemachine.actions.Transition;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import com.community.tools.util.statemachie.Event;
+import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.actions.Transition;
+import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import java.io.IOException;
-import java.util.Map;
 import lombok.SneakyThrows;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +28,14 @@ public class AddGitNameActionTransition implements Transition {
 
   @Autowired
   private Action<State, Event> errorAction;
-  @Value("${congratsAvailableNick}")
-  private String congratsAvailableNick;
   @Value("${generalInformationChannel}")
   private String channel;
-
+  @Value("${getFirstTask}")
+  private String getFirstTask;
+  @Value("${errorWithAddingGitName}")
+  private String errorWithAddingGitName;
+  @Autowired
+  private MessageService messageService;
   @Autowired
   private StateMachineRepository stateMachineRepository;
   @Autowired
@@ -38,28 +43,14 @@ public class AddGitNameActionTransition implements Transition {
   @Autowired
   private GitHubService gitHubService;
 
-  @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
-
   @Override
   public void configure(
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
     transitions
         .withExternal()
-        .source(State.CHECK_LOGIN)
-        .target(State.ADDED_GIT)
-        .event(Event.ADD_GIT_NAME)
+        .source(CHECK_LOGIN)
+        .target(GOT_THE_TASK)
+        .event(ADD_GIT_NAME_AND_FIRST_TASK)
         .action(this, errorAction);
   }
 
@@ -84,19 +75,18 @@ public class AddGitNameActionTransition implements Transition {
           .stream().filter(e -> e.getName().equals("trainees")).findFirst()
           .get().add(userGitLogin);
     } catch (IOException e) {
-      getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
-          Messages.WRONG_ADDING_TO_ROLE);
+      messageService.sendBlocksMessage(messageService.getUserById(user),
+          errorWithAddingGitName);
     }
-    getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
-        Messages.CONGRATS_AVAILABLE_NICK);
-    getMessageService().sendMessageToConversation(channel,
+    messageService.sendMessageToConversation(channel,
         generalInformationAboutUserToChannel(user, userGitLogin)
             + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
+    messageService.sendBlocksMessage(messageService.getUserById(user), getFirstTask);
     stateContext.getExtendedState().getVariables().put("gitNick", nickname);
   }
 
   private String generalInformationAboutUserToChannel(String slackName, GHUser user) {
-    return getMessageService().getUserById(slackName) + " - " + user.getLogin();
+    return messageService.getUserById(slackName) + " - " + user.getLogin();
   }
 
   private String sendUserAnswersToChannel(String firstAnswer, String secondAnswer,

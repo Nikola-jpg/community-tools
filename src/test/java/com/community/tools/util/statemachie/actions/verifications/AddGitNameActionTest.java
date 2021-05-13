@@ -14,10 +14,10 @@ import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.service.slack.SlackHandlerService;
-import com.community.tools.util.statemachine.Event;
-import com.community.tools.util.statemachine.State;
-import com.community.tools.util.statemachine.actions.transitions.verifications.AddGitNameActionTransition;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import com.community.tools.util.statemachie.Event;
+import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.actions.transitions.verifications.AddGitNameActionTransition;
+import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -35,7 +35,6 @@ import org.kohsuke.github.GHTeam;
 import org.kohsuke.github.GHUser;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateContext;
@@ -58,8 +57,6 @@ public class AddGitNameActionTest {
   @Mock
   private MessageService messageService;
   @Mock
-  private Map<String, MessageService> messageServiceMap;
-  @Mock
   private SlackHandlerService slackHandlerService;
   @Mock
   private StateMachine<State, Event> machine;
@@ -71,6 +68,10 @@ public class AddGitNameActionTest {
   private GHTeam team;
   @Mock
   private GHRepository ghRepository;
+
+  private final String getFirstTask = "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Hurray! Your nick is available. Nice to meet you :smile:\n\nThis is your first <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/checkstyle|TASK>. gl\"}}]";
+
+  private final String errorWithAddingGitName = "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Something went wrong with adding to the team. Please, contact *<https://broscorp-community.slack.com/archives/D01QZ9U2GH5|Liliya Stepanovna>*\"}}]";
 
   /**
    * This method init fields in the AddGitNameAction.
@@ -89,19 +90,13 @@ public class AddGitNameActionTest {
     repoService.setAccessible(true);
     repoService.set(addGitNameAction, gitHubService);
 
-    //Field messageService = AddGitNameActionTransition.class.getDeclaredField("messageService");
-    //messageService.setAccessible(true);
-    //messageService.set(addGitNameAction, this.messageService);
-
-    Field messageServiceMap = AddGitNameActionTransition.class
-        .getDeclaredField("messageServiceMap");
-    messageServiceMap.setAccessible(true);
-    messageServiceMap.set(addGitNameAction, this.messageServiceMap);
-
-    ReflectionTestUtils.setField(addGitNameAction, "congratsAvailableNick",
-        "Hurray! Your nick is available. Nice to meet you :smile:");
+    Field messageService = AddGitNameActionTransition.class.getDeclaredField("messageService");
+    messageService.setAccessible(true);
+    messageService.set(addGitNameAction, this.messageService);
     ReflectionTestUtils.setField(addGitNameAction, "channel", "test_3");
-    ReflectionTestUtils.setField(addGitNameAction, "currentMessageService", "discordService");
+    ReflectionTestUtils.setField(addGitNameAction, "getFirstTask", getFirstTask);
+    ReflectionTestUtils
+        .setField(addGitNameAction, "errorWithAddingGitName", errorWithAddingGitName);
   }
 
   @Test
@@ -118,7 +113,6 @@ public class AddGitNameActionTest {
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
-    when(messageServiceMap.get(anyString())).thenReturn(messageService);
 
     when(repository.findByUserID("U0191K2V20K")).thenReturn(Optional.of(entity));
 
@@ -129,19 +123,20 @@ public class AddGitNameActionTest {
     doNothing().when(team).add(user);
 
     when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
-    when(messageService.sendPrivateMessage("Горб Юра",
-        "Hurray! Your nick is available. Nice to meet you :smile:")).thenReturn("");
     when(messageService.sendMessageToConversation(anyString(), anyString())).thenReturn("");
+    when(messageService.sendBlocksMessage("Горб Юра",
+        getFirstTask)).thenReturn("");
 
     addGitNameAction.execute(stateContext);
     verify(stateContext, times(4)).getExtendedState();
     verify(gitHubService, times(2)).getUserByLoginInGitHub("likeRewca");
     verify(gitHubConnectService, times(2)).getGitHubRepository();
     verify(messageService, times(5)).getUserById("U0191K2V20K");
-    verify(messageService, times(2))
-        .sendPrivateMessage("Горб Юра",
-            "Hurray! Your nick is available. Nice to meet you :smile:");
+
     verify(messageService, times(2)).sendMessageToConversation(anyString(), anyString());
+    verify(messageService, times(2))
+        .sendBlocksMessage("Горб Юра",
+            getFirstTask);
   }
 
 
@@ -160,7 +155,6 @@ public class AddGitNameActionTest {
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
-    when(messageServiceMap.get(anyString())).thenReturn(messageService);
 
     when(repository.findByUserID("U0191K2V20K")).thenReturn(Optional.of(entity));
 
@@ -171,8 +165,8 @@ public class AddGitNameActionTest {
     doThrow(IOException.class).when(team).add(user);
 
     when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
-    when(messageService.sendPrivateMessage("Горб Юра",
-        "Something went wrong when adding to role. You need to contact the admin!"))
+    when(messageService.sendBlocksMessage("Горб Юра",
+        errorWithAddingGitName))
         .thenReturn("");
 
     addGitNameAction.execute(stateContext);
@@ -181,11 +175,12 @@ public class AddGitNameActionTest {
     verify(gitHubConnectService, times(1)).getGitHubRepository();
     verify(messageService, times(3)).getUserById("U0191K2V20K");
     verify(messageService, times(1))
-        .sendPrivateMessage("Горб Юра",
-            "Hurray! Your nick is available. Nice to meet you :smile:");
-    verify(messageService, times(1))
-        .sendPrivateMessage("Горб Юра",
-            "Something went wrong when adding to role. You need to contact the admin!");
+        .sendBlocksMessage("Горб Юра",
+            errorWithAddingGitName);
     verify(messageService, times(1)).sendMessageToConversation(anyString(), anyString());
+    verify(messageService, times(1))
+        .sendBlocksMessage("Горб Юра",
+            getFirstTask);
+
   }
 }

@@ -1,5 +1,9 @@
 package com.community.tools.controller;
 
+import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.Event.QUESTION_FIRST;
+import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
+import static com.community.tools.util.statemachie.State.NEW_USER;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.service.MessageService;
@@ -13,14 +17,11 @@ import com.google.gson.Gson;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHPerson;
 import org.kohsuke.github.GHUser;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,20 +38,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class GitSlackUsersController {
 
   private final StateMachineService stateMachineService;
-
-  @Autowired
-  @Qualifier("slackService")
-  private MessageService messageService;
-
+  private final MessageService messageService;
   private final GitHubService gitService;
 
+  @Value("${noOneCase}")
+  private String noOneCase;
+  @Value("${notThatMessage}")
+  private String notThatMessage;
 
   /**
    * Endpoint /git. Method GET.
+   *
    * @return ResponseEntity with Status.OK and List of all users in GH repository
    */
   @ApiOperation(value = "Returns list of github logins"
-          + " of Broscorp-net/traineeship collaborators")
+      + " of Broscorp-net/traineeship collaborators")
   @GetMapping(value = "/git", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getGitHubAllUsers() {
     Set<GHUser> gitHubAllUsers = gitService.getGitHubAllUsers();
@@ -63,6 +65,7 @@ public class GitSlackUsersController {
 
   /**
    * Endpoint /slack. Method GET.
+   *
    * @return ResponseEntity with Status.OK and List of all users in Slack repository
    */
   @ApiOperation(value = "Returns list of slack users that work with the bot")
@@ -79,6 +82,7 @@ public class GitSlackUsersController {
 
   /**
    * Endpoint /sack/action. Method POST
+   *
    * @param payload JSON of BlockActionPayload
    * @throws Exception Exception
    */
@@ -90,8 +94,26 @@ public class GitSlackUsersController {
 
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
+    String action = pl.getActions().get(0).getValue();
+    String userId = pl.getUser().getId();
 
-    stateMachineService.checkActionsFromButton(pl.getActions()
-            .get(0).getValue(),pl.getUser().getId());
+    String user = messageService.getUserById(userId);
+    switch (action) {
+      case "AGREE_LICENSE":
+        if (!stateMachineService.doAction(userId, NEW_USER, QUESTION_FIRST)) {
+          messageService.sendBlocksMessage(user, notThatMessage);
+        }
+        break;
+      case "theEnd":
+        if (stateMachineService.doAction(userId, GOT_THE_TASK, GET_THE_FIRST_TASK)) {
+          messageService
+              .sendPrivateMessage(user, "that was the end, congrats");
+        } else {
+          messageService.sendBlocksMessage(user, notThatMessage);
+        }
+        break;
+      default:
+        messageService.sendBlocksMessage(user, noOneCase);
+    }
   }
 }

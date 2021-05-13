@@ -1,19 +1,15 @@
-package com.community.tools.util.statemachine.actions.transitions.tasks;
+package com.community.tools.util.statemachie.actions.transitions.tasks;
 
-import static com.community.tools.util.statemachine.Event.GET_THE_NEW_TASK;
-import static com.community.tools.util.statemachine.State.CHECK_FOR_NEW_TASK;
-import static com.community.tools.util.statemachine.State.GOT_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.Event.GET_THE_NEW_TASK;
+import static com.community.tools.util.statemachie.State.CHECK_FOR_NEW_TASK;
+import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
 
-import com.community.tools.model.Messages;
-import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
-import com.community.tools.util.statemachine.Event;
-import com.community.tools.util.statemachine.State;
-import com.community.tools.util.statemachine.actions.Transition;
+import com.community.tools.util.statemachie.Event;
+import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.actions.Transition;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import net.dv8tion.jda.api.EmbedBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -25,7 +21,7 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 public class CheckForNewTaskActionTransition implements Transition {
 
   @Autowired
-  private BlockService blockService;
+  private MessageService messageService;
 
   @Value("${tasksForUsers}")
   private String[] tasksForUsers;
@@ -33,26 +29,12 @@ public class CheckForNewTaskActionTransition implements Transition {
   @Autowired
   private Action<State, Event> errorAction;
 
-  @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
-
   @Override
   public void configure(
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
     transitions
         .withExternal()
-        .source(GOT_THE_FIRST_TASK)
+        .source(GOT_THE_TASK)
         .target(CHECK_FOR_NEW_TASK)
         .event(GET_THE_NEW_TASK)
         .action(this, errorAction);
@@ -60,17 +42,13 @@ public class CheckForNewTaskActionTransition implements Transition {
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    List<String> tasksList = Arrays.asList(Messages.TASKS_FOR_USERS);
+    List<String> tasksList = Arrays.asList(tasksForUsers);
 
     int i = (Integer) stateContext.getExtendedState().getVariables().get("taskNumber");
     String taskMessage =
         "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Here is your next <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/"
             + tasksList.get(i) + "|TASK>.\"}}]";
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    getMessageService().sendBlocksMessage(getMessageService().getUserById(user),
-        blockService.createBlockMessage(taskMessage,
-            new EmbedBuilder()
-                .addField("", Messages.NEXT_TASK + tasksList.get(i), false)
-                .build()));
+    messageService.sendBlocksMessage(messageService.getUserById(user), taskMessage);
   }
 }

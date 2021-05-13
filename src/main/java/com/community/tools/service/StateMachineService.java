@@ -1,25 +1,12 @@
 package com.community.tools.service;
 
-import static com.community.tools.util.statemachine.Event.ADD_GIT_NAME;
-import static com.community.tools.util.statemachine.Event.GET_THE_FIRST_TASK;
-import static com.community.tools.util.statemachine.Event.QUESTION_FIRST;
-import static com.community.tools.util.statemachine.State.AGREED_LICENSE;
-import static com.community.tools.util.statemachine.State.GOT_THE_FIRST_TASK;
-import static com.community.tools.util.statemachine.State.NEW_USER;
-
-import com.community.tools.model.Messages;
 import com.community.tools.model.User;
-import com.community.tools.service.discord.MessagesToDiscord;
-import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.Payload;
-import com.community.tools.service.slack.MessagesToSlack;
-import com.community.tools.util.statemachine.Event;
-import com.community.tools.util.statemachine.State;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
-import java.util.Map;
+import com.community.tools.util.statemachie.Event;
+import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.persist.StateMachinePersister;
@@ -31,121 +18,10 @@ public class StateMachineService {
 
   @Autowired
   private StateMachineRepository stateMachineRepository;
-
-  @Value("${welcome}")
-  private String welcome;
-  @Value("${checkNickName}")
-  private String checkNickName;
-
-  @Value("${failedCheckNickName}")
-  private String failedCheckNickName;
-  @Value("${doNotUnderstandWhatTodo}")
-  private String doNotUnderstandWhatTodo;
-
-  @Value("${noOneCase}")
-  private String noOneCase;
-  @Value("${notThatMessage}")
-  private String notThatMessage;
   @Autowired
   private StateMachineFactory<State, Event> factory;
   @Autowired
   private StateMachinePersister<State, Event, String> persister;
-
-  private final GitHubService gitHubService;
-
-  @Autowired
-  private BlockService blockService;
-
-  @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
-
-
-  /**
-   * Check Slack`s user and Github login.
-   *
-   * @param nickName GitHub login
-   * @param userId   Slack`s userId
-   * @throws Exception Exception
-   */
-  public void agreeForGitHubNickName(String nickName, String userId) throws Exception {
-    String user = getMessageService().getUserById(userId);
-
-    StateMachine<State, Event> machine = restoreMachine(userId);
-
-    if (machine.getState().getId() == AGREED_LICENSE) {
-      getMessageService().sendPrivateMessage(user,
-          checkNickName + nickName);
-
-      boolean nicknameMatch = gitHubService.getGitHubAllUsers().stream()
-          .anyMatch(e -> e.getLogin().equals(nickName));
-      if (nicknameMatch) {
-
-        machine.sendEvent(ADD_GIT_NAME);
-        machine.sendEvent(GET_THE_FIRST_TASK);
-        persistMachine(machine, userId);
-
-        User stateEntity = stateMachineRepository.findByUserID(userId).get();
-        stateEntity.setGitName(nickName);
-        stateMachineRepository.save(stateEntity);
-
-      } else {
-        getMessageService().sendPrivateMessage(user, failedCheckNickName);
-      }
-
-    } else {
-      getMessageService().sendPrivateMessage(user, doNotUnderstandWhatTodo);
-
-    }
-  }
-
-  /**
-   * Check action from Slack`s user.
-   *
-   * @param action action
-   * @param userId Slack`s userId
-   * @throws Exception Exception
-   */
-  public void checkActionsFromButton(String action, String userId) throws Exception {
-    StateMachine<State, Event> machine = restoreMachine(userId);
-    String user = getMessageService().getUserById(userId);
-    switch (action) {
-      case "AGREE_LICENSE":
-        if (machine.getState().getId() == NEW_USER) {
-          machine.sendEvent(QUESTION_FIRST);
-          persistMachine(machine, userId);
-        } else {
-          getMessageService().sendBlocksMessage(user, blockService.createBlockMessage(
-              MessagesToSlack.NOT_THAT_MESSAGE, MessagesToDiscord.NOT_THAT_MESSAGE));
-        }
-        break;
-      case "theEnd":
-
-        if (machine.getState().getId() == GOT_THE_FIRST_TASK) {
-          machine.sendEvent(GET_THE_FIRST_TASK);
-          getMessageService()
-              .sendPrivateMessage(user, Messages.CONGRATS);
-        } else {
-          getMessageService().sendBlocksMessage(user, blockService.createBlockMessage(
-              MessagesToSlack.NOT_THAT_MESSAGE, MessagesToDiscord.NOT_THAT_MESSAGE));
-        }
-        break;
-      default:
-        getMessageService().sendBlocksMessage(user, blockService.createBlockMessage(
-            MessagesToSlack.NO_ONE_CASE, MessagesToDiscord.NO_ONE_CASE));
-
-    }
-  }
 
   /**
    * Restore machine by Slack`s userId.
@@ -222,5 +98,24 @@ public class StateMachineService {
     machine.getExtendedState().getVariables().put("dataPayload", payload);
     machine.sendEvent(event);
     persistMachine(machine, payload.getId());
+  }
+
+  /**
+   * Method to start the event by state.
+   *
+   * @param userId - id users
+   * @param state  - state id
+   * @param event  - event for state machine
+   * @return - true if state id equals machine.stateId
+   */
+  public boolean doAction(String userId, State state, Event event) throws Exception {
+    StateMachine<State, Event> machine = restoreMachine(userId);
+    if (machine.getState().getId().equals(state)) {
+      machine.sendEvent(event);
+      persister.persist(machine, userId);
+      return true;
+    } else {
+      return false;
+    }
   }
 }
