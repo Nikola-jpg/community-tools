@@ -2,7 +2,7 @@ package com.community.tools.util.statemachie.actions.transitions.tasks;
 
 import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
 import static com.community.tools.util.statemachie.State.ADDED_GIT;
-import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
 
 import com.community.tools.service.MessageService;
 import com.community.tools.service.payload.SinglePayload;
@@ -34,7 +34,7 @@ public class GetTheFirstTaskActionTransition implements Transition {
     transitions
         .withExternal()
         .source(ADDED_GIT)
-        .target(GOT_THE_FIRST_TASK)
+        .target(GOT_THE_TASK)
         .event(GET_THE_FIRST_TASK)
         .action(this, errorAction);
   }
