@@ -2,7 +2,7 @@ package com.community.tools.util.statemachie.actions.transitions.tasks;
 
 import static com.community.tools.util.statemachie.Event.GET_THE_NEW_TASK;
 import static com.community.tools.util.statemachie.State.CHECK_FOR_NEW_TASK;
-import static com.community.tools.util.statemachie.State.GOT_THE_NEXT_TASK;
+import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
 
 import com.community.tools.service.MessageService;
 import com.community.tools.util.statemachie.Event;
@@ -34,7 +34,7 @@ public class GetTheNewTaskActionTransition implements Transition {
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
     transitions
         .withExternal()
-        .source(GOT_THE_NEXT_TASK)
+        .source(GOT_THE_TASK)
         .target(CHECK_FOR_NEW_TASK)
         .event(GET_THE_NEW_TASK)
         .action(this, errorAction);
@@ -43,7 +43,7 @@ public class GetTheNewTaskActionTransition implements Transition {
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     List<String> tasksList = Arrays.asList(tasksForUsers);
-    
+
     int i = (Integer) stateContext.getExtendedState().getVariables().get("taskNumber");
     String taskMessage =
         "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Here is your next <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/"

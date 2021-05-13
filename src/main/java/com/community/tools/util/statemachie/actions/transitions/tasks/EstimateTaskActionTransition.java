@@ -2,9 +2,11 @@ package com.community.tools.util.statemachie.actions.transitions.tasks;
 
 import static com.community.tools.util.statemachie.Event.SEND_ESTIMATE_TASK;
 import static com.community.tools.util.statemachie.State.ESTIMATE_THE_TASK;
-import static com.community.tools.util.statemachie.State.GOT_THE_NEXT_TASK;
+import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
 
 import com.community.tools.service.MessageService;
+import com.community.tools.service.payload.SinglePayload;
+import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.Transition;
@@ -16,7 +18,7 @@ import org.springframework.statemachine.annotation.WithStateMachine;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
 @WithStateMachine
-public class EstimateTaskTransition implements Transition {
+public class EstimateTaskActionTransition implements Transition {
 
   @Autowired
   private MessageService messageService;
@@ -33,14 +35,16 @@ public class EstimateTaskTransition implements Transition {
     transitions
         .withExternal()
         .source(ESTIMATE_THE_TASK)
-        .target(GOT_THE_NEXT_TASK)
+        .target(GOT_THE_TASK)
         .event(SEND_ESTIMATE_TASK)
         .action(this, errorAction);
   }
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    String user = stateContext.getExtendedState().getVariables().get("id").toString();
+    SinglePayload payload = (SinglePayload) stateContext.getExtendedState()
+        .getVariables().get("dataPayload");
+    String user = payload.getId();
 
     messageService.sendBlocksMessage(messageService.getUserById(user), messageForEstimateTheTask);
 

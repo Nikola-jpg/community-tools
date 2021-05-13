@@ -1,5 +1,9 @@
 package com.community.tools.controller;
 
+import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.Event.QUESTION_FIRST;
+import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
+import static com.community.tools.util.statemachie.State.NEW_USER;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.service.MessageService;
@@ -41,6 +45,11 @@ public class GitSlackUsersController {
   private final StateMachineService stateMachineService;
   private final MessageService messageService;
   private final GitHubService gitService;
+
+  @org.springframework.beans.factory.annotation.Value("${noOneCase}")
+  private String noOneCase;
+  @org.springframework.beans.factory.annotation.Value("${notThatMessage}")
+  private String notThatMessage;
 
   /**
    * Endpoint /git. Method GET.
@@ -90,10 +99,33 @@ public class GitSlackUsersController {
 
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
+    String action = pl.getActions().get(0).getValue();
+    String userId = pl.getUser().getId();
 
     Map<String, Map<String, Value>> values = pl.getView().getState().getValues();
     logger.info("url: /app/slack/action/" + values.toString());
-    stateMachineService.checkActionsFromButton(pl.getActions()
-        .get(0).getValue(), pl.getUser().getId(), values);
+
+    String user = messageService.getUserById(userId);
+    switch (action) {
+      case "AGREE_LICENSE":
+        if (!stateMachineService.doAction(userId, NEW_USER, QUESTION_FIRST)) {
+          messageService.sendBlocksMessage(user, notThatMessage);
+        }
+        break;
+      case "radio_buttons-action":
+        logger.info("action =======>>>" + "radio_buttons-action");
+        stateMachineService.estimate(values, userId);
+        break;
+      case "theEnd":
+        if (stateMachineService.doAction(userId, GOT_THE_TASK, GET_THE_FIRST_TASK)) {
+          messageService
+              .sendPrivateMessage(user, "that was the end, congrats");
+        } else {
+          messageService.sendBlocksMessage(user, notThatMessage);
+        }
+        break;
+      default:
+        messageService.sendBlocksMessage(user, noOneCase);
+    }
   }
 }

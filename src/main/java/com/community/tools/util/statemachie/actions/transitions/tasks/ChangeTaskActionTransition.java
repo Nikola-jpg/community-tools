@@ -3,6 +3,7 @@ package com.community.tools.util.statemachie.actions.transitions.tasks;
 import static com.community.tools.util.statemachie.Event.CHANGE_TASK;
 import static com.community.tools.util.statemachie.State.CHECK_FOR_NEW_TASK;
 import static com.community.tools.util.statemachie.State.ESTIMATE_THE_TASK;
+
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.actions.Transition;
