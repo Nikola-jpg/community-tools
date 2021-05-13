@@ -42,8 +42,6 @@ public class SlackHandlerService {
   private String messageAboutRules;
   @Value("${idOfSlackBot}")
   private String idOfSlackBot;
-  @Value("${usersAgreeMessage}")
-  private String usersAgreeMessage;
   @Value("${defaultMessage}")
   private String defaultMessage;
   @Value("${testModeSwitcher}")
@@ -105,68 +103,76 @@ public class SlackHandlerService {
         try {
           if (messageEvent.getText().equals("reset") && testModeSwitcher) {
             resetUser(messageEvent.getUser());
-          }
-
-          String id = messageEvent.getUser();
-          StateMachine<State, Event> machine = stateMachineService
-              .restoreMachine(id);
-
-          String userForQuestion = machine.getExtendedState().getVariables().get("id").toString();
-
-          String message = defaultMessage;
-          Event event = null;
-          Payload payload = null;
-          switch (machine.getState().getId()) {
-            case NEW_USER:
-              if (messageEvent.getText().equals("ready")) {
-                payload = new SinglePayload(id);
-                event = Event.QUESTION_FIRST;
-              } else if (!messageEvent.getText().equals("reset")) {
-                message = notThatMessage;
-              }
-              break;
-            case FIRST_QUESTION:
-              payload = new QuestionPayload(id, messageEvent.getText(), userForQuestion);
-              event = Event.QUESTION_SECOND;
-              break;
-            case SECOND_QUESTION:
-              payload = new QuestionPayload(id, messageEvent.getText(), userForQuestion);
-              event = Event.QUESTION_THIRD;
-              break;
-            case THIRD_QUESTION:
-              payload = new QuestionPayload(id, messageEvent.getText(), userForQuestion);
-              event = Event.CONSENT_TO_INFORMATION;
-              break;
-            case AGREED_LICENSE:
-              String gitNick = messageEvent.getText();
-              payload = new VerificationPayload(id, gitNick);
-              event = Event.LOGIN_CONFIRMATION;
-              break;
-            case CHECK_LOGIN:
-              if (messageEvent.getText().equals("yes")) {
-                event = Event.ADD_GIT_NAME_AND_FIRST_TASK;
-              } else if (messageEvent.getText().equals("no")) {
-                event = Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
-              } else {
-                message = notThatMessage;
-              }
-              payload = (VerificationPayload) machine.getExtendedState().getVariables()
-                  .get("dataPayload");
-              break;
-            default:
-              event = null;
-              payload = null;
-          }
-
-          if (event == null) {
-            messageService.sendBlocksMessage(
-                messageService.getUserById(messageEvent.getUser()),
-                message);
           } else {
-            stateMachineService
-                .doAction(machine, payload, event);
-          }
 
+            String id = messageEvent.getUser();
+            StateMachine<State, Event> machine = stateMachineService
+                .restoreMachine(id);
+
+            String userForQuestion = machine.getExtendedState().getVariables().get("id").toString();
+
+            String message = defaultMessage;
+            Event event = null;
+            Payload payload = null;
+            switch (machine.getState().getId()) {
+              case NEW_USER:
+                if (messageEvent.getText().equals("ready")) {
+                  payload = new SinglePayload(id);
+                  event = Event.QUESTION_FIRST;
+                } else {
+                  message = notThatMessage;
+                }
+                break;
+              case FIRST_QUESTION:
+                payload = new QuestionPayload(id, messageEvent.getText(), userForQuestion);
+                event = Event.QUESTION_SECOND;
+                break;
+              case SECOND_QUESTION:
+                payload = new QuestionPayload(id, messageEvent.getText(), userForQuestion);
+                event = Event.QUESTION_THIRD;
+                break;
+              case THIRD_QUESTION:
+                payload = new QuestionPayload(id, messageEvent.getText(), userForQuestion);
+                event = Event.CONSENT_TO_INFORMATION;
+                break;
+              case AGREED_LICENSE:
+                String gitNick = messageEvent.getText();
+                payload = new VerificationPayload(id, gitNick);
+                event = Event.LOGIN_CONFIRMATION;
+                break;
+              case CHECK_LOGIN:
+                if (messageEvent.getText().equals("yes")) {
+                  event = Event.ADD_GIT_NAME_AND_FIRST_TASK;
+                } else if (messageEvent.getText().equals("no")) {
+                  event = Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
+                } else {
+                  message = notThatMessage;
+                }
+                payload = (VerificationPayload) machine.getExtendedState().getVariables()
+                    .get("dataPayload");
+                break;
+              case ESTIMATE_THE_TASK:
+                if (messageEvent.getText().equals("pull") && testModeSwitcher) {
+                  event = Event.SEND_ESTIMATE_TASK;
+                } else {
+                  message = notThatMessage;
+                }
+                payload = new SinglePayload(id);
+                break;
+              default:
+                event = null;
+                payload = null;
+            }
+
+            if (event == null) {
+              messageService.sendBlocksMessage(
+                  messageService.getUserById(messageEvent.getUser()),
+                  message);
+            } else {
+              stateMachineService
+                  .doAction(machine, payload, event);
+            }
+          }
         } catch (Exception e) {
           throw new RuntimeException("Impossible to answer request with id="
               + teamJoinPayload.getEvent().getUser(), e);

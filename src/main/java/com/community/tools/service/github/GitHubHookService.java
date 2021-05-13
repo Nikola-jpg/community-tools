@@ -1,9 +1,15 @@
 package com.community.tools.service.github;
 
+import static com.community.tools.util.statemachie.Event.SEND_ESTIMATE_TASK;
+
 import com.community.tools.service.MessageService;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
+import com.community.tools.service.payload.Payload;
+import com.community.tools.service.payload.SinglePayload;
 import com.community.tools.service.slack.SlackService;
+import com.community.tools.util.statemachie.Event;
+import com.community.tools.util.statemachie.State;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
 import java.io.IOException;
@@ -14,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,8 +34,6 @@ public class GitHubHookService {
   private String channel;
   @Autowired
   private MessageService messageService;
-  @Autowired
-  private GitHubGiveNewTask gitHubGiveNewTask;
   @Autowired
   private AddMentorService addMentorService;
   @Autowired
@@ -161,7 +166,11 @@ public class GitHubHookService {
   private void giveNewTaskIfPrOpened(JSONObject json) {
     if (json.get("action").toString().equals(opened)) {
       String user = json.getJSONObject("sender").getString("login");
-      gitHubGiveNewTask.giveNewTask(user);
+
+      StateMachine<State, Event> machine = stateMachineService.restoreMachineByNick(user);
+      String id = machine.getExtendedState().getVariables().get("id").toString();
+      Payload payload = new SinglePayload(id);
+      stateMachineService.doAction(machine, payload, SEND_ESTIMATE_TASK);
     }
   }
 }

@@ -1,21 +1,15 @@
 package com.community.tools.service;
 
-import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME_AND_FIRST_TASK;
-import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.Event.QUESTION_FIRST;
-import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
-import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
-import static com.community.tools.util.statemachie.State.NEW_USER;
-
 import com.community.tools.model.User;
-import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+import com.github.seratch.jslack.api.model.view.ViewState.Value;
+import java.util.Map;
+import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.persist.StateMachinePersister;
@@ -25,101 +19,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class StateMachineService {
 
+  private static final Logger logger = Logger.getLogger(StateMachineService.class.getName());
+
   @Autowired
   private StateMachineRepository stateMachineRepository;
-
-  @Value("${welcome}")
-  private String welcome;
-  @Value("${checkNickName}")
-  private String checkNickName;
-
-  @Value("${failedCheckNickName}")
-  private String failedCheckNickName;
-  @Value("${doNotUnderstandWhatTodo}")
-  private String doNotUnderstandWhatTodo;
-
-  @Value("${noOneCase}")
-  private String noOneCase;
-  @Value("${notThatMessage}")
-  private String notThatMessage;
   @Autowired
   private StateMachineFactory<State, Event> factory;
   @Autowired
   private StateMachinePersister<State, Event, String> persister;
 
-  private final GitHubService gitHubService;
-  private final MessageService messageService;
-
-  /**
-   * Check Slack`s user and Github login.
-   *
-   * @param nickName GitHub login
-   * @param userId   Slack`s userId
-   * @throws Exception Exception
-   */
-  public void agreeForGitHubNickName(String nickName, String userId) throws Exception {
-    String user = messageService.getUserById(userId);
-
-    StateMachine<State, Event> machine = restoreMachine(userId);
-
-    if (machine.getState().getId() == AGREED_LICENSE) {
-      messageService.sendPrivateMessage(user,
-          checkNickName + nickName);
-
-      boolean nicknameMatch = gitHubService.getGitHubAllUsers().stream()
-          .anyMatch(e -> e.getLogin().equals(nickName));
-      if (nicknameMatch) {
-
-        machine.sendEvent(ADD_GIT_NAME_AND_FIRST_TASK);
-        persistMachine(machine, userId);
-
-        User stateEntity = stateMachineRepository.findByUserID(userId).get();
-        stateEntity.setGitName(nickName);
-        stateMachineRepository.save(stateEntity);
-
-      } else {
-        messageService.sendPrivateMessage(user, failedCheckNickName);
-      }
-
-    } else {
-      messageService.sendPrivateMessage(user, doNotUnderstandWhatTodo);
-
-    }
-  }
-
-  /**
-   * Check action from Slack`s user.
-   *
-   * @param action action
-   * @param userId Slack`s userId
-   * @throws Exception Exception
-   */
-  public void checkActionsFromButton(String action, String userId) throws Exception {
-    StateMachine<State, Event> machine = restoreMachine(userId);
-    String user = messageService.getUserById(userId);
-    switch (action) {
-      case "AGREE_LICENSE":
-        if (machine.getState().getId() == NEW_USER) {
-          machine.sendEvent(QUESTION_FIRST);
-          persistMachine(machine, userId);
-        } else {
-          messageService.sendBlocksMessage(user, notThatMessage);
-        }
-        break;
-      case "theEnd":
-        if (machine.getState().getId() == GOT_THE_TASK) {
-          machine.sendEvent(GET_THE_FIRST_TASK);
-          messageService
-              .sendPrivateMessage(user, "that was the end, congrats");
-        } else {
-          messageService.sendBlocksMessage(user, notThatMessage);
-        }
-        break;
-      default:
-        messageService.sendBlocksMessage(user, noOneCase);
-
-    }
-  }
+  @Autowired
+  GiveNewTaskService giveNewTaskService;
 
   /**
    * Restore machine by Slack`s userId.
@@ -196,5 +106,41 @@ public class StateMachineService {
     machine.getExtendedState().getVariables().put("dataPayload", payload);
     machine.sendEvent(event);
     persistMachine(machine, payload.getId());
+  }
+
+  /**
+   * Method to start the event by state.
+   *
+   * @param userId - id users
+   * @param state  - state id
+   * @param event  - event for state machine
+   * @return - true if state id equals machine.stateId
+   */
+  public boolean doAction(String userId, State state, Event event) throws Exception {
+    StateMachine<State, Event> machine = restoreMachine(userId);
+    if (machine.getState().getId().equals(state)) {
+      machine.sendEvent(event);
+      persister.persist(machine, userId);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Method for action 'radio_buttons-action'.
+   *
+   * @param values - answer for button
+   * @param userId - id users
+   */
+  public void estimate(Map<String, Map<String, Value>> values, String userId)
+      throws Exception {
+    StateMachine<State, Event> machine = restoreMachine(userId);
+    Integer taskNumber = (Integer) machine.getExtendedState().getVariables().get("taskNumber");
+    logger.info("/taskNumber =======>>>" + taskNumber);
+    logger.info("/values =======>>>" + values.toString());
+    logger.info("/values.get(0) =======>>>" + values.get("0").toString());
+    logger.info("/values.get(0) =======>>>" + values.get("0").get("0").toString());
+    giveNewTaskService.giveNewTask(stateMachineRepository.findByUserID(userId).get().getGitName());
   }
 }
