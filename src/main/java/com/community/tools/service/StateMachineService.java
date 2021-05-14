@@ -133,14 +133,12 @@ public class StateMachineService {
    * @param values - answer for button
    * @param userId - id users
    */
-  public void estimate(Map<String, Map<String, Value>> values, String userId)
+  public void estimate(String values, String userId)
       throws Exception {
     StateMachine<State, Event> machine = restoreMachine(userId);
     Integer taskNumber = (Integer) machine.getExtendedState().getVariables().get("taskNumber");
     logger.info("/taskNumber =======>>>" + taskNumber);
-    logger.info("/values =======>>>" + values.toString());
-    logger.info("/values.get(0) =======>>>" + values.get("0").toString());
-    logger.info("/values.get(0) =======>>>" + values.get("0").get("0").toString());
+    logger.info("/values =======>>>" + values);
     giveNewTaskService.giveNewTask(stateMachineRepository.findByUserID(userId).get().getGitName());
   }
 }

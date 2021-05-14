@@ -99,11 +99,12 @@ public class GitSlackUsersController {
     logger.info("payload: " + payload);
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
-    String action = pl.getActions().get(0).getValue();
     String userId = pl.getUser().getId();
 
-    Map<String, Map<String, Value>> values = pl.getView().getState().getValues();
-    logger.info("url: /app/slack/action/" + values.toString());
+    String action = pl.getActions().get(0).getActionId();
+    String value = pl.getActions().get(0).getSelectedOption().getValue();
+    logger.info("url: /app/slack/action/" + value);
+
     try {
       String user = messageService.getUserById(userId);
       switch (action) {
@@ -114,7 +115,7 @@ public class GitSlackUsersController {
           break;
         case "radio_buttons-action":
           logger.info("action =======>>>" + "radio_buttons-action");
-          stateMachineService.estimate(values, userId);
+          stateMachineService.estimate(value, userId);
           break;
         case "theEnd":
           if (stateMachineService.doAction(userId, GOT_THE_TASK, GET_THE_FIRST_TASK)) {
