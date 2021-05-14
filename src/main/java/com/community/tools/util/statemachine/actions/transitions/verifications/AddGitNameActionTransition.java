@@ -95,7 +95,7 @@ public class AddGitNameActionTransition implements Transition {
           .get().add(userGitLogin);
     } catch (IOException e) {
       getMessageService().sendBlocksMessage(getMessageService().getUserById(user),
-          blockService.createBlockMessage(errorWithAddingGitName, MessagesToDiscord.ADD_GIT_NAME));
+          blockService.createBlockMessage(errorWithAddingGitName, MessagesToDiscord.ERROR_WITH_ADDING_GIT_NAME));
     }
     getMessageService().sendMessageToConversation(channel,
         generalInformationAboutUserToChannel(user, userGitLogin)

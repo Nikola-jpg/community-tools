@@ -40,6 +40,10 @@ public class MessagesToDiscord {
       .addField("", Messages.MESSAGE_ABOUT_RULES_4, false)
       .build();
 
+  public static final MessageEmbed ERROR_WITH_ADDING_GIT_NAME = new EmbedBuilder()
+      .addField("", Messages.ERROR_WITH_ADDING_GIT_NAME, false)
+      .build();
+
   //Information channels message
   public static final MessageEmbed MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL = new EmbedBuilder()
       .appendDescription(Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_1)

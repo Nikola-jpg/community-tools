@@ -58,6 +58,7 @@ public class Messages {
       + " (write \"ready\").`";
   public static final String WRONG_ADDING_TO_ROLE = "Something went wrong when adding to role."
       + " You need to contact the admin!";
+  public static final String ERROR_WITH_ADDING_GIT_NAME = "Something went wrong with adding to the team. Please, contact ";
   public static final String CONGRATS = "That was The End, Congrats";
 
 
