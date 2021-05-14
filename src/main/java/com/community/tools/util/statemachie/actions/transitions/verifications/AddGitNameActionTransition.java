@@ -34,6 +34,8 @@ public class AddGitNameActionTransition implements Transition {
   private String getFirstTask;
   @Value("${errorWithAddingGitName}")
   private String errorWithAddingGitName;
+  @Value("${testModeSwitcher}")
+  private Boolean testModeSwitcher;
   @Autowired
   private MessageService messageService;
   @Autowired
@@ -68,19 +70,21 @@ public class AddGitNameActionTransition implements Transition {
     String firstAnswer = stateEntity.getFirstAnswerAboutRules();
     String secondAnswer = stateEntity.getSecondAnswerAboutRules();
     String thirdAnswer = stateEntity.getThirdAnswerAboutRules();
-    GHUser userGitLogin = new GHUser();
-    try {
-      userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
-      gitHubConnectService.getGitHubRepository().getTeams()
-          .stream().filter(e -> e.getName().equals("trainees")).findFirst()
-          .get().add(userGitLogin);
-    } catch (IOException e) {
-      messageService.sendBlocksMessage(messageService.getUserById(user),
-          errorWithAddingGitName);
+    if (!testModeSwitcher) {
+      GHUser userGitLogin = new GHUser();
+      try {
+        userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
+        gitHubConnectService.getGitHubRepository().getTeams()
+            .stream().filter(e -> e.getName().equals("trainees")).findFirst()
+            .get().add(userGitLogin);
+      } catch (IOException e) {
+        messageService.sendBlocksMessage(messageService.getUserById(user),
+            errorWithAddingGitName);
+      }
+      messageService.sendMessageToConversation(channel,
+          generalInformationAboutUserToChannel(user, userGitLogin)
+              + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
     }
-    messageService.sendMessageToConversation(channel,
-        generalInformationAboutUserToChannel(user, userGitLogin)
-            + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
     messageService.sendBlocksMessage(messageService.getUserById(user), getFirstTask);
     stateContext.getExtendedState().getVariables().put("gitNick", nickname);
   }

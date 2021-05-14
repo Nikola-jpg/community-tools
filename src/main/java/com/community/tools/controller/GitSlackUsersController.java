@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHPerson;
 import org.kohsuke.github.GHUser;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -89,13 +90,12 @@ public class GitSlackUsersController {
    * Endpoint /sack/action. Method POST
    *
    * @param payload JSON of BlockActionPayload
-   * @throws Exception Exception
    */
   @ApiOperation(value = "Deserializes Slack payload and sends message to user")
   @ApiImplicitParam(name = "payload", dataType = "string", paramType = "query",
       required = true, value = "payload")
   @RequestMapping(value = "/slack/action", method = RequestMethod.POST)
-  public void action(@RequestParam(name = "payload") String payload) throws Exception {
+  public ResponseEntity<String> action(@RequestParam(name = "payload") String payload) {
     logger.info("payload: " + payload);
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
@@ -104,28 +104,34 @@ public class GitSlackUsersController {
 
     Map<String, Map<String, Value>> values = pl.getView().getState().getValues();
     logger.info("url: /app/slack/action/" + values.toString());
-
-    String user = messageService.getUserById(userId);
-    switch (action) {
-      case "AGREE_LICENSE":
-        if (!stateMachineService.doAction(userId, NEW_USER, QUESTION_FIRST)) {
-          messageService.sendBlocksMessage(user, notThatMessage);
-        }
-        break;
-      case "radio_buttons-action":
-        logger.info("action =======>>>" + "radio_buttons-action");
-        stateMachineService.estimate(values, userId);
-        break;
-      case "theEnd":
-        if (stateMachineService.doAction(userId, GOT_THE_TASK, GET_THE_FIRST_TASK)) {
-          messageService
-              .sendPrivateMessage(user, "that was the end, congrats");
-        } else {
-          messageService.sendBlocksMessage(user, notThatMessage);
-        }
-        break;
-      default:
-        messageService.sendBlocksMessage(user, noOneCase);
+    try {
+      String user = messageService.getUserById(userId);
+      switch (action) {
+        case "AGREE_LICENSE":
+          if (!stateMachineService.doAction(userId, NEW_USER, QUESTION_FIRST)) {
+            messageService.sendBlocksMessage(user, notThatMessage);
+          }
+          break;
+        case "radio_buttons-action":
+          logger.info("action =======>>>" + "radio_buttons-action");
+          stateMachineService.estimate(values, userId);
+          break;
+        case "theEnd":
+          if (stateMachineService.doAction(userId, GOT_THE_TASK, GET_THE_FIRST_TASK)) {
+            messageService
+                .sendPrivateMessage(user, "that was the end, congrats");
+          } else {
+            messageService.sendBlocksMessage(user, notThatMessage);
+          }
+          break;
+        default:
+          messageService.sendBlocksMessage(user, noOneCase);
+      }
+      return new ResponseEntity<>("Action: " + action,
+          HttpStatus.OK);
+    } catch (Exception ex) {
+      return new ResponseEntity<>("Exception " + ex,
+          HttpStatus.BAD_REQUEST);
     }
   }
 }
