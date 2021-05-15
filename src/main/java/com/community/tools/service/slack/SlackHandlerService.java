@@ -124,7 +124,7 @@ public class SlackHandlerService {
                 if (messageEvent.getText().equals("ready")) {
                   payload = new SinglePayload(id);
                   event = Event.QUESTION_FIRST;
-                } else if (!messageEvent.getText().equals("reset")) {
+                } else {
                   message = notThatMessage;
                 }
                 break;

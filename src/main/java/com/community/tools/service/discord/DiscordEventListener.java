@@ -114,10 +114,6 @@ public class DiscordEventListener extends ListenerAdapter {
               payload = (VerificationPayload) machine.getExtendedState().getVariables()
                   .get("dataPayload");
               break;
-            case ADDED_GIT:
-              payload = new SinglePayload(id);
-              stateMachineEvent = Event.GET_THE_FIRST_TASK;
-              break;
             default:
               stateMachineEvent = null;
               payload = null;

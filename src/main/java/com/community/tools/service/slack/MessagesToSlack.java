@@ -48,20 +48,24 @@ public class MessagesToSlack {
       + "\"alt_text\": \"inspiration\"}]";
   public static final String CHECK_NEXT_TASK = "[{\"type\": \"section\",\"text\":"
       + " {\"type\": \"mrkdwn\",\"text\": \"" + Messages.NEXT_TASK;
+  public static final String ERROR_WITH_ADDING_GIT_NAME = "[{\"type\": \"section\",\"text\":"
+      + " {\"type\": \"mrkdwn\",\"text\": \""
+      + Messages.ERROR_WITH_ADDING_GIT_NAME
+      + "*<https://broscorp-community.slack.com/archives/D01QZ9U2GH5|Liliya Stepanovna>*\"}}]";
 
   //Information channels message
   public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL = "[{\"type\": \"header\","
       + "\"text\": {\"type\": \"plain_text\",\"text\": \""
       + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_1 + "\"}},{\"type\": \"context\","
-      + "\"elements\": [{\"type\": \"mrkdwn\",\"text\": \""
+      + "\"elements\": [{\"type\": \"mrkdwn\",\"text\": \"#welcome \n "
       + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_2 + "\"}]},{\"type\": \"context\","
-      + "\"elements\": [{\"type\": \"mrkdwn\",\"text\": \""
+      + "\"elements\": [{\"type\": \"mrkdwn\",\"text\": \"#help \n "
       + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_3 + "\"}]},{\"type\": \"context\","
-      + "\"elements\": [{\"type\": \"mrkdwn\",\"text\": \""
+      + "\"elements\": [{\"type\": \"mrkdwn\",\"text\": \"#general \n"
       + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_4 + "\"}]},{\"type\": \"context\","
-      + "\"elements\": [{\"type\": \"mrkdwn\",\"text\": \""
+      + "\"elements\": [{\"type\": \"mrkdwn\",\"text\": \"#random \n"
       + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_5 + "\"}]},{\"type\": \"context\","
-      + "\"elements\": [{\"type\": \"mrkdwn\",\"text\": \""
+      + "\"elements\": [{\"type\": \"mrkdwn\",\"text\": \"#hall-of-fame \n"
       + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_6 + "\"}]},{\"type\": \"context\","
       + "\"elements\": [{\"type\": \"mrkdwn\",\"text\": \""
       + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_7 + "\"}]}]";

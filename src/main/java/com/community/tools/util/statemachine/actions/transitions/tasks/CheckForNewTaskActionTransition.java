@@ -70,7 +70,7 @@ public class CheckForNewTaskActionTransition implements Transition {
     getMessageService().sendBlocksMessage(getMessageService().getUserById(user),
         blockService.createBlockMessage(taskMessage,
             new EmbedBuilder()
-                .addField("", Messages.NEXT_TASK + tasksList.get(i), false)
+                .addField("", Messages.NEXT_TASK + tasksList.get(i) + ") :link:", false)
                 .build()));
   }
 }

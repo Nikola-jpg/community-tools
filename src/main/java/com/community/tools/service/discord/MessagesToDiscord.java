@@ -42,16 +42,29 @@ public class MessagesToDiscord {
 
   public static final MessageEmbed ERROR_WITH_ADDING_GIT_NAME = new EmbedBuilder()
       .addField("", Messages.ERROR_WITH_ADDING_GIT_NAME, false)
+      .addField("",
+          "[*Liliya Stepanovna*](https://discord.com/channels/@me/842774422792437781)", false)
+      .setThumbnail("https://cdn-0.emojis.wiki/emoji-pics/facebook/woman-technologist-facebook.png")
       .build();
 
   //Information channels message
   public static final MessageEmbed MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL = new EmbedBuilder()
       .appendDescription(Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_1)
-      .addField("", Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_2, false)
-      .addField("", Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_3, false)
-      .addField("", Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_4, false)
-      .addField("", Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_5, false)
-      .addField("", Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_6, false)
+      .addField("",
+          "[#welcome](https://discord.com/channels/834691593512550400/834693025547943966)\n"
+              + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_2, false)
+      .addField("",
+          "[#help](https://discord.com/channels/834691593512550400/834692800586055710)\n"
+              + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_3, false)
+      .addField("",
+          "[#general](https://discord.com/channels/834691593512550400/834691593512550403)\n"
+              + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_4, false)
+      .addField("",
+          "[#random](https://discord.com/channels/834691593512550400/834692970048651285)\n"
+              + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_5, false)
+      .addField("",
+          "[#hall-of-fame](https://discord.com/channels/834691593512550400/834693307967602698)\n"
+              + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_6, false)
       .addField("", Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_7, false)
       .build();
 

@@ -66,16 +66,16 @@ public class Messages {
   //Information channels message
   public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_1 = "We have several channels"
       + " to help you during your internship:";
-  public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_2 = "1. #welcome \n Please write"
+  public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_2 = "Please write"
       + " a few words about yourself) \n Yeees, perhaps you will work with these people"
       + " in one team :slightly_smiling_face: ";
-  public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_3 = "2. #help \n You can ask"
+  public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_3 = "You can ask"
       + " questions on any subject and get an answer :nerd_face: ";
-  public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_4 = "3. #general \n Channel for"
+  public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_4 = "Channel for"
       + " important messages and various announcements:rolled_up_newspaper::bookmark_tabs: ";
-  public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_5 = "4. #random \n A channel for"
+  public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_5 = "A channel for"
       + " communication on any topics :yum: ";
-  public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_6 = "5. #hall-of-fame \n Stories"
+  public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_6 = "Stories"
       + " of those who have completed an internship and found a job :sunglasses: ";
   public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_7 = "`Please use the trades to"
       + " respond to messages.`";
@@ -88,7 +88,7 @@ public class Messages {
       + "inner/classes:5, override/overload:4, strings:5, gamelife:10");
   public static final String NO_ACTIVITY_MESSAGE = "There was no activity last week :pensive:";
 
-  public static final String NEXT_TASK = "Here is your next "
-      + "<https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
+  public static final String NEXT_TASK = "Here is your next [TASK]("
+      + "https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
 
 }
