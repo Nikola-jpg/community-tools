@@ -84,7 +84,7 @@ public class PublishWeekStatsService {
       events.stream().filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
               .forEach(ed -> sortedMapGroupByActors.put(ed.getActorLogin(), new ArrayList<>()));
 
-      embedBuilder.addField("", "Statistic: ", false);
+      embedBuilder.addField("", "`Statistic:`", false);
       messageBuilder.append("[{\"type\": \"header\",\t\"text\": {\"type\":"
               + " \"plain_text\",\"text\": \"Statistic:\"}},"
               + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"");
@@ -104,7 +104,7 @@ public class PublishWeekStatsService {
                 embedBuilder.addField("", getTypeTitleBold(entry.getKey())
                     + emojiGen(entry.getKey()) + ": " + entry.getValue().size(), false);
               });
-      embedBuilder.addField("", "Activity: ", false);
+      embedBuilder.addField("", "`Activity:`", false);
       messageBuilder.append("\"\t}]},{\"type\": \"header\",\"text\": "
               + "{\"type\": \"plain_text\",\"text\": \"Activity:\"}}");
       sortedMapGroupByActors.entrySet().stream()
@@ -116,8 +116,7 @@ public class PublishWeekStatsService {
                 name.getValue()
                         .forEach(eventData -> { authorsActivMessage
                                 .append(emojiGen(eventData.getType()));
-                          embedBuilder.addField("",
-                              emojiGen(eventData.getType()),false); }
+                        }
                   );
 
                 messageBuilder.append(",{\"type\": \"context\",\n"
@@ -127,7 +126,7 @@ public class PublishWeekStatsService {
                 messageBuilder.append("*: ");
                 messageBuilder.append(authorsActivMessage);
                 messageBuilder.append("\"}]}");
-                embedBuilder.addField("", name.getKey() + "*: "
+                embedBuilder.addField("", name.getKey() + ": "
                     + authorsActivMessage,false);
               });
       messageBuilder.append("]");

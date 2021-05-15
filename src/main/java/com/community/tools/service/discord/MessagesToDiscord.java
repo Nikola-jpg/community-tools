@@ -51,19 +51,19 @@ public class MessagesToDiscord {
   public static final MessageEmbed MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL = new EmbedBuilder()
       .appendDescription(Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_1)
       .addField("",
-          "[#welcome](https://discord.com/channels/834691593512550400/834693025547943966)\n"
+          "<#834693025547943966>\n"
               + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_2, false)
       .addField("",
-          "[#help](https://discord.com/channels/834691593512550400/834692800586055710)\n"
+          "<#834692800586055710>\n"
               + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_3, false)
       .addField("",
-          "[#general](https://discord.com/channels/834691593512550400/834691593512550403)\n"
+          "<#834691593512550403>\n"
               + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_4, false)
       .addField("",
-          "[#random](https://discord.com/channels/834691593512550400/834692970048651285)\n"
+          "<#834692970048651285>\n"
               + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_5, false)
       .addField("",
-          "[#hall-of-fame](https://discord.com/channels/834691593512550400/834693307967602698)\n"
+          "<#834693307967602698>\n"
               + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_6, false)
       .addField("", Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_7, false)
       .build();

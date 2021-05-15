@@ -51,7 +51,7 @@ public class MessagesToSlack {
   public static final String ERROR_WITH_ADDING_GIT_NAME = "[{\"type\": \"section\",\"text\":"
       + " {\"type\": \"mrkdwn\",\"text\": \""
       + Messages.ERROR_WITH_ADDING_GIT_NAME
-      + "*<https://broscorp-community.slack.com/archives/D01QZ9U2GH5|Liliya Stepanovna>*\"}}]";
+      + "\n*<https://broscorp-community.slack.com/archives/D01QZ9U2GH5|Liliya Stepanovna>*\"}}]";
 
   //Information channels message
   public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL = "[{\"type\": \"header\","
