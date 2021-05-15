@@ -36,7 +36,6 @@ import org.kohsuke.github.GHUser;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.StateMachine;
@@ -74,8 +73,6 @@ public class AddGitNameActionTest {
 
   private final String errorWithAddingGitName = "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Something went wrong with adding to the team. Please, contact *<https://broscorp-community.slack.com/archives/D01QZ9U2GH5|Liliya Stepanovna>*\"}}]";
 
-  private final Boolean testModeSwitcher = false;
-
   /**
    * This method init fields in the AddGitNameAction.
    *
@@ -100,8 +97,6 @@ public class AddGitNameActionTest {
     ReflectionTestUtils.setField(addGitNameAction, "getFirstTask", getFirstTask);
     ReflectionTestUtils
         .setField(addGitNameAction, "errorWithAddingGitName", errorWithAddingGitName);
-    ReflectionTestUtils
-        .setField(addGitNameAction, "testModeSwitcher", testModeSwitcher);
 
   }
 

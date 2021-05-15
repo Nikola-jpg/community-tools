@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class StateMachineService {
 
-  private static final Logger logger = Logger.getLogger(StateMachineService.class.getName());
-
   @Autowired
   private StateMachineRepository stateMachineRepository;
   @Autowired
@@ -139,9 +137,7 @@ public class StateMachineService {
     StateMachine<State, Event> machine = restoreMachine(userId);
     Integer taskNumber = (Integer) machine.getExtendedState().getVariables().get("taskNumber");
     String ts = machine.getExtendedState().getVariables().get("timeStamp").toString();
-    logger.info("/taskNumber =======>>>" + taskNumber);
-    logger.info("/values =======>>>" + value);
-    logger.info("/ts =======>>>" + ts);
+
     messageService.deleteMessage(messageService.getUserById(userId), ts);
     estimateTaskService.saveEstimateTask(userId, taskNumber, value);
     giveNewTaskService.giveNewTask(stateMachineRepository.findByUserID(userId).get().getGitName());

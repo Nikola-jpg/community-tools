@@ -6,7 +6,6 @@ import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
 import static com.community.tools.util.statemachie.State.NEW_USER;
 import static org.springframework.http.ResponseEntity.ok;
 
-import com.community.tools.service.EstimateTaskService;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.GitHubService;
@@ -46,14 +45,11 @@ public class GitSlackUsersController {
   private final StateMachineService stateMachineService;
   private final MessageService messageService;
   private final GitHubService gitService;
-  private final EstimateTaskService estimateTaskService;
 
   @Value("${noOneCase}")
   private String noOneCase;
   @Value("${notThatMessage}")
   private String notThatMessage;
-  @Value("${yoursChose}")
-  private String yoursChose;
 
   /**
    * Endpoint /git. Method GET.
