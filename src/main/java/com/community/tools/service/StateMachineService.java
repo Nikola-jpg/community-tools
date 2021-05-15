@@ -141,6 +141,7 @@ public class StateMachineService {
     String ts = machine.getExtendedState().getVariables().get("timeStamp").toString();
     logger.info("/taskNumber =======>>>" + taskNumber);
     logger.info("/values =======>>>" + value);
+    logger.info("/ts =======>>>" + ts);
     messageService.deleteMessage(messageService.getUserById(userId), ts);
     estimateTaskService.saveEstimateTask(userId, taskNumber, value);
     giveNewTaskService.giveNewTask(stateMachineRepository.findByUserID(userId).get().getGitName());

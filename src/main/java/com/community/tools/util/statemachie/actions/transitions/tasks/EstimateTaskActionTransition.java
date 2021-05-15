@@ -46,7 +46,8 @@ public class EstimateTaskActionTransition implements Transition {
         .getVariables().get("dataPayload");
     String user = payload.getId();
 
-    String ts = messageService.sendBlocksMessage(messageService.getUserById(user), messageForEstimateTheTask);
+    String ts = messageService
+        .sendBlocksMessage(messageService.getUserById(user), messageForEstimateTheTask);
     stateContext.getExtendedState().getVariables().put("timeStamp", ts);
   }
 }
