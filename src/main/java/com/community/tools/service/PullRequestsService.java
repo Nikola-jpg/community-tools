@@ -17,16 +17,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class TasksStatusService {
+public class PullRequestsService {
 
   private final GitHubConnectService gitHubConnectService;
-  private final MessageService messageService;
-
-  @Value("${importantInformationChannel}")
-  private String channel;
-
-  @Value("${noActivityMessage}")
-  private String noActivityMessage;
 
   /**
    * Get sorted map group by actors.
