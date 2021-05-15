@@ -116,9 +116,6 @@ public class GitSlackUsersController {
           break;
         case "radio_buttons-action":
           String value = pl.getActions().get(0).getSelectedOption().getValue();
-          String ts = pl.getActions().get(0).getActionTs();
-          logger.info("ts " + ts);
-          messageService.deleteMessage(user, ts);
           stateMachineService.estimate(value, userId);
           break;
         case "theEnd":

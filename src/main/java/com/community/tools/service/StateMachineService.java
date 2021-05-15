@@ -5,8 +5,6 @@ import com.community.tools.service.payload.Payload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
-import com.github.seratch.jslack.api.model.view.ViewState.Value;
-import java.util.Map;
 import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +29,8 @@ public class StateMachineService {
   GiveNewTaskService giveNewTaskService;
   @Autowired
   EstimateTaskService estimateTaskService;
+  @Autowired
+  MessageService messageService;
 
   /**
    * Restore machine by Slack`s userId.
@@ -131,15 +131,17 @@ public class StateMachineService {
   /**
    * Method for action 'radio_buttons-action'.
    *
-   * @param value - answer for button
+   * @param value  - answer for button
    * @param userId - id users
    */
   public void estimate(String value, String userId)
       throws Exception {
     StateMachine<State, Event> machine = restoreMachine(userId);
     Integer taskNumber = (Integer) machine.getExtendedState().getVariables().get("taskNumber");
+    String ts = machine.getExtendedState().getVariables().get("timeStamp").toString();
     logger.info("/taskNumber =======>>>" + taskNumber);
     logger.info("/values =======>>>" + value);
+    messageService.deleteMessage(messageService.getUserById(userId), ts);
     estimateTaskService.saveEstimateTask(userId, taskNumber, value);
     giveNewTaskService.giveNewTask(stateMachineRepository.findByUserID(userId).get().getGitName());
   }
