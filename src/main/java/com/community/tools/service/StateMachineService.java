@@ -27,9 +27,10 @@ public class StateMachineService {
   private StateMachineFactory<State, Event> factory;
   @Autowired
   private StateMachinePersister<State, Event, String> persister;
-
   @Autowired
   GiveNewTaskService giveNewTaskService;
+  @Autowired
+  EstimateTaskService estimateTaskService;
 
   /**
    * Restore machine by Slack`s userId.
@@ -130,15 +131,16 @@ public class StateMachineService {
   /**
    * Method for action 'radio_buttons-action'.
    *
-   * @param values - answer for button
+   * @param value - answer for button
    * @param userId - id users
    */
-  public void estimate(String values, String userId)
+  public void estimate(String value, String userId)
       throws Exception {
     StateMachine<State, Event> machine = restoreMachine(userId);
     Integer taskNumber = (Integer) machine.getExtendedState().getVariables().get("taskNumber");
     logger.info("/taskNumber =======>>>" + taskNumber);
-    logger.info("/values =======>>>" + values);
+    logger.info("/values =======>>>" + value);
+    estimateTaskService.saveEstimateTask(userId, taskNumber, value);
     giveNewTaskService.giveNewTask(stateMachineRepository.findByUserID(userId).get().getGitName());
   }
 }

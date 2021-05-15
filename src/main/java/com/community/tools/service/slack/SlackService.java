@@ -4,6 +4,7 @@ import com.community.tools.service.MessageService;
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
+import com.github.seratch.jslack.api.methods.response.chat.ChatDeleteResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.github.seratch.jslack.api.model.Channel;
 import com.github.seratch.jslack.api.model.Conversation;
@@ -40,9 +41,29 @@ public class SlackService implements MessageService {
     Slack slack = Slack.getInstance();
     try {
       ChatPostMessageResponse postResponse =
-              slack.methods(token).chatPostMessage(
-                  req -> req.channel(getIdByUsername(username)).asUser(true)
-                              .text(messageText));
+          slack.methods(token).chatPostMessage(
+              req -> req.channel(getIdByUsername(username)).asUser(true)
+                  .text(messageText));
+      return postResponse.getTs();
+    } catch (IOException | SlackApiException exception) {
+      throw new RuntimeException(exception);
+    }
+  }
+
+  /**
+   * Delete message by timestamp.
+   *
+   * @param username - display username
+   * @param ts       - timestamp
+   * @return timestamp of delete message
+   */
+  public String deleteMessage(String username, String ts) {
+    Slack slack = Slack.getInstance();
+    try {
+      ChatDeleteResponse postResponse =
+          slack.methods(token).chatDelete(
+              req -> req.channel(getIdByUsername(username)).asUser(true)
+                  .ts(ts));
       return postResponse.getTs();
     } catch (IOException | SlackApiException exception) {
       throw new RuntimeException(exception);
@@ -63,7 +84,7 @@ public class SlackService implements MessageService {
     try {
       ChatPostMessageResponse postResponse = slack.methods(token).chatPostMessage(
           req -> req.channel(getIdByUsername(username)).asUser(true)
-                      .blocksAsString(messageText));
+              .blocksAsString(messageText));
       return postResponse.getTs();
     } catch (IOException | SlackApiException exception) {
       throw new RuntimeException(exception);
@@ -197,8 +218,8 @@ public class SlackService implements MessageService {
     Slack slack = Slack.getInstance();
     try {
       User user = slack.methods(token).usersList(req -> req).getMembers().stream()
-              .filter(u -> u.getId().equals(id))
-              .findFirst().get();
+          .filter(u -> u.getId().equals(id))
+          .findFirst().get();
       return user.getProfile().getDisplayName();
     } catch (IOException | SlackApiException e) {
       throw new RuntimeException(e);
@@ -215,8 +236,8 @@ public class SlackService implements MessageService {
     Slack slack = Slack.getInstance();
     try {
       User user = slack.methods(token).usersList(req -> req).getMembers().stream()
-              .filter(u -> u.getRealName().equals(id))
-              .findFirst().get();
+          .filter(u -> u.getRealName().equals(id))
+          .findFirst().get();
       return user.getId();
     } catch (IOException | SlackApiException e) {
       throw new RuntimeException(e);
@@ -250,10 +271,10 @@ public class SlackService implements MessageService {
     try {
       Slack slack = Slack.getInstance();
       Set<User> users = new HashSet<>(slack.methods()
-              .usersList(UsersListRequest.builder()
-                      .token(token)
-                      .build())
-              .getMembers());
+          .usersList(UsersListRequest.builder()
+              .token(token)
+              .build())
+          .getMembers());
 
       return users;
     } catch (IOException | SlackApiException e) {

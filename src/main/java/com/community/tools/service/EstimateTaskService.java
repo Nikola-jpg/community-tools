@@ -1,6 +1,8 @@
 package com.community.tools.service;
 
+import com.community.tools.model.Estimate;
 import com.community.tools.model.Task;
+import com.community.tools.repository.EstimateRepository;
 import com.community.tools.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,8 @@ public class EstimateTaskService {
 
   @Autowired
   TaskRepository taskRepository;
+  @Autowired
+  EstimateRepository estimateRepository;
 
   /**
    * Save estimate task in database.
@@ -30,6 +34,16 @@ public class EstimateTaskService {
       task.setEstimateId(Integer.parseInt(estimateId));
     }
     taskRepository.save(task);
+  }
+
+  /**
+   * Getting Estimate by id.
+   *
+   * @param estimateId - id estimates
+   * @return estimate Entity
+   */
+  public String getNameById(Integer estimateId) {
+    return estimateRepository.getOne(estimateId).getName();
   }
 
 }

@@ -4,6 +4,8 @@ public interface MessageService extends UserService {
 
   String sendPrivateMessage(String username, String messageText);
 
+  String deleteMessage(String username, String ts);
+
   String sendBlocksMessage(String username, String messageText);
 
   String sendAttachmentsMessage(String username, String messageText);
@@ -13,7 +15,6 @@ public interface MessageService extends UserService {
   String sendBlockMessageToConversation(String channelName, String messageText);
 
   String sendMessageToChat(String channelName, String messageText);
-
 
   String getIdByChannelName(String channelName);
 

@@ -6,25 +6,25 @@ import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
 import static com.community.tools.util.statemachie.State.NEW_USER;
 import static org.springframework.http.ResponseEntity.ok;
 
+import com.community.tools.service.EstimateTaskService;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.GitHubService;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.model.User.Profile;
-import com.github.seratch.jslack.api.model.view.ViewState.Value;
 import com.github.seratch.jslack.app_backend.interactive_messages.payload.BlockActionPayload;
 import com.github.seratch.jslack.common.json.GsonFactory;
 import com.google.gson.Gson;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHPerson;
 import org.kohsuke.github.GHUser;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,11 +46,14 @@ public class GitSlackUsersController {
   private final StateMachineService stateMachineService;
   private final MessageService messageService;
   private final GitHubService gitService;
+  private final EstimateTaskService estimateTaskService;
 
-  @org.springframework.beans.factory.annotation.Value("${noOneCase}")
+  @Value("${noOneCase}")
   private String noOneCase;
-  @org.springframework.beans.factory.annotation.Value("${notThatMessage}")
+  @Value("${notThatMessage}")
   private String notThatMessage;
+  @Value("${yoursChose}")
+  private String yoursChose;
 
   /**
    * Endpoint /git. Method GET.
@@ -99,14 +102,12 @@ public class GitSlackUsersController {
     logger.info("payload: " + payload);
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
+
     String userId = pl.getUser().getId();
-
     String action = pl.getActions().get(0).getActionId();
-    String value = pl.getActions().get(0).getSelectedOption().getValue();
-    logger.info("url: /app/slack/action/" + value);
 
+    String user = messageService.getUserById(userId);
     try {
-      String user = messageService.getUserById(userId);
       switch (action) {
         case "AGREE_LICENSE":
           if (!stateMachineService.doAction(userId, NEW_USER, QUESTION_FIRST)) {
@@ -114,7 +115,12 @@ public class GitSlackUsersController {
           }
           break;
         case "radio_buttons-action":
-          logger.info("action =======>>>" + "radio_buttons-action");
+          String value = pl.getActions().get(0).getSelectedOption().getValue();
+          String ts = pl.getActions().get(0).getActionTs();
+          String messageDelete =
+              yoursChose + estimateTaskService.getNameById(Integer.parseInt(userId));
+          messageService.sendPrivateMessage(user, messageDelete);
+          messageService.deleteMessage(user, ts);
           stateMachineService.estimate(value, userId);
           break;
         case "theEnd":
