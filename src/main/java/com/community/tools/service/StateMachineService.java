@@ -5,7 +5,6 @@ import com.community.tools.service.payload.Payload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
-import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
@@ -64,6 +63,10 @@ public class StateMachineService {
 
   public String getIdByNick(String nick) {
     return stateMachineRepository.findByGitName(nick).get().getUserID();
+  }
+
+  public String getUserByNick(String nick) {
+    return messageService.getUserById(getIdByNick(nick));
   }
 
   /**
@@ -136,10 +139,8 @@ public class StateMachineService {
       throws Exception {
     StateMachine<State, Event> machine = restoreMachine(userId);
     Integer taskNumber = (Integer) machine.getExtendedState().getVariables().get("taskNumber");
-    String ts = machine.getExtendedState().getVariables().get("timeStamp").toString();
 
-    messageService.deleteMessage(messageService.getUserById(userId), ts);
     estimateTaskService.saveEstimateTask(userId, taskNumber, value);
-    giveNewTaskService.giveNewTask(stateMachineRepository.findByUserID(userId).get().getGitName());
+    giveNewTaskService.giveNewTask(userId);
   }
 }

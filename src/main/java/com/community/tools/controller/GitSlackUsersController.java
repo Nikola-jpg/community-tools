@@ -18,7 +18,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHPerson;
@@ -38,9 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("app")
 public class GitSlackUsersController {
-
-  private static final Logger logger = Logger
-      .getLogger(GitSlackUsersController.class.getName());
 
   private final StateMachineService stateMachineService;
   private final MessageService messageService;
@@ -95,7 +91,6 @@ public class GitSlackUsersController {
       required = true, value = "payload")
   @RequestMapping(value = "/slack/action", method = RequestMethod.POST)
   public ResponseEntity<String> action(@RequestParam(name = "payload") String payload) {
-    logger.info("payload: " + payload);
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
 
@@ -109,10 +104,6 @@ public class GitSlackUsersController {
           if (!stateMachineService.doAction(userId, NEW_USER, QUESTION_FIRST)) {
             messageService.sendBlocksMessage(user, notThatMessage);
           }
-          break;
-        case "radio_buttons-action":
-          String value = pl.getActions().get(0).getSelectedOption().getValue();
-          stateMachineService.estimate(value, userId);
           break;
         case "theEnd":
           if (stateMachineService.doAction(userId, GOT_THE_TASK, GET_THE_FIRST_TASK)) {

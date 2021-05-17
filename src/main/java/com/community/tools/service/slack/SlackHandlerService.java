@@ -3,6 +3,7 @@ package com.community.tools.service.slack;
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
+import com.community.tools.service.payload.EstimatePayload;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.service.payload.SinglePayload;
@@ -46,6 +47,10 @@ public class SlackHandlerService {
   private String defaultMessage;
   @Value("${testModeSwitcher}")
   private Boolean testModeSwitcher;
+  @Value("${estimateTheTask}")
+  private String estimateTheTask;
+  @Value("${chooseAnAnswer}")
+  private String chooseAnAnswer;
 
   private final MessageService messageService;
   private final StateMachineService stateMachineService;
@@ -152,12 +157,22 @@ public class SlackHandlerService {
                     .get("dataPayload");
                 break;
               case ESTIMATE_THE_TASK:
-                if (messageEvent.getText().equals("pull") && testModeSwitcher) {
+                if (Integer.parseInt(messageEvent.getText()) > 0
+                    && Integer.parseInt(messageEvent.getText()) <= 5) {
                   event = Event.SEND_ESTIMATE_TASK;
+                  payload = new EstimatePayload(id, Integer.parseInt(messageEvent.getText()));
                 } else {
-                  message = notThatMessage;
+                  message = chooseAnAnswer;
                 }
-                payload = new SinglePayload(id);
+                break;
+              case CHECK_ESTIMATE:
+                if (messageEvent.getText().equals("yes")) {
+                  event = Event.SAVE_ESTIMATE;
+                  payload = (EstimatePayload) machine.getExtendedState().getVariables()
+                      .get("dataPayload");
+                } else if (messageEvent.getText().equals("no")) {
+                  message = estimateTheTask;
+                }
                 break;
               default:
                 event = null;

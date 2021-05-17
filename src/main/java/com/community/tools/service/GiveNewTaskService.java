@@ -21,18 +21,18 @@ public class GiveNewTaskService {
   /**
    * Give new Task to the trainee. Checks for the last task.
    *
-   * @param user GitHub login of trainee
+   * @param userId - id user
    */
-  public void giveNewTask(String user) {
+  public void giveNewTask(String userId) {
     try {
-      StateMachine<State, Event> machine = stateMachineService.restoreMachineByNick(user);
+      StateMachine<State, Event> machine = stateMachineService.restoreMachine(userId);
       machine.sendEvent(Event.GET_THE_NEW_TASK);
       if (machine.getExtendedState().getVariables().get("taskNumber") == numberOfTasks) {
         machine.sendEvent(Event.LAST_TASK);
       } else {
         machine.sendEvent(Event.CHANGE_TASK);
       }
-      persister.persist(machine, stateMachineService.getIdByNick(user));
+      persister.persist(machine, userId);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
