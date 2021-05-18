@@ -82,7 +82,7 @@
                 <td th:text="${user.getLoginPlatform()}"></td>
                 <td th:text="${user.getLoginGithub()}"></td>
                 <td th:text="${user.getCompletedTasks()}"></td>
-                <td th:each="task, numberTask: ${tasksForUsers}" th:class="${user.getTaskStatus().get(task)}"></td>
+                <td th:each="task, numberTask: ${tasksForUsers}" th:class="${user.getTaskStatusMap().get(task)}"></td>
             </tr>
 
             </tbody>

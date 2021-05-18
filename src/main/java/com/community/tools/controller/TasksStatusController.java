@@ -1,10 +1,13 @@
 package com.community.tools.controller;
 
-import com.community.tools.dto.UserTasksStatus;
+import com.community.tools.dto.UserTasksStatusDto;
+import com.community.tools.model.User;
 import com.community.tools.service.PullRequestsService;
-import com.community.tools.service.UserTasksStatusService;
+import com.community.tools.service.TaskStatusService;
+import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.kohsuke.github.GHPullRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,9 +26,10 @@ public class TasksStatusController {
   private PullRequestsService pullRequestsService;
 
   @Autowired
-  private UserTasksStatusService userTasksStatusService;
+  private TaskStatusService taskStatusService;
 
-  private List<UserTasksStatus> userTasksStatuses;
+  @Autowired
+  private StateMachineRepository stateMachineRepository;
 
   @Value("${tasksForUsers}")
   private String[] tasksForUsers;
@@ -38,16 +42,15 @@ public class TasksStatusController {
   @RequestMapping(value = "", method = RequestMethod.GET)
   public String getTaskStatus(Model model) {
 
-    userTasksStatuses = new ArrayList<>();
+    List<UserTasksStatusDto> userTasksStatusDtoList = new ArrayList<>();
 
-    List<GHPullRequest> pullRequests = pullRequestsService.getPullRequests(45);
-
-    pullRequestsService.sortedByActors(pullRequests)
-        .forEach((loginGithub, sortedByActorsPullRequests) -> userTasksStatuses.add(
-            userTasksStatusService.getUserTasksStatus(loginGithub, sortedByActorsPullRequests)));
+    List<User> users = stateMachineRepository.findAll();
+    users.forEach(user -> {
+      userTasksStatusDtoList.add(UserTasksStatusDto.fromUser(user, tasksForUsers));
+    });
 
     model.addAttribute("tasksForUsers", tasksForUsers);
-    model.addAttribute("userTasksStatuses", userTasksStatuses);
+    model.addAttribute("userTasksStatuses", userTasksStatusDtoList);
 
     return "tasksstatus";
   }
@@ -61,12 +64,18 @@ public class TasksStatusController {
   @RequestMapping(value = "/{sortedField}", method = RequestMethod.GET)
   public String getTaskStatusSorted(Model model, @PathVariable("sortedField") String sortedField) {
 
-    userTasksStatusService.sortedByField(sortedField, userTasksStatuses);
-
-    model.addAttribute("tasksForUsers", tasksForUsers);
-    model.addAttribute("userTasksStatuses", userTasksStatuses);
-
     return "tasksstatus";
+  }
+
+  /**
+   * Download and save into data base all tasks status.
+   * @param response response
+   */
+  @RequestMapping(value = "/download", method = RequestMethod.GET)
+  public void downloadAllTasksStatus(HttpServletResponse response) {
+    List<GHPullRequest> ghPullRequests = pullRequestsService.getPullRequests();
+    taskStatusService.downloadTasksStatus(ghPullRequests);
+    response.getStatus();
   }
 
 }

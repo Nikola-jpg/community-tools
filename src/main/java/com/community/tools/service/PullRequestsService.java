@@ -112,4 +112,20 @@ public class PullRequestsService {
       }
     }).collect(Collectors.toList());
   }
+
+  /**
+   * Get last label from pull request.
+   * @param ghPullRequest pull request
+   * @return last label or pull request string
+   */
+  public String getLastLabel(GHPullRequest ghPullRequest) {
+    String lastLabel;
+    try {
+      lastLabel = ghPullRequest.getLabels().isEmpty() ? "pull request" :
+          ghPullRequest.getLabels().stream().findFirst().get().getName();
+    } catch (IOException exception) {
+      throw new RuntimeException(exception);
+    }
+    return lastLabel;
+  }
 }
