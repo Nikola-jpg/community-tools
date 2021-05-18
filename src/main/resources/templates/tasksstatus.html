@@ -59,13 +59,13 @@
             <tr>
                 <th class="tdposition">#</th>
                 <th class="tdposition">
-                    <a th:href="@{/tasksstatus/{platformName}(platformName = ${'platformName'})}">SlackName/DiscordName</a>
+                    <a th:href="@{/tasksstatus/(sortByField = ${'platformName'})}">SlackName/DiscordName</a>
                 </th>
                 <th class="tdposition">
-                    <a th:href="@{/tasksstatus/{gitName}(gitName = ${'gitName'})}">GitName</a>
+                    <a th:href="@{/tasksstatus/(sortByField = ${'gitName'})}">GitName</a>
                 </th>
                 <th class="tdposition">
-                    <a th:href="@{/tasksstatus/{completedTask}(completedTask = ${'completedTask'})}">Completed tasks</a>
+                    <a th:href="@{/tasksstatus/(sortByField = ${'completedTask'})}">Completed tasks</a>
                 </th>
                 <th class="tdposition"
                     th:each="task : ${tasksForUsers}"
