@@ -52,6 +52,15 @@ public class MessagesToSlack {
       + " {\"type\": \"mrkdwn\",\"text\": \""
       + Messages.ERROR_WITH_ADDING_GIT_NAME
       + "\n*<https://broscorp-community.slack.com/archives/D01QZ9U2GH5|Liliya Stepanovna>*\"}}]";
+  public static final String ESTIMATE_THE_TASK = "[ {\"type\": \"section\",\"text\": {\"type\":"
+      + " \"mrkdwn\",\"text\": \""
+      + Messages.ESTIMATE_HEADER + "\n *1*"
+      + Messages.ESTIMATE_QUESTION_FIRST + "\n *2*"
+      + Messages.ESTIMATE_QUESTION_SECOND + "\n *3*"
+      + Messages.ESTIMATE_QUESTION_THIRD + "\n *4*"
+      + Messages.ESTIMATE_QUESTION_FOURTH + "\n *5*"
+      + Messages.ESTIMATE_QUESTION_FIFTH + "\n\n *"
+      + Messages.ESTIMATE_FOOTER + "*\"}}]";
 
   //Information channels message
   public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL = "[{\"type\": \"header\","

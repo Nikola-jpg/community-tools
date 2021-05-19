@@ -39,14 +39,14 @@ public class Messages {
       + " you should write a comment *approved*. \n\n If in your opinion everything is ok to write"
       + " a comment approved. You can specify what was done well. :relaxed:  \n"
       + " For the quality reviews, you can get + into karma :smirk:";
-  public static final String ZERO_POINTS_MESSAGE = "For the task \"pull_name\" you got 0 points."
+  public static final String ZERO_POINTS_MESSAGE = "For the task 'pull_name' you got 0 points."
       + " You made a mistake in the name of the pull request, from now on be more careful.";
   public static final String DEFAULT_MESSAGE = "Oops, I'm sorry, but I don't have an answer"
       + " to your request.";
   public static final String FIRST_QUESTION = "1. What names should branches"
       + " and pull requests have?";
   public static final String SECOND_QUESTION = "2. Which library should be used for unit testing?";
-  public static final String THIRD_QUESTION = "3. Your task labelled as \"changes requested\"."
+  public static final String THIRD_QUESTION = "3. Your task labelled as 'changes requested'."
       + " What is your next step?";
   public static final String MESSAGE_ABOUT_RULES_1 = "Before you start, be sure to familiarize"
       + " yourself with the rules.  You can read the rules by clicking on this link.:point_down:";
@@ -55,13 +55,24 @@ public class Messages {
   public static final String MESSAGE_ABOUT_RULES_3 = "After you have read the rules,"
       + " please answer a few questions.";
   public static final String MESSAGE_ABOUT_RULES_4 = "`Let me know when you are ready"
-      + " (write \"ready\").`";
+      + " (write 'ready').`";
   public static final String WRONG_ADDING_TO_ROLE = "Something went wrong when adding to role."
       + " You need to contact the admin!";
   public static final String ERROR_WITH_ADDING_GIT_NAME =
       "Something went wrong with adding to the team. Please, contact ";
   public static final String CONGRATS = "That was The End, Congrats";
-
+  public static final String NEXT_TASK = "Here is your next [TASK]("
+      + "https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
+  public static final String NO_ACTIVITY_MESSAGE = "There was no activity last week :pensive:";
+  public static final String ESTIMATE_HEADER = "Please, rate the usefulness of the task for you:";
+  public static final String ESTIMATE_QUESTION_FIRST = " - not at all useful;";
+  public static final String ESTIMATE_QUESTION_SECOND = " - not very useful;";
+  public static final String ESTIMATE_QUESTION_THIRD = " - neutral;";
+  public static final String ESTIMATE_QUESTION_FOURTH = " - useful;";
+  public static final String ESTIMATE_QUESTION_FIFTH = " - very useful.";
+  public static final String ESTIMATE_FOOTER = "Enter your rating:";
+  public static final String CONFIRM_ESTIMATE = "Do you confirm this assessment (*yes*/*no*)?";
+  public static final String CHOOSE_AN_ANSWER = "Choose an answer from 1 to 5.";
 
 
   //Information channels message
@@ -80,6 +91,7 @@ public class Messages {
       + " of those who have completed an internship and found a job :sunglasses: ";
   public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_7 = "`Please use the trades to"
       + " respond to messages.`";
+
   public static final String[] TASKS_FOR_USERS = {"checkstyle", "primitives", "boxing", "valueref",
       "equals/hashcode", "platform", "bytecode", "gc", "exceptions", "classpath", "generics",
       "inner/classes", "override/overload", "strings", "gamelife"};
@@ -87,9 +99,4 @@ public class Messages {
       .withKeyValueSeparator(":").split("checkstyle:1, primitives:2, boxing:2, valueref:3, "
       + "equals/hashcode:3, platform:3, bytecode:2, gc:4, exceptions:4, classpath:3, generics:5, "
       + "inner/classes:5, override/overload:4, strings:5, gamelife:10");
-  public static final String NO_ACTIVITY_MESSAGE = "There was no activity last week :pensive:";
-
-  public static final String NEXT_TASK = "Here is your next [TASK]("
-      + "https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
-
 }

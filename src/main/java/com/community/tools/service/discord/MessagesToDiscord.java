@@ -47,6 +47,16 @@ public class MessagesToDiscord {
       .setThumbnail("https://cdn-0.emojis.wiki/emoji-pics/facebook/woman-technologist-facebook.png")
       .build();
 
+  public static final MessageEmbed ESTIMATE_THE_TASK = new  EmbedBuilder()
+      .setTitle(Messages.ESTIMATE_HEADER)
+      .addField("", "*1*" + Messages.ESTIMATE_QUESTION_FIRST, false)
+      .addField("", "*2*" + Messages.ESTIMATE_QUESTION_SECOND, false)
+      .addField("", "*3*" + Messages.ESTIMATE_QUESTION_THIRD, false)
+      .addField("", "*4*" + Messages.ESTIMATE_QUESTION_FOURTH, false)
+      .addField("", "*5*" + Messages.ESTIMATE_QUESTION_FIFTH, false)
+      .addField("", "`" + Messages.ESTIMATE_FOOTER + "` :point_down:",false)
+      .build();
+
   //Information channels message
   public static final MessageEmbed MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL = new EmbedBuilder()
       .appendDescription(Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_1)
