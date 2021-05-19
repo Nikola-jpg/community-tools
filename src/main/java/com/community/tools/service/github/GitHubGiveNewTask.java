@@ -26,7 +26,8 @@ public class GitHubGiveNewTask {
     try {
       StateMachine<State, Event> machine = stateMachineService.restoreMachineByNick(user);
       machine.sendEvent(Event.GET_THE_NEW_TASK);
-      if (machine.getExtendedState().getVariables().get("taskNumber") ==  numberOfTasks) {
+      if (machine.getExtendedState().getVariables()
+          .get("taskNumber") == Integer.valueOf(numberOfTasks - 1)) {
         machine.sendEvent(Event.LAST_TASK);
       } else {
         machine.sendEvent(Event.CHANGE_TASK);

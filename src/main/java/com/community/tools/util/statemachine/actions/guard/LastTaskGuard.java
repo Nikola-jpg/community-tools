@@ -16,6 +16,6 @@ public class LastTaskGuard implements Guard<State, Event> {
   @Override
   public boolean evaluate(StateContext<State, Event> stateContext) {
     return stateContext.getExtendedState().getVariables()
-            .get("taskNumber").equals(numberOfTasks);
+            .get("taskNumber").equals(numberOfTasks - 1);
   }
 }
