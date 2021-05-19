@@ -22,6 +22,7 @@ import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
+import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.net.URL;
