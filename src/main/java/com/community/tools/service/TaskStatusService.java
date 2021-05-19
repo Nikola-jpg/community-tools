@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.kohsuke.github.GHPullRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -78,16 +80,51 @@ public class TaskStatusService {
           if (new LevenshteinDistance().apply(task, title) < 3) {
             TaskStatus taskStatus = taskStatusRepository
                 .findTaskStatusByUserAndTaskName(user, task).orElse(null);
+            String status = pullRequestsService.getLastLabel(ghPullRequest);
             if (!(taskStatus == null)) {
-              String status = pullRequestsService.getLastLabel(ghPullRequest);
               update(taskStatus, status);
             } else {
-              String status = pullRequestsService.getLastLabel(ghPullRequest);
               create(user, task, status);
             }
           }
         });
       }
     });
+  }
+
+  /**
+   * Update task status after pull request.
+   * @param json json
+   */
+  public void updateTasksStatus(JSONObject json) {
+    String gitName;
+    String title;
+    String status;
+    try {
+      gitName = json.getJSONObject("pull_request").getJSONObject("user").getString("login");
+      title = json.getJSONObject("pull_request").getString("title");
+      if (json.getJSONObject("pull_request").getJSONArray("labels").isEmpty()) {
+        status = "pull request";
+      } else {
+        status = json.getJSONObject("pull_request").getJSONArray("labels")
+            .getJSONObject(0).getString("name");
+      }
+    } catch (JSONException exception) {
+      throw new RuntimeException(exception);
+    }
+    User user = stateMachineRepository.findByGitName(gitName).orElse(null);
+    if (!(user == null)) {
+      Arrays.stream(tasksForUsers).forEach(task -> {
+        if (new LevenshteinDistance().apply(task, title) < 3) {
+          TaskStatus taskStatus = taskStatusRepository
+              .findTaskStatusByUserAndTaskName(user, task).orElse(null);
+          if (!(taskStatus == null)) {
+            update(taskStatus, status);
+          } else {
+            create(user, task, status);
+          }
+        }
+      });
+    }
   }
 }

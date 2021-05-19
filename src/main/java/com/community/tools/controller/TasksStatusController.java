@@ -49,7 +49,8 @@ public class TasksStatusController {
    */
   @RequestMapping(value = "", method = RequestMethod.GET)
   public String getTaskStatus(Model model,
-      @RequestParam(name = "sortByField", required = false, defaultValue = "gitName") String sortByField) {
+      @RequestParam(name = "sortByField", required = false, defaultValue = "gitName")
+          String sortByField) {
 
     List<UserTasksStatusDto> userTasksStatusDtoList = new ArrayList<>();
     Page<User> page = stateMachineRepository.findAll(
@@ -74,6 +75,18 @@ public class TasksStatusController {
   public void downloadAllTasksStatus(HttpServletResponse response) {
     List<GHPullRequest> ghPullRequests = pullRequestsService.getPullRequests();
     taskStatusService.downloadTasksStatus(ghPullRequests);
+    response.getStatus();
+  }
+
+  /**
+   * Update from json.
+   * @param body json
+   * @param response status
+   */
+  @RequestMapping(value = "/update", method = RequestMethod.POST)
+  public void updateTasksStatus(@RequestBody String body, HttpServletResponse response) {
+    JSONObject json = new JSONObject(body);
+    taskStatusService.updateTasksStatus(json);
     response.getStatus();
   }
 
