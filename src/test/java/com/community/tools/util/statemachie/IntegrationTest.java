@@ -7,15 +7,17 @@ import static com.community.tools.util.statemachie.State.CHECK_LOGIN;
 import static com.community.tools.util.statemachie.State.FIRST_QUESTION;
 import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
 import static com.community.tools.util.statemachie.State.INFORMATION_CHANNELS;
+import static com.community.tools.util.statemachie.State.NEW_USER;
 import static com.community.tools.util.statemachie.State.SECOND_QUESTION;
 import static com.community.tools.util.statemachie.State.THIRD_QUESTION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.community.tools.model.User;
-
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
@@ -82,6 +84,9 @@ class IntegrationTest {
   @Value("${lastTask}")
   private String lastTask;
 
+  @Value("${generalInformationChannel}")
+  private String channel;
+
   @Autowired
   private StateMachineService stateMachineService;
 
@@ -112,6 +117,9 @@ class IntegrationTest {
   @Captor
   private ArgumentCaptor<String> secondArg;
 
+  @Captor
+  private ArgumentCaptor<GHUser> ghUserCaptor;
+
   private ExtendedState extendedState;
 
   private StateMachine<State, Event> machine;
@@ -121,6 +129,12 @@ class IntegrationTest {
   void setUp() {
     machine = stateMachineService
         .restoreMachine(USER_ID);
+    if (machine == null) {
+      User stateEntity = new User();
+      stateEntity.setUserID(USER_ID);
+      stateMachineRepository.save(stateEntity);
+      stateMachineService.restoreMachine(USER_ID);
+    }
     machine.getExtendedState().getVariables()
         .put("gitNick", USER_NAME);
     machine.getExtendedState().getVariables()
@@ -130,17 +144,18 @@ class IntegrationTest {
   @SneakyThrows
   @Test
   void firstQuestionActionTest() {
-    User stateEntity = new User();
-    stateEntity.setUserID(USER_ID);
-    stateMachineRepository.save(stateEntity);
-    stateMachineService.persistMachineForNewUser(USER_ID);
+    machine.getStateMachineAccessor().doWithAllRegions(access -> access
+        .resetStateMachine(new DefaultStateMachineContext<>(NEW_USER,
+            null, null, extendedState)));
 
     when(slackService.getUserById(USER_ID)).thenReturn(USER_NAME);
     when(slackService.sendBlocksMessage(USER_NAME, firstQuestion)).thenReturn("");
 
     machine.sendEvent(Event.QUESTION_FIRST);
 
-    verify(slackService).sendBlocksMessage(firstArg.capture(), secondArg.capture());
+    verify(slackService, times(1)).getUserById(firstArg.capture());
+    assertEquals(USER_ID, firstArg.getValue());
+    verify(slackService, times(1)).sendBlocksMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
     assertEquals(firstQuestion, secondArg.getValue());
   }
@@ -157,7 +172,9 @@ class IntegrationTest {
 
     machine.sendEvent(Event.QUESTION_SECOND);
 
-    verify(slackService).sendBlocksMessage(firstArg.capture(), secondArg.capture());
+    verify(slackService, times(1)).getUserById(firstArg.capture());
+    assertEquals(USER_ID, firstArg.getValue());
+    verify(slackService, times(1)).sendBlocksMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
     assertEquals(secondQuestion, secondArg.getValue());
   }
@@ -174,7 +191,9 @@ class IntegrationTest {
 
     machine.sendEvent(Event.QUESTION_THIRD);
 
-    verify(slackService).sendBlocksMessage(firstArg.capture(), secondArg.capture());
+    verify(slackService, times(1)).getUserById(firstArg.capture());
+    assertEquals(USER_ID, firstArg.getValue());
+    verify(slackService, times(1)).sendBlocksMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
     assertEquals(thirdQuestion, secondArg.getValue());
   }
@@ -191,7 +210,9 @@ class IntegrationTest {
 
     machine.sendEvent(Event.CHANNELS_INFORMATION);
 
-    verify(slackService).sendBlocksMessage(firstArg.capture(), secondArg.capture());
+    verify(slackService, times(1)).getUserById(firstArg.capture());
+    assertEquals(USER_ID, firstArg.getValue());
+    verify(slackService, times(1)).sendBlocksMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
     assertEquals(messageAboutSeveralInfoChannel, secondArg.getValue());
   }
@@ -208,7 +229,9 @@ class IntegrationTest {
 
     machine.sendEvent(Event.AGREE_LICENSE);
 
-    verify(slackService).sendBlocksMessage(firstArg.capture(), secondArg.capture());
+    verify(slackService, times(1)).getUserById(firstArg.capture());
+    assertEquals(USER_ID, firstArg.getValue());
+    verify(slackService, times(1)).sendBlocksMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
     assertEquals(addGitName, secondArg.getValue());
   }
@@ -225,10 +248,16 @@ class IntegrationTest {
     when(user.getHtmlUrl()).thenReturn(url);
     when(slackService.getUserById(USER_ID)).thenReturn(USER_NAME);
     when(slackService.sendPrivateMessage(USER_NAME, askAboutProfile + "\n" + url)).thenReturn("");
+    when(slackService.getUserById(USER_ID)).thenReturn(USER_NAME);
 
     machine.sendEvent(Event.LOGIN_CONFIRMATION);
 
-    verify(slackService).sendPrivateMessage(firstArg.capture(), secondArg.capture());
+    verify(user, times(1)).getHtmlUrl();
+    verify(gitHubService, times(1)).getUserByLoginInGitHub(firstArg.capture());
+    assertEquals(USER_NAME, firstArg.getValue());
+    verify(slackService, times(1)).getUserById(firstArg.capture());
+    assertEquals(USER_ID, firstArg.getValue());
+    verify(slackService, times(1)).sendPrivateMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
     assertEquals(askAboutProfile + "\n" + url, secondArg.getValue());
   }
@@ -239,6 +268,7 @@ class IntegrationTest {
     machine.getStateMachineAccessor().doWithAllRegions(access -> access
         .resetStateMachine(new DefaultStateMachineContext<>(CHECK_LOGIN,
             null, null, extendedState)));
+
     Set<GHTeam> mockSet = new HashSet<>();
     mockSet.add(team);
     when(gitHubService.getUserByLoginInGitHub(USER_NAME)).thenReturn(user);
@@ -248,12 +278,24 @@ class IntegrationTest {
     doNothing().when(team).add(user);
     when(slackService.getUserById(USER_ID)).thenReturn(USER_NAME);
     when(slackService.sendPrivateMessage(USER_NAME, congratsAvailableNick)).thenReturn("");
+    when(slackService.sendMessageToConversation(channel, "")).thenReturn("");
 
     machine.sendEvent(Event.ADD_GIT_NAME);
 
-    verify(slackService).sendPrivateMessage(firstArg.capture(), secondArg.capture());
+    verify(gitHubService, times(1)).getUserByLoginInGitHub(firstArg.capture());
+    assertEquals(USER_NAME, firstArg.getValue());
+    verify(gitHubConnectService, times(1)).getGitHubRepository();
+    verify(ghRepository, times(1)).getTeams();
+    verify(team, times(1)).getName();
+    verify(team, times(1)).add(ghUserCaptor.capture());
+    assertEquals(user, ghUserCaptor.getValue());
+    verify(slackService, times(2)).getUserById(firstArg.capture());
+    assertEquals(USER_ID, firstArg.getValue());
+    verify(slackService, times(1)).sendPrivateMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
     assertEquals(congratsAvailableNick, secondArg.getValue());
+    verify(slackService, times(1)).sendMessageToConversation(firstArg.capture(), anyString());
+    assertEquals(channel, firstArg.getValue());
   }
 
   @SneakyThrows
@@ -268,7 +310,9 @@ class IntegrationTest {
 
     machine.sendEvent(Event.GET_THE_FIRST_TASK);
 
-    verify(slackService).sendBlocksMessage(firstArg.capture(), secondArg.capture());
+    verify(slackService, times(1)).getUserById(firstArg.capture());
+    assertEquals(USER_ID, firstArg.getValue());
+    verify(slackService, times(1)).sendBlocksMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
     assertEquals(getFirstTask, secondArg.getValue());
   }
@@ -285,7 +329,9 @@ class IntegrationTest {
 
     machine.sendEvent(Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN);
 
-    verify(slackService).sendPrivateMessage(firstArg.capture(), secondArg.capture());
+    verify(slackService, times(1)).getUserById(firstArg.capture());
+    assertEquals(USER_ID, firstArg.getValue());
+    verify(slackService, times(1)).sendPrivateMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
     assertEquals(answeredNoDuringVerification, secondArg.getValue());
   }
@@ -309,7 +355,9 @@ class IntegrationTest {
 
     machine.sendEvent(Event.GET_THE_NEW_TASK);
 
-    verify(slackService).sendBlocksMessage(firstArg.capture(), secondArg.capture());
+    verify(slackService, times(1)).getUserById(firstArg.capture());
+    assertEquals(USER_ID, firstArg.getValue());
+    verify(slackService, times(1)).sendBlocksMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
     assertEquals(taskMessage, secondArg.getValue());
   }
@@ -342,7 +390,9 @@ class IntegrationTest {
 
     machine.sendEvent(Event.LAST_TASK);
 
-    verify(slackService).sendPrivateMessage(firstArg.capture(), secondArg.capture());
+    verify(slackService, times(1)).getUserById(firstArg.capture());
+    assertEquals(USER_ID, firstArg.getValue());
+    verify(slackService, times(1)).sendPrivateMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
     assertEquals(lastTask, secondArg.getValue());
   }
