@@ -45,10 +45,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.support.DefaultStateMachineContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@TestPropertySource(locations = "/application-test.properties")
 class IntegrationTest {
 
   private static final String USER_ID = "U01QY6GRZ0X";
