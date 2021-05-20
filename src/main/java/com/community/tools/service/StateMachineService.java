@@ -130,17 +130,16 @@ public class StateMachineService {
   }
 
   /**
-   * Method for action 'radio_buttons-action'.
+   * Method for save ask estimate and get new task.
    *
-   * @param value  - answer for button
    * @param userId - id users
    */
-  public void estimate(String value, String userId)
-      throws Exception {
+  public void estimate(String userId) throws Exception {
     StateMachine<State, Event> machine = restoreMachine(userId);
     Integer taskNumber = (Integer) machine.getExtendedState().getVariables().get("taskNumber");
+    Integer value = (Integer) machine.getExtendedState().getVariables().get("value");
 
     estimateTaskService.saveEstimateTask(userId, taskNumber, value);
-    giveNewTaskService.giveNewTask(userId);
+    giveNewTaskService.giveNewTask(userId, taskNumber);
   }
 }

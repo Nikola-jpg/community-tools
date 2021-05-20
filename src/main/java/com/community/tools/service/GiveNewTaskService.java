@@ -23,11 +23,11 @@ public class GiveNewTaskService {
    *
    * @param userId - id user
    */
-  public void giveNewTask(String userId) {
+  public void giveNewTask(String userId, Integer taskNumber) {
     try {
       StateMachine<State, Event> machine = stateMachineService.restoreMachine(userId);
       machine.sendEvent(Event.GET_THE_NEW_TASK);
-      if (machine.getExtendedState().getVariables().get("taskNumber") == numberOfTasks) {
+      if (taskNumber.equals(numberOfTasks - 1)) {
         machine.sendEvent(Event.LAST_TASK);
       } else {
         machine.sendEvent(Event.CHANGE_TASK);

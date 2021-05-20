@@ -2,7 +2,7 @@ package com.community.tools.util.statemachine.actions.transitions.tasks;
 
 import static com.community.tools.util.statemachine.Event.LAST_TASK;
 import static com.community.tools.util.statemachine.State.CHECK_FOR_NEW_TASK;
-import static com.community.tools.util.statemachine.State.CONGRATS_LAST_TASK;
+import static com.community.tools.util.statemachine.State.ESTIMATE_THE_TASK;
 
 import com.community.tools.service.MessageService;
 import com.community.tools.util.statemachine.Event;
@@ -37,7 +37,7 @@ public class LastTaskActionTransition implements Transition {
     transitions
         .withExternal()
         .source(CHECK_FOR_NEW_TASK)
-        .target(CONGRATS_LAST_TASK)
+        .target(ESTIMATE_THE_TASK)
         .event(LAST_TASK)
         .guard(lastTaskGuard)
         .action(this, errorAction);

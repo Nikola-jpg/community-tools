@@ -1,8 +1,8 @@
 package com.community.tools.util.statemachine.actions.transitions.tasks;
 
-import static com.community.tools.util.statemachine.Event.SEND_ESTIMATE_TASK;
-import static com.community.tools.util.statemachine.State.CHECK_ESTIMATE;
+import static com.community.tools.util.statemachine.Event.CONFIRM_ESTIMATE;
 import static com.community.tools.util.statemachine.State.ESTIMATE_THE_TASK;
+import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
 
 import com.community.tools.service.MessageService;
 import com.community.tools.service.payload.EstimatePayload;
@@ -34,8 +34,8 @@ public class EstimateTaskActionTransition implements Transition {
     transitions
         .withExternal()
         .source(ESTIMATE_THE_TASK)
-        .target(CHECK_ESTIMATE)
-        .event(SEND_ESTIMATE_TASK)
+        .target(GOT_THE_TASK)
+        .event(CONFIRM_ESTIMATE)
         .action(this, errorAction);
   }
 
@@ -45,6 +45,7 @@ public class EstimateTaskActionTransition implements Transition {
         .getVariables().get("dataPayload");
     String user = payload.getId();
 
-    messageService.sendBlocksMessage(messageService.getUserById(user), confirmEstimate);
+    messageService.sendPrivateMessage(messageService.getUserById(user), confirmEstimate);
+    stateContext.getExtendedState().getVariables().put("value", payload.getValue());
   }
 }

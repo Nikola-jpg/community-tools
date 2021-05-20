@@ -18,16 +18,16 @@ public class EstimateTaskService {
    * @param taskNumber - taskNumber for saving
    * @param estimateId - id estimate
    */
-  public void saveEstimateTask(String userId, Integer taskNumber, String estimateId) {
+  public void saveEstimateTask(String userId, Integer taskNumber, Integer estimateId) {
     Task task = taskRepository.findByUserIdAndTaskNumber(userId, taskNumber);
     if (task == null) {
       task = Task.builder()
           .userId(userId)
           .taskNumber(taskNumber)
-          .estimateId(Integer.parseInt(estimateId))
+          .estimateId(estimateId)
           .build();
     } else {
-      task.setEstimateId(Integer.parseInt(estimateId));
+      task.setEstimateId(estimateId);
     }
     taskRepository.save(task);
   }

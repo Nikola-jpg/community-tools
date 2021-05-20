@@ -1,5 +1,7 @@
 package com.community.tools.service.slack;
 
+import static com.community.tools.util.statemachine.Event.SEND_ESTIMATE_TASK;
+
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
@@ -148,30 +150,31 @@ public class SlackHandlerService {
               case CHECK_LOGIN:
                 if (messageEvent.getText().equals("yes")) {
                   event = Event.ADD_GIT_NAME_AND_FIRST_TASK;
+                  payload = (VerificationPayload) machine.getExtendedState().getVariables()
+                      .get("dataPayload");
                 } else if (messageEvent.getText().equals("no")) {
                   event = Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
+                  payload = new SinglePayload(id);
                 } else {
                   message = notThatMessage;
                 }
-                payload = (VerificationPayload) machine.getExtendedState().getVariables()
-                    .get("dataPayload");
                 break;
               case ESTIMATE_THE_TASK:
-                if (Integer.parseInt(messageEvent.getText()) > 0
-                    && Integer.parseInt(messageEvent.getText()) <= 5) {
-                  event = Event.SEND_ESTIMATE_TASK;
-                  payload = new EstimatePayload(id, Integer.parseInt(messageEvent.getText()));
+                int value = Integer.parseInt(messageEvent.getText());
+                if (value > 0 && value < 6) {
+                  event = Event.CONFIRM_ESTIMATE;
+                  payload = new EstimatePayload(id, value);
                 } else {
                   message = chooseAnAnswer;
                 }
                 break;
-              case CHECK_ESTIMATE:
+              case GOT_THE_TASK:
                 if (messageEvent.getText().equals("yes")) {
-                  event = Event.SAVE_ESTIMATE;
-                  payload = (EstimatePayload) machine.getExtendedState().getVariables()
-                      .get("dataPayload");
+                  stateMachineService.estimate(id);
+                  return;
                 } else if (messageEvent.getText().equals("no")) {
-                  message = estimateTheTask;
+                  event = SEND_ESTIMATE_TASK;
+                  payload = new SinglePayload(id);
                 }
                 break;
               default:
@@ -181,8 +184,7 @@ public class SlackHandlerService {
 
             if (event == null) {
               messageService.sendBlocksMessage(
-                  messageService.getUserById(messageEvent.getUser()),
-                  message);
+                  messageService.getUserById(messageEvent.getUser()), message);
             } else {
               stateMachineService
                   .doAction(machine, payload, event);
