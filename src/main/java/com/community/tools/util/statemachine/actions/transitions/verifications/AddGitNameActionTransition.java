@@ -46,21 +46,10 @@ public class AddGitNameActionTransition implements Transition {
   private GitHubService gitHubService;
 
   @Autowired
-  private BlockService blockService;
+  private MessageService messageService;
 
   @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
+  private BlockService blockService;
 
   @Override
   public void configure(
@@ -94,20 +83,20 @@ public class AddGitNameActionTransition implements Transition {
           .stream().filter(e -> e.getName().equals("trainees")).findFirst()
           .get().add(userGitLogin);
     } catch (IOException e) {
-      getMessageService().sendBlocksMessage(getMessageService().getUserById(user),
+      messageService.sendBlocksMessage(messageService.getUserById(user),
           blockService.createBlockMessage(errorWithAddingGitName,
               MessagesToDiscord.ERROR_WITH_ADDING_GIT_NAME));
     }
-    getMessageService().sendMessageToConversation(channel,
+    messageService.sendMessageToConversation(channel,
         generalInformationAboutUserToChannel(user, userGitLogin)
             + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
-    getMessageService().sendBlocksMessage(getMessageService().getUserById(user),
+    messageService.sendBlocksMessage(messageService.getUserById(user),
         blockService.createBlockMessage(getFirstTask, MessagesToDiscord.GET_FIRST_TASK));
     stateContext.getExtendedState().getVariables().put("gitNick", nickname);
   }
 
   private String generalInformationAboutUserToChannel(String slackName, GHUser user) {
-    return getMessageService().getUserById(slackName) + " - " + user.getLogin();
+    return messageService.getUserById(slackName) + " - " + user.getLogin();
   }
 
   private String sendUserAnswersToChannel(String firstAnswer, String secondAnswer,

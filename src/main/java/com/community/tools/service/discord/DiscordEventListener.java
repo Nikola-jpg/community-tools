@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 public class DiscordEventListener extends ListenerAdapter {
 
   @Autowired
-  @Qualifier("discordService")
   private MessageService messageService;
   @Autowired
   private StateMachineService stateMachineService;

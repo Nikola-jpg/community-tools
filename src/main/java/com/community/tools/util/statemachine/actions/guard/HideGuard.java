@@ -30,31 +30,20 @@ public class HideGuard implements Guard<State, Event> {
   private GitHubService gitHubService;
 
   @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
+  private MessageService messageService;
 
   @SneakyThrows
   @Override
   public boolean evaluate(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
     String nickName = stateContext.getExtendedState().getVariables().get("gitNick").toString();
-    getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
+    messageService.sendPrivateMessage(messageService.getUserById(user),
         Messages.CHECK_NICK_NAME + nickName);
     boolean nicknameMatch = false;
     try {
       nicknameMatch = gitHubService.getUserByLoginInGitHub(nickName).getLogin().equals(nickName);
     } catch (IOException e) {
-      getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
+      messageService.sendPrivateMessage(messageService.getUserById(user),
           Messages.FAILED_NICK_NAME);
     }
     return nicknameMatch;

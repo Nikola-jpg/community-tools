@@ -49,21 +49,10 @@ public class GitSlackUsersController {
   private String notThatMessage;
 
   @Autowired
-  private BlockService blockService;
+  private MessageService messageService;
 
   @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
+  private BlockService blockService;
 
   /**
    * Endpoint /git. Method GET.
@@ -90,7 +79,7 @@ public class GitSlackUsersController {
   @ApiOperation(value = "Returns list of slack users that work with the bot")
   @GetMapping(value = "/slack", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getSlackAllUsers() {
-    Set<User> allSlackUsers = getMessageService().getAllUsers();
+    Set<User> allSlackUsers = messageService.getAllUsers();
 
     List<String> listSlackUsersName = allSlackUsers.stream()
         .map(User::getProfile)
@@ -116,25 +105,25 @@ public class GitSlackUsersController {
     String action = pl.getActions().get(0).getValue();
     String userId = pl.getUser().getId();
 
-    String user = getMessageService().getUserById(userId);
+    String user = messageService.getUserById(userId);
     switch (action) {
       case "AGREE_LICENSE":
         if (!stateMachineService.doAction(userId, NEW_USER, QUESTION_FIRST)) {
-          getMessageService().sendBlocksMessage(user,
+          messageService.sendBlocksMessage(user,
               blockService.createBlockMessage(notThatMessage));
         }
         break;
       case "theEnd":
         if (stateMachineService.doAction(userId, GOT_THE_TASK, GET_THE_FIRST_TASK)) {
-          getMessageService()
+          messageService
               .sendPrivateMessage(user, "that was the end, congrats");
         } else {
-          getMessageService().sendBlocksMessage(user,
+          messageService.sendBlocksMessage(user,
               blockService.createBlockMessage(notThatMessage));
         }
         break;
       default:
-        getMessageService().sendBlocksMessage(user, blockService.createBlockMessage(noOneCase));
+        messageService.sendBlocksMessage(user, blockService.createBlockMessage(noOneCase));
     }
   }
 }

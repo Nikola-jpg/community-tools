@@ -27,24 +27,13 @@ public class GetTheFirstTaskActionTransition implements Transition {
   private String getFirstTask;
 
   @Autowired
+  private MessageService messageService;
+
+  @Autowired
   private BlockService blockService;
 
   @Autowired
   private Action<State, Event> errorAction;
-
-  @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
 
   @Override
   public void configure(
@@ -62,7 +51,7 @@ public class GetTheFirstTaskActionTransition implements Transition {
     SinglePayload payload = (SinglePayload) stateContext.getExtendedState().getVariables()
         .get("dataPayload");
     String user = payload.getId();
-    getMessageService().sendBlocksMessage(getMessageService().getUserById(user),
+    messageService.sendBlocksMessage(messageService.getUserById(user),
         blockService.createBlockMessage(
             MessagesToSlack.GET_FIRST_TASK, MessagesToDiscord.GET_FIRST_TASK));
   }

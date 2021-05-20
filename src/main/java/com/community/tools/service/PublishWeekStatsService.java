@@ -43,21 +43,10 @@ public class PublishWeekStatsService {
   private String noActivityMessage;
 
   @Autowired
-  private BlockService blockService;
+  private MessageService messageService;
 
   @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
+  private BlockService blockService;
 
   /**
    * Publish statistics of Events for last week. Statistic sends every Monday.
@@ -77,7 +66,7 @@ public class PublishWeekStatsService {
     StringBuilder messageBuilder = new StringBuilder();
     EmbedBuilder embedBuilder = new EmbedBuilder();
     if (events.size() == 0) {
-      getMessageService().sendMessageToConversation(channel, Messages.NO_ACTIVITY_MESSAGE);
+      messageService.sendMessageToConversation(channel, Messages.NO_ACTIVITY_MESSAGE);
       System.out.println(events);
     } else {
       Map<String, List<EventData>> sortedMapGroupByActors = new HashMap<>();
@@ -130,7 +119,7 @@ public class PublishWeekStatsService {
                     + authorsActivMessage,false);
               });
       messageBuilder.append("]");
-      getMessageService().sendBlockMessageToConversation(channel,
+      messageService.sendBlockMessageToConversation(channel,
           blockService.createBlockMessage(messageBuilder.toString(),
               embedBuilder.build()));
 
@@ -155,7 +144,7 @@ public class PublishWeekStatsService {
             + "\", \"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"%s"
             + "\",\"alt_text\": \"inspiration\"}]", url, img);
 
-    getMessageService().sendBlockMessageToConversation(channel,
+    messageService.sendBlockMessageToConversation(channel,
         blockService.createBlockMessage(message,
             new EmbedBuilder()
                 .addField("","Рейтинг этой недели доступен по ссылке: ", false)

@@ -37,18 +37,7 @@ public class GitHubHookService {
   @Autowired
   private PointsTaskService pointsTaskService;
   @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
+  private MessageService messageService;
 
   /**
    * Methid receive data from Github and check it.
@@ -76,7 +65,7 @@ public class GitHubHookService {
           throw new RuntimeException(e);
         }
       } else {
-        getMessageService().sendMessageToConversation(channel,
+        messageService.sendMessageToConversation(channel,
                   "User " + user
                           + " created a pull request \n url: " + url);
       }

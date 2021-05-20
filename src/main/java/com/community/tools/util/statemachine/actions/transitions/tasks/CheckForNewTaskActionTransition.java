@@ -25,6 +25,9 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 public class CheckForNewTaskActionTransition implements Transition {
 
   @Autowired
+  private MessageService messageService;
+
+  @Autowired
   private BlockService blockService;
 
   @Value("${tasksForUsers}")
@@ -32,20 +35,6 @@ public class CheckForNewTaskActionTransition implements Transition {
 
   @Autowired
   private Action<State, Event> errorAction;
-
-  @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
 
   @Override
   public void configure(
@@ -67,7 +56,7 @@ public class CheckForNewTaskActionTransition implements Transition {
         "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Here is your next <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/"
             + tasksList.get(i) + "|TASK>.\"}}]";
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    getMessageService().sendBlocksMessage(getMessageService().getUserById(user),
+    messageService.sendBlocksMessage(messageService.getUserById(user),
         blockService.createBlockMessage(taskMessage,
             new EmbedBuilder()
                 .addField("", Messages.NEXT_TASK + tasksList.get(i) + ") :link:", false)

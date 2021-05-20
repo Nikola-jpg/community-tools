@@ -25,6 +25,9 @@ public class SecondQuestionActionTransition implements Transition {
   private String secondQuestion;
 
   @Autowired
+  private MessageService messageService;
+
+  @Autowired
   private BlockService blockService;
 
   @Autowired
@@ -32,20 +35,6 @@ public class SecondQuestionActionTransition implements Transition {
 
   @Autowired
   private StateMachineRepository stateMachineRepository;
-
-  @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
 
   @Override
   public void configure(
@@ -66,7 +55,7 @@ public class SecondQuestionActionTransition implements Transition {
     User stateEntity = stateMachineRepository.findByUserID(id).get();
     stateEntity.setFirstAnswerAboutRules(payloadFirstAnswer.getAnswer());
     stateMachineRepository.save(stateEntity);
-    getMessageService().sendBlocksMessage(getMessageService().getUserById(id),
+    messageService.sendBlocksMessage(messageService.getUserById(id),
         blockService.createBlockMessage(
         MessagesToSlack.SECOND_QUESTION, MessagesToDiscord.SECOND_QUESTION));
   }

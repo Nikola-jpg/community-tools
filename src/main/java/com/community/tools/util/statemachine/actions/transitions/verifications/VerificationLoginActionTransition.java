@@ -33,18 +33,7 @@ public class VerificationLoginActionTransition implements Transition {
   private GitHubService gitHubService;
 
   @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
+  private MessageService messageService;
 
   @Override
   public void configure(
@@ -66,7 +55,7 @@ public class VerificationLoginActionTransition implements Transition {
     String nickname = payload.getGitNick();
     try {
       GHUser userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
-      getMessageService().sendPrivateMessage(getMessageService().getUserById(id),
+      messageService.sendPrivateMessage(messageService.getUserById(id),
           Messages.ASK_ABOUT_PROFILE + "\n" + userGitLogin.getHtmlUrl().toString());
     } catch (IOException e) {
       throw new RuntimeException(e);

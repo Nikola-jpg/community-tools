@@ -16,10 +16,12 @@ import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Profile("slack")
 public class SlackService implements MessageService {
 
   @Value("${slack.token}")

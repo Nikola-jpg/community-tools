@@ -51,7 +51,6 @@ public class SlackHandlerService {
   private Boolean testModeSwitcher;
 
   @Autowired
-  @Qualifier("slackService")
   private MessageService messageService;
   private final StateMachineService stateMachineService;
   @Autowired

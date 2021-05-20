@@ -23,18 +23,7 @@ public class DidNotPassVerificationGitLoginTrans implements Transition {
   private String answeredNoDuringVerification;
 
   @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
+  private MessageService messageService;
 
   @Override
   public void configure(
@@ -52,7 +41,7 @@ public class DidNotPassVerificationGitLoginTrans implements Transition {
     VerificationPayload payload = (VerificationPayload) stateContext.getExtendedState()
         .getVariables().get("dataPayload");
     String user = payload.getId();
-    getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
+    messageService.sendPrivateMessage(messageService.getUserById(user),
         Messages.ANSWERED_NO_DURING_VERIFICATION);
   }
 }

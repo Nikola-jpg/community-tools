@@ -34,21 +34,10 @@ public class ConsentToInformationActionTransition implements Transition {
   private StateMachineRepository stateMachineRepository;
 
   @Autowired
-  private BlockService blockService;
+  private MessageService messageService;
 
   @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
+  private BlockService blockService;
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
@@ -58,11 +47,11 @@ public class ConsentToInformationActionTransition implements Transition {
     User stateEntity = stateMachineRepository.findByUserID(id).get();
     stateEntity.setThirdAnswerAboutRules(payloadThirdAnswer.getAnswer());
     stateMachineRepository.save(stateEntity);
-    getMessageService()
-        .sendBlocksMessage(getMessageService().getUserById(id), blockService.createBlockMessage(
+    messageService
+        .sendBlocksMessage(messageService.getUserById(id), blockService.createBlockMessage(
             MessagesToSlack.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL,
             MessagesToDiscord.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL));
-    getMessageService().sendBlocksMessage(getMessageService().getUserById(id),
+    messageService.sendBlocksMessage(messageService.getUserById(id),
         blockService.createBlockMessage(MessagesToSlack.ADD_GIT_NAME,
             MessagesToDiscord.ADD_GIT_NAME));
   }

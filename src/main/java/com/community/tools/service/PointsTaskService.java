@@ -29,6 +29,8 @@ public class PointsTaskService {
   @Value("#{${pointsForTask}}")
   private Map<String, Integer> pointsForTask;
 
+  final int numberPullsAbilityReview = 3;
+
   @Autowired
   StateMachineService stateMachineService;
 
@@ -38,24 +40,11 @@ public class PointsTaskService {
   @Autowired
   StateMachineRepository stateMachineRepository;
 
-  final int numberPullsAbilityReview = 3;
+  @Autowired
+  private MessageService messageService;
 
   @Autowired
   private BlockService blockService;
-
-  @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
 
   /**
    * This method adds points to the trainee, when menntor labeled pull as "done".
@@ -99,7 +88,7 @@ public class PointsTaskService {
    * @param id Slack User Id
    */
   public void sendAbilityReviewMess(String id) {
-    getMessageService().sendBlocksMessage(getMessageService().getUserById(id),
+    messageService.sendBlocksMessage(messageService.getUserById(id),
         blockService.createBlockMessage(MessagesToSlack.ABILITY_REVIEW_MESSAGE,
             MessagesToDiscord.ABILITY_REVIEW_MESSAGE));
   }
@@ -110,7 +99,7 @@ public class PointsTaskService {
    */
   public void sendMessageWhichDescribesZeroPoints(String id, String pullName) {
     String messageDescribesZero = zeroPointsMessage.replace("pull_name", pullName);
-    getMessageService().sendPrivateMessage(getMessageService().getUserById(id),
+    messageService.sendPrivateMessage(messageService.getUserById(id),
         messageDescribesZero);
   }
 }

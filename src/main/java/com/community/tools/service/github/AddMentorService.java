@@ -25,18 +25,7 @@ public class AddMentorService {
   private MentorsRepository mentorsRepository;
 
   @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
+  private MessageService messageService;
 
   /**
    * Add Mentor to the trainee, which make pull request.
@@ -66,7 +55,7 @@ public class AddMentorService {
    * @param url  Url of pull request
    */
   public void sendNotifyWithMentor(String user, String url) throws IOException, SlackApiException {
-    getMessageService()
+    messageService
         .sendMessageToConversation(channel, "User " + user
          + " created a pull request \n url: " + url
          + "\n Please check it : <@" + mentorsRepository

@@ -20,6 +20,9 @@ import org.springframework.statemachine.guard.Guard;
 public class LastTaskActionTransition implements Transition {
 
   @Autowired
+  private MessageService messageService;
+
+  @Autowired
   private Action<State, Event> errorAction;
 
   @Autowired
@@ -27,20 +30,6 @@ public class LastTaskActionTransition implements Transition {
 
   @Value("${lastTask}")
   private String lastTask;
-
-  @Autowired
-  private Map<String, MessageService> messageServiceMap;
-
-  @Value("${currentMessageService}")
-  private String currentMessageService;
-
-  /**
-   * Selected current message service.
-   * @return current message service
-   */
-  public MessageService getMessageService() {
-    return messageServiceMap.get(currentMessageService);
-  }
 
   @Override
   public void configure(
@@ -57,7 +46,7 @@ public class LastTaskActionTransition implements Transition {
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    getMessageService().sendPrivateMessage(getMessageService().getUserById(user),
+    messageService.sendPrivateMessage(messageService.getUserById(user),
         Messages.LAST_TASK);
   }
 }

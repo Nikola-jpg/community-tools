@@ -33,7 +33,6 @@ public class LeaderBoardService {
   TemplateEngine templateEngine;
 
   @Autowired
-  @Qualifier("slackService")
   private MessageService messageService;
 
 

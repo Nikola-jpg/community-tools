@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BlockService {
 
-  @Value("${currentMessageService}")
-  private String currentMessageService;
+  //@Value("${currentMessageService}")
+  private String currentMessageService = "discordService";
 
   /**
    * Selected message for the active service.
