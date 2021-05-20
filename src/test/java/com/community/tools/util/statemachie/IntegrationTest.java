@@ -22,7 +22,6 @@ import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
-import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.net.URL;
@@ -128,18 +127,18 @@ class IntegrationTest {
   @SneakyThrows
   @BeforeEach
   void setUp() {
-    machine = stateMachineService
-        .restoreMachine(USER_ID);
     if (machine == null) {
       User stateEntity = new User();
       stateEntity.setUserID(USER_ID);
       stateMachineRepository.save(stateEntity);
       stateMachineService.restoreMachine(USER_ID);
+      machine = stateMachineService
+          .restoreMachine(USER_ID);
+      machine.getExtendedState().getVariables()
+          .put("gitNick", USER_NAME);
+      machine.getExtendedState().getVariables()
+          .put("id", USER_ID);
     }
-    machine.getExtendedState().getVariables()
-        .put("gitNick", USER_NAME);
-    machine.getExtendedState().getVariables()
-        .put("id", USER_ID);
   }
 
   @SneakyThrows
