@@ -36,9 +36,6 @@ class PublishWeekStatsServiceTest {
   @Mock
   private MessageService messageService;
 
-  @Mock
-  private BlockService blockService;
-
   @BeforeAll
   public void initMocks() {
     MockitoAnnotations.initMocks(this);
@@ -67,7 +64,7 @@ class PublishWeekStatsServiceTest {
         new EventData(new Date(), "roman", Event.COMMENT));
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
-    Mockito.when(blockService.createBlockMessage(any())).thenReturn(message);
+    Mockito.when(messageService.createBlockMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();
@@ -110,7 +107,7 @@ class PublishWeekStatsServiceTest {
     );
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
-    Mockito.when(blockService.createBlockMessage(any())).thenReturn(message);
+    Mockito.when(messageService.createBlockMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();
@@ -156,7 +153,7 @@ class PublishWeekStatsServiceTest {
     );
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
-    Mockito.when(blockService.createBlockMessage(any())).thenReturn(message);
+    Mockito.when(messageService.createBlockMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();

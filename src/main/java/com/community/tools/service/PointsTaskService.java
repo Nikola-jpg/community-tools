@@ -43,9 +43,6 @@ public class PointsTaskService {
   @Autowired
   private MessageService messageService;
 
-  @Autowired
-  private BlockService blockService;
-
   /**
    * This method adds points to the trainee, when menntor labeled pull as "done".
    If pull has wrong name, add 0 points
@@ -89,7 +86,7 @@ public class PointsTaskService {
    */
   public void sendAbilityReviewMess(String id) {
     messageService.sendBlocksMessage(messageService.getUserById(id),
-        blockService.createBlockMessage(MessagesToSlack.ABILITY_REVIEW_MESSAGE,
+        messageService.createBlockMessage(MessagesToSlack.ABILITY_REVIEW_MESSAGE,
             MessagesToDiscord.ABILITY_REVIEW_MESSAGE));
   }
 

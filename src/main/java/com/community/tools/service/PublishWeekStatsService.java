@@ -45,9 +45,6 @@ public class PublishWeekStatsService {
   @Autowired
   private MessageService messageService;
 
-  @Autowired
-  private BlockService blockService;
-
   /**
    * Publish statistics of Events for last week. Statistic sends every Monday.
    *
@@ -120,7 +117,7 @@ public class PublishWeekStatsService {
               });
       messageBuilder.append("]");
       messageService.sendBlockMessageToConversation(channel,
-          blockService.createBlockMessage(messageBuilder.toString(),
+          messageService.createBlockMessage(messageBuilder.toString(),
               embedBuilder.build()));
 
     }
@@ -145,7 +142,7 @@ public class PublishWeekStatsService {
             + "\",\"alt_text\": \"inspiration\"}]", url, img);
 
     messageService.sendBlockMessageToConversation(channel,
-        blockService.createBlockMessage(message,
+        messageService.createBlockMessage(message,
             new EmbedBuilder()
                 .addField("","Рейтинг этой недели доступен по ссылке: ", false)
                 .addField("", url, false)

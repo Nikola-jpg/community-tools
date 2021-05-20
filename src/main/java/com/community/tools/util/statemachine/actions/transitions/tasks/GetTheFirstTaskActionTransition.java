@@ -30,9 +30,6 @@ public class GetTheFirstTaskActionTransition implements Transition {
   private MessageService messageService;
 
   @Autowired
-  private BlockService blockService;
-
-  @Autowired
   private Action<State, Event> errorAction;
 
   @Override
@@ -52,7 +49,7 @@ public class GetTheFirstTaskActionTransition implements Transition {
         .get("dataPayload");
     String user = payload.getId();
     messageService.sendBlocksMessage(messageService.getUserById(user),
-        blockService.createBlockMessage(
+        messageService.createBlockMessage(
             MessagesToSlack.GET_FIRST_TASK, MessagesToDiscord.GET_FIRST_TASK));
   }
 }

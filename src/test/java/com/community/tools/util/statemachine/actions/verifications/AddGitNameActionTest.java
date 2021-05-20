@@ -60,8 +60,6 @@ public class AddGitNameActionTest {
   @Mock
   private MessageService messageService;
   @Mock
-  private BlockService blockService;
-  @Mock
   private SlackHandlerService slackHandlerService;
   @Mock
   private StateMachine<State, Event> machine;
@@ -99,10 +97,6 @@ public class AddGitNameActionTest {
     messageService.setAccessible(true);
     messageService.set(addGitNameAction, this.messageService);
 
-    Field blockService = AddGitNameActionTransition.class.getDeclaredField("blockService");
-    blockService.setAccessible(true);
-    blockService.set(addGitNameAction, this.blockService);
-
     ReflectionTestUtils.setField(addGitNameAction, "channel", "test_3");
     ReflectionTestUtils.setField(addGitNameAction, "getFirstTask", getFirstTask);
     ReflectionTestUtils
@@ -123,7 +117,7 @@ public class AddGitNameActionTest {
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
-    when(blockService.createBlockMessage(anyString(), any())).thenReturn(getFirstTask);
+    when(messageService.createBlockMessage(anyString(), any())).thenReturn(getFirstTask);
     when(repository.findByUserID("U0191K2V20K")).thenReturn(Optional.of(entity));
 
     when(gitHubService.getUserByLoginInGitHub("likeRewca")).thenReturn(user);
@@ -162,9 +156,9 @@ public class AddGitNameActionTest {
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
-    when(blockService.createBlockMessage(eq(errorWithAddingGitName), any()))
+    when(messageService.createBlockMessage(eq(errorWithAddingGitName), any()))
         .thenReturn(errorWithAddingGitName);
-    when(blockService.createBlockMessage(eq(getFirstTask), any())).thenReturn(getFirstTask);
+    when(messageService.createBlockMessage(eq(getFirstTask), any())).thenReturn(getFirstTask);
     when(repository.findByUserID("U0191K2V20K")).thenReturn(Optional.of(entity));
 
     when(gitHubService.getUserByLoginInGitHub("likeRewca")).thenReturn(user);

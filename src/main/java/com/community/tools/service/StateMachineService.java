@@ -7,6 +7,7 @@ import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.service.payload.SinglePayload;
 import com.community.tools.service.payload.VerificationPayload;
+import com.community.tools.service.slack.MessagesToSlack;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
@@ -209,6 +210,8 @@ public class StateMachineService {
     messageService.sendPrivateMessage(user,
         Messages.WELCOME);
     messageService
-        .sendBlocksMessage(user, MessagesToDiscord.MESSAGE_ABOUT_RULES);
+        .sendBlocksMessage(user, messageService
+            .createBlockMessage(MessagesToSlack.MESSAGE_ABOUT_RULES,
+                MessagesToDiscord.MESSAGE_ABOUT_RULES));
   }
 }

@@ -33,7 +33,6 @@ class DiscordEventListenerTest {
   private StateMachineService stateMachineService;
 
   @Autowired
-  @Qualifier("discordService")
   private MessageService messageService;
 
   @BeforeEach
@@ -48,7 +47,7 @@ class DiscordEventListenerTest {
   @DisplayName("Should on private message received")
   void shouldOnPrivateMessageReceived() throws Exception {
     String id = "830117510543441930";
-    discordEventListener.resetUser("830117510543441930");
+    stateMachineService.resetUser("830117510543441930");
     StateMachine<State, Event> machine = stateMachineService
         .restoreMachine(id);
 

@@ -27,9 +27,6 @@ public class CheckForNewTaskActionTransition implements Transition {
   @Autowired
   private MessageService messageService;
 
-  @Autowired
-  private BlockService blockService;
-
   @Value("${tasksForUsers}")
   private String[] tasksForUsers;
 
@@ -57,7 +54,7 @@ public class CheckForNewTaskActionTransition implements Transition {
             + tasksList.get(i) + "|TASK>.\"}}]";
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
     messageService.sendBlocksMessage(messageService.getUserById(user),
-        blockService.createBlockMessage(taskMessage,
+        messageService.createBlockMessage(taskMessage,
             new EmbedBuilder()
                 .addField("", Messages.NEXT_TASK + tasksList.get(i) + ") :link:", false)
                 .build()));

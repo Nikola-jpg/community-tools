@@ -48,9 +48,6 @@ public class AddGitNameActionTransition implements Transition {
   @Autowired
   private MessageService messageService;
 
-  @Autowired
-  private BlockService blockService;
-
   @Override
   public void configure(
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
@@ -84,14 +81,14 @@ public class AddGitNameActionTransition implements Transition {
           .get().add(userGitLogin);
     } catch (IOException e) {
       messageService.sendBlocksMessage(messageService.getUserById(user),
-          blockService.createBlockMessage(errorWithAddingGitName,
+          messageService.createBlockMessage(errorWithAddingGitName,
               MessagesToDiscord.ERROR_WITH_ADDING_GIT_NAME));
     }
     messageService.sendMessageToConversation(channel,
         generalInformationAboutUserToChannel(user, userGitLogin)
             + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
     messageService.sendBlocksMessage(messageService.getUserById(user),
-        blockService.createBlockMessage(getFirstTask, MessagesToDiscord.GET_FIRST_TASK));
+        messageService.createBlockMessage(getFirstTask, MessagesToDiscord.GET_FIRST_TASK));
     stateContext.getExtendedState().getVariables().put("gitNick", nickname);
   }
 

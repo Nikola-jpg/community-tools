@@ -28,9 +28,6 @@ public class SecondQuestionActionTransition implements Transition {
   private MessageService messageService;
 
   @Autowired
-  private BlockService blockService;
-
-  @Autowired
   private Action<State, Event> errorAction;
 
   @Autowired
@@ -56,7 +53,7 @@ public class SecondQuestionActionTransition implements Transition {
     stateEntity.setFirstAnswerAboutRules(payloadFirstAnswer.getAnswer());
     stateMachineRepository.save(stateEntity);
     messageService.sendBlocksMessage(messageService.getUserById(id),
-        blockService.createBlockMessage(
+        messageService.createBlockMessage(
         MessagesToSlack.SECOND_QUESTION, MessagesToDiscord.SECOND_QUESTION));
   }
 }

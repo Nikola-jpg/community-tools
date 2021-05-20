@@ -26,9 +26,6 @@ public class FirstQuestionActionTransition implements Transition {
   private MessageService messageService;
 
   @Autowired
-  private BlockService blockService;
-
-  @Autowired
   private Action<State, Event> errorAction;
 
   @Override
@@ -37,7 +34,7 @@ public class FirstQuestionActionTransition implements Transition {
         .get("dataPayload");
     String id = payload.getId();
     messageService.sendBlocksMessage(messageService.getUserById(id),
-        blockService.createBlockMessage(
+        messageService.createBlockMessage(
         MessagesToSlack.FIRST_QUESTION, MessagesToDiscord.FIRST_QUESTION));
   }
 

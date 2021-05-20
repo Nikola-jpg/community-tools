@@ -9,6 +9,7 @@ import static org.springframework.http.ResponseEntity.ok;
 import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
+import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.github.GitHubService;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.model.User.Profile;
@@ -50,9 +51,6 @@ public class GitSlackUsersController {
 
   @Autowired
   private MessageService messageService;
-
-  @Autowired
-  private BlockService blockService;
 
   /**
    * Endpoint /git. Method GET.
@@ -110,7 +108,8 @@ public class GitSlackUsersController {
       case "AGREE_LICENSE":
         if (!stateMachineService.doAction(userId, NEW_USER, QUESTION_FIRST)) {
           messageService.sendBlocksMessage(user,
-              blockService.createBlockMessage(notThatMessage));
+              messageService.createBlockMessage(notThatMessage,
+                  MessagesToDiscord.NOT_THAT_MESSAGE));
         }
         break;
       case "theEnd":
@@ -119,11 +118,13 @@ public class GitSlackUsersController {
               .sendPrivateMessage(user, "that was the end, congrats");
         } else {
           messageService.sendBlocksMessage(user,
-              blockService.createBlockMessage(notThatMessage));
+              messageService.createBlockMessage(notThatMessage,
+                  MessagesToDiscord.NOT_THAT_MESSAGE));
         }
         break;
       default:
-        messageService.sendBlocksMessage(user, blockService.createBlockMessage(noOneCase));
+        messageService.sendBlocksMessage(user, messageService.createBlockMessage(noOneCase,
+            MessagesToDiscord.NO_ONE_CASE));
     }
   }
 }

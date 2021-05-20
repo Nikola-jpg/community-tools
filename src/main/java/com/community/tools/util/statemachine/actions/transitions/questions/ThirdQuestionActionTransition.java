@@ -28,9 +28,6 @@ public class ThirdQuestionActionTransition implements Transition {
   private MessageService messageService;
 
   @Autowired
-  private BlockService blockService;
-
-  @Autowired
   private Action<State, Event> errorAction;
 
   @Autowired
@@ -56,7 +53,7 @@ public class ThirdQuestionActionTransition implements Transition {
     stateEntity.setSecondAnswerAboutRules(payloadSecondAnswer.getAnswer());
     stateMachineRepository.save(stateEntity);
     messageService.sendBlocksMessage(messageService.getUserById(id),
-        blockService.createBlockMessage(
+        messageService.createBlockMessage(
         MessagesToSlack.THIRD_QUESTION, MessagesToDiscord.THIRD_QUESTION));
   }
 }

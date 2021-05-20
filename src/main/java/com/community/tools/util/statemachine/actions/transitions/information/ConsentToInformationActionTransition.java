@@ -36,9 +36,6 @@ public class ConsentToInformationActionTransition implements Transition {
   @Autowired
   private MessageService messageService;
 
-  @Autowired
-  private BlockService blockService;
-
   @Override
   public void execute(StateContext<State, Event> stateContext) {
     QuestionPayload payloadThirdAnswer = (QuestionPayload) stateContext.getExtendedState()
@@ -48,11 +45,11 @@ public class ConsentToInformationActionTransition implements Transition {
     stateEntity.setThirdAnswerAboutRules(payloadThirdAnswer.getAnswer());
     stateMachineRepository.save(stateEntity);
     messageService
-        .sendBlocksMessage(messageService.getUserById(id), blockService.createBlockMessage(
+        .sendBlocksMessage(messageService.getUserById(id), messageService.createBlockMessage(
             MessagesToSlack.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL,
             MessagesToDiscord.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL));
     messageService.sendBlocksMessage(messageService.getUserById(id),
-        blockService.createBlockMessage(MessagesToSlack.ADD_GIT_NAME,
+        messageService.createBlockMessage(MessagesToSlack.ADD_GIT_NAME,
             MessagesToDiscord.ADD_GIT_NAME));
   }
 

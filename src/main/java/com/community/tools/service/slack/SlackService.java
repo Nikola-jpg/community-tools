@@ -1,5 +1,6 @@
 package com.community.tools.service.slack;
 
+import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Profile("slack")
-public class SlackService implements MessageService {
+public class SlackService extends BlockService implements MessageService {
 
   @Value("${slack.token}")
   private String token;

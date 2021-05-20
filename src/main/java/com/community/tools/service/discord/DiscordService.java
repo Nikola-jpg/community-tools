@@ -1,9 +1,10 @@
 package com.community.tools.service.discord;
 
+import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -15,18 +16,20 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
+@Data
 @RequiredArgsConstructor
 @Profile("discord")
-public class DiscordService implements MessageService {
+public class DiscordService extends BlockService implements MessageService {
 
-  private final JDA jda;
+  private JDA jda;
 
   @Autowired
   private DiscordEventListener discordEventListener;
 
-  @PostConstruct
-  private void postConstruct() {
+  @Autowired
+  public void setJda(JDA jda) {
     jda.addEventListener(discordEventListener);
+    this.jda = jda;
   }
 
   /**
