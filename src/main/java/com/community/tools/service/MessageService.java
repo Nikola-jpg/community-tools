@@ -2,17 +2,15 @@ package com.community.tools.service;
 
 public interface MessageService extends UserService {
 
-  String sendPrivateMessage(String username, String messageText);
+  void sendPrivateMessage(String username, String messageText);
 
-  <T> String sendBlocksMessage(String username, T message);
+  <T> void sendBlocksMessage(String username, T message);
 
-  <T> String sendAttachmentsMessage(String username, T message);
+  <T> void sendAttachmentsMessage(String username, T message);
 
-  String sendMessageToConversation(String channelName, String messageText);
+  void sendMessageToConversation(String channelName, String messageText);
 
-  <T> String sendBlockMessageToConversation(String channelName, T message);
-
-  String sendMessageToChat(String channelName, String messageText);
+  <T> void sendBlockMessageToConversation(String channelName, T message);
 
 
   String getIdByChannelName(String channelName);

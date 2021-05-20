@@ -58,10 +58,7 @@ public class HideGuardTest {
   @MockBean
   private GitHubService gitHubService;
   @MockBean
-  @Qualifier("slackService")
   private MessageService messageService;
-  @Mock
-  private Map<String, MessageService> messageServiceMap;
   @Mock
   private ExtendedState extendedState;
   @Mock
@@ -73,9 +70,9 @@ public class HideGuardTest {
    */
   @Before
   public void setUp() throws Exception {
-    Field slackService = HideGuard.class.getDeclaredField("slackService");
-    slackService.setAccessible(true);
-    slackService.set(hideGuard, messageService);
+    Field messageService = HideGuard.class.getDeclaredField("messageService");
+    messageService.setAccessible(true);
+    messageService.set(hideGuard, messageService);
 
     Field repoService = HideGuard.class.getDeclaredField("gitHubService");
     repoService.setAccessible(true);
@@ -91,11 +88,8 @@ public class HideGuardTest {
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
-    when(messageServiceMap.get(anyString())).thenReturn(messageService);
 
     when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
-    when(messageService.sendPrivateMessage("Горб Юра",
-            "Okay! Let me check your nick, " + mockData.get("gitNick"))).thenReturn("");
 
     when(gitHubService.getUserByLoginInGitHub("likeRewca")).thenReturn(user);
     when(user.getLogin()).thenReturn("likeRewca");
@@ -121,13 +115,8 @@ public class HideGuardTest {
     when(extendedState.getVariables()).thenReturn(mockData);
 
     when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
-    when(messageService.sendPrivateMessage("Горб Юра",
-            "Okay! Let me check your nick, " + mockData.get("gitNick"))).thenReturn("");
 
     when(gitHubService.getUserByLoginInGitHub("likeRewca")).thenThrow(IOException.class);
-
-    when(messageService.sendPrivateMessage("Горб Юра",
-            "Sry but looks like you are not registered on Github :worried:")).thenReturn("");
 
     assertFalse(hideGuard.evaluate(stateContext));
 

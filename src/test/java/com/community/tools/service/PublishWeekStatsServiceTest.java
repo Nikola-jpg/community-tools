@@ -37,17 +37,12 @@ class PublishWeekStatsServiceTest {
   private MessageService messageService;
 
   @Mock
-  private Map<String, MessageService> messageServiceMap;
-
-  @Mock
   private BlockService blockService;
 
   @BeforeAll
   public void initMocks() {
     MockitoAnnotations.initMocks(this);
     ReflectionTestUtils.setField(publishWeekStatsService, "channel", "general");
-    ReflectionTestUtils.setField(publishWeekStatsService, "currentMessageService",
-        "slackService");
   }
 
   @Test
@@ -72,7 +67,6 @@ class PublishWeekStatsServiceTest {
         new EventData(new Date(), "roman", Event.COMMENT));
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
-    Mockito.when(messageServiceMap.get(anyString())).thenReturn(messageService);
     Mockito.when(blockService.createBlockMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(() -> {
@@ -116,7 +110,6 @@ class PublishWeekStatsServiceTest {
     );
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
-    Mockito.when(messageServiceMap.get(anyString())).thenReturn(messageService);
     Mockito.when(blockService.createBlockMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(() -> {
@@ -163,7 +156,6 @@ class PublishWeekStatsServiceTest {
     );
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
-    Mockito.when(messageServiceMap.get(anyString())).thenReturn(messageService);
     Mockito.when(blockService.createBlockMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(() -> {

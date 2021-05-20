@@ -60,8 +60,6 @@ public class AddGitNameActionTest {
   @Mock
   private MessageService messageService;
   @Mock
-  private Map<String, MessageService> messageServiceMap;
-  @Mock
   private BlockService blockService;
   @Mock
   private SlackHandlerService slackHandlerService;
@@ -97,24 +95,18 @@ public class AddGitNameActionTest {
     repoService.setAccessible(true);
     repoService.set(addGitNameAction, gitHubService);
 
-    //Field messageService = AddGitNameActionTransition.class.getDeclaredField("messageService");
-    //messageService.setAccessible(true);
-    //messageService.set(addGitNameAction, this.messageService);
+    Field messageService = AddGitNameActionTransition.class.getDeclaredField("messageService");
+    messageService.setAccessible(true);
+    messageService.set(addGitNameAction, this.messageService);
 
     Field blockService = AddGitNameActionTransition.class.getDeclaredField("blockService");
     blockService.setAccessible(true);
     blockService.set(addGitNameAction, this.blockService);
 
-    Field messageServiceMap = AddGitNameActionTransition.class
-        .getDeclaredField("messageServiceMap");
-    messageServiceMap.setAccessible(true);
-    messageServiceMap.set(addGitNameAction, this.messageServiceMap);
-
     ReflectionTestUtils.setField(addGitNameAction, "channel", "test_3");
     ReflectionTestUtils.setField(addGitNameAction, "getFirstTask", getFirstTask);
     ReflectionTestUtils
         .setField(addGitNameAction, "errorWithAddingGitName", errorWithAddingGitName);
-    ReflectionTestUtils.setField(addGitNameAction, "currentMessageService", "slackService");
   }
 
   @Test
@@ -131,7 +123,6 @@ public class AddGitNameActionTest {
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
-    when(messageServiceMap.get(anyString())).thenReturn(messageService);
     when(blockService.createBlockMessage(anyString(), any())).thenReturn(getFirstTask);
     when(repository.findByUserID("U0191K2V20K")).thenReturn(Optional.of(entity));
 
@@ -142,9 +133,6 @@ public class AddGitNameActionTest {
     doNothing().when(team).add(user);
 
     when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
-    when(messageService.sendMessageToConversation(anyString(), anyString())).thenReturn("");
-    when(messageService.sendBlocksMessage("Горб Юра",
-        getFirstTask)).thenReturn("");
 
     addGitNameAction.execute(stateContext);
     verify(stateContext, times(4)).getExtendedState();
@@ -174,7 +162,6 @@ public class AddGitNameActionTest {
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
-    when(messageServiceMap.get(anyString())).thenReturn(messageService);
     when(blockService.createBlockMessage(eq(errorWithAddingGitName), any()))
         .thenReturn(errorWithAddingGitName);
     when(blockService.createBlockMessage(eq(getFirstTask), any())).thenReturn(getFirstTask);
@@ -187,10 +174,6 @@ public class AddGitNameActionTest {
     doThrow(IOException.class).when(team).add(user);
 
     when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
-    when(messageService.sendBlocksMessage("Горб Юра",
-        errorWithAddingGitName)).thenReturn("");
-    when(messageService.sendBlocksMessage("Горб Юра",
-        getFirstTask)).thenReturn("");
 
     addGitNameAction.execute(stateContext);
     verify(stateContext, times(2)).getExtendedState();

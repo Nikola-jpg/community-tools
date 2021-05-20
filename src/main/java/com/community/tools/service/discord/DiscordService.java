@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -33,14 +34,12 @@ public class DiscordService implements MessageService {
    *
    * @param username    Discord login
    * @param messageText Text of message
-   * @return timestamp of message
    */
   @Override
-  public String sendPrivateMessage(String username, String messageText) {
+  public void sendPrivateMessage(String username, String messageText) {
     jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
       channel.sendMessage(messageText).queue();
     });
-    return "";
   }
 
   /**
@@ -48,14 +47,12 @@ public class DiscordService implements MessageService {
    *
    * @param username    Discord login
    * @param message object of MessageEmbed
-   * @return timestamp of message
    */
   @Override
-  public <T> String sendBlocksMessage(String username, T message) {
+  public <T> void sendBlocksMessage(String username, T message) {
     jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
       channel.sendMessage((MessageEmbed) message).queue();
     });
-    return "";
   }
 
   /**
@@ -63,14 +60,12 @@ public class DiscordService implements MessageService {
    *
    * @param username    Discord login
    * @param message object of MessageEmbed
-   * @return timestamp of message
    */
   @Override
-  public <T> String sendAttachmentsMessage(String username, T message) {
+  public <T> void sendAttachmentsMessage(String username, T message) {
     jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
       channel.sendMessage((MessageEmbed) message).queue();
     });
-    return "";
   }
 
   /**
@@ -78,13 +73,11 @@ public class DiscordService implements MessageService {
    *
    * @param channelName Name of channel
    * @param messageText Text of message
-   * @return timestamp of message
    */
   @Override
-  public String sendMessageToConversation(String channelName, String messageText) {
+  public void sendMessageToConversation(String channelName, String messageText) {
     jda.getTextChannelById(getIdByChannelName(channelName))
           .sendMessage(messageText).queue();
-    return "";
   }
 
   /**
@@ -92,18 +85,11 @@ public class DiscordService implements MessageService {
    *
    * @param channelName Name of channel
    * @param message object of MessageEmbed
-   * @return timestamp of message
    */
   @Override
-  public <T> String sendBlockMessageToConversation(String channelName, T message) {
+  public <T> void sendBlockMessageToConversation(String channelName, T message) {
     jda.getTextChannelById(getIdByChannelName(channelName))
         .sendMessage((MessageEmbed) message).queue();
-    return "";
-  }
-
-  @Override
-  public String sendMessageToChat(String channelName, String messageText) {
-    return null;
   }
 
   /**
@@ -123,9 +109,8 @@ public class DiscordService implements MessageService {
 
   @Override
   public void sendAnnouncement(String message) {
-
+    throw new NotImplementedException("This functionality is not implemented in this release.");
   }
-
 
   /**
    * Get channel by Discord`s id.
