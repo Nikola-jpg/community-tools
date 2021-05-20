@@ -51,26 +51,6 @@ public class SlackService implements MessageService {
   }
 
   /**
-   * Delete message by timestamp.
-   *
-   * @param username - display username
-   * @param ts       - timestamp
-   * @return timestamp of delete message
-   */
-  public String deleteMessage(String username, String ts) {
-    Slack slack = Slack.getInstance();
-    try {
-      ChatDeleteResponse postResponse =
-          slack.methods(token).chatDelete(
-              req -> req.channel(getIdByUsername(username)).asUser(true)
-                  .ts(ts));
-      return postResponse.getTs();
-    } catch (IOException | SlackApiException exception) {
-      throw new RuntimeException(exception);
-    }
-  }
-
-  /**
    * Send block message with messageText to username.
    *
    * @param username    Slack login
