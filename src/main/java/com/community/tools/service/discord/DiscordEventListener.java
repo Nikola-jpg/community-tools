@@ -1,6 +1,6 @@
 package com.community.tools.service.discord;
 
-import com.community.tools.service.StateMachineService;
+import com.community.tools.service.TrackingService;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class DiscordEventListener extends ListenerAdapter {
 
   @Autowired
-  private StateMachineService stateMachineService;
+  private TrackingService trackingService;
 
   @Value("${testModeSwitcher}")
   private Boolean testModeSwitcher;
@@ -25,7 +25,7 @@ public class DiscordEventListener extends ListenerAdapter {
   public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
     try {
       String userId = event.getUser().getId();
-      stateMachineService.resetUser(userId);
+      trackingService.resetUser(userId);
     } catch (Exception exception) {
       throw new RuntimeException(exception);
     }
@@ -39,9 +39,9 @@ public class DiscordEventListener extends ListenerAdapter {
       try {
         if (messageFromUser.equalsIgnoreCase("reset")
             && testModeSwitcher) {
-          stateMachineService.resetUser(userId);
+          trackingService.resetUser(userId);
         } else {
-          stateMachineService.doAction(messageFromUser, userId);
+          trackingService.doAction(messageFromUser, userId);
         }
       } catch (Exception exception) {
         throw new RuntimeException("Impossible to answer request with id = "

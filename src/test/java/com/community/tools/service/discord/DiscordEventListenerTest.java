@@ -16,7 +16,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.test.context.ActiveProfiles;
@@ -25,9 +24,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 @ActiveProfiles("discord")
 class DiscordEventListenerTest {
-
-  @Autowired
-  private DiscordEventListener discordEventListener;
 
   @Autowired
   private StateMachineService stateMachineService;
