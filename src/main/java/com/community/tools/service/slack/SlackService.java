@@ -1,12 +1,10 @@
 package com.community.tools.service.slack;
 
-import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
-import com.github.seratch.jslack.api.model.Channel;
 import com.github.seratch.jslack.api.model.Conversation;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.webhook.Payload;
@@ -23,7 +21,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Profile("slack")
-public class SlackService extends BlockService implements MessageService {
+public class SlackService implements MessageService {
 
   @Value("${slack.token}")
   private String token;

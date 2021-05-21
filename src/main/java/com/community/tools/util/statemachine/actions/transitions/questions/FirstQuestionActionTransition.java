@@ -1,15 +1,11 @@
 package com.community.tools.util.statemachine.actions.transitions.questions;
 
-import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.MessagesToPlatform;
-import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.payload.SinglePayload;
-import com.community.tools.service.slack.MessagesToSlack;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -38,7 +34,7 @@ public class FirstQuestionActionTransition implements Transition {
         .get("dataPayload");
     String id = payload.getId();
     messageService.sendBlocksMessage(messageService.getUserById(id),
-        messageService.createBlockMessage(messagesToPlatform.FIRST_QUESTION));
+        messagesToPlatform.firstQuestion);
   }
 
   @Override

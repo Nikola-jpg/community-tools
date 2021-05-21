@@ -45,6 +45,9 @@ public class PublishWeekStatsService {
   @Autowired
   private MessageService messageService;
 
+  @Autowired
+  private BlockService blockService;
+
   /**
    * Publish statistics of Events for last week. Statistic sends every Monday.
    *
@@ -117,8 +120,7 @@ public class PublishWeekStatsService {
               });
       messageBuilder.append("]");
       messageService.sendBlockMessageToConversation(channel,
-          messageService.createBlockMessage(messageBuilder.toString(),
-              embedBuilder.build()));
+          blockService.statisticMessage(messageBuilder, embedBuilder));
 
     }
   }
@@ -133,22 +135,8 @@ public class PublishWeekStatsService {
     String url = urlServer + "leaderboard/";
     String date = LocalDate.now().toString();
     String img = url + "img/" + date;
-    String message = String.format("[{\"type\": \"section\", \"text\": "
-            + "{\"type\": \"mrkdwn\",\"text\": \"Рейтинг этой недели доступен по ссылке: \"},"
-            + "\"accessory\": {\"type\": \"button\",\t\"text\": "
-            + "{\"type\": \"plain_text\",\"text\": \":loudspeaker:\",\"emoji\": true},"
-            + "\"value\": \"click_me_123\", \"url\": \"%s"
-            + "\", \"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"%s"
-            + "\",\"alt_text\": \"inspiration\"}]", url, img);
 
-    messageService.sendBlockMessageToConversation(channel,
-        messageService.createBlockMessage(message,
-            new EmbedBuilder()
-                .addField("","Рейтинг этой недели доступен по ссылке: ", false)
-                .addField("", url, false)
-                .addField("", img, true)
-                .build()
-        ));
+    messageService.sendBlockMessageToConversation(channel, blockService.ratingMessage(url, img));
   }
 
   private String emojiGen(Event type) {

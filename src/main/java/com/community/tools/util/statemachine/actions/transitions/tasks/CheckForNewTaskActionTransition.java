@@ -33,6 +33,9 @@ public class CheckForNewTaskActionTransition implements Transition {
   @Autowired
   private Action<State, Event> errorAction;
 
+  @Autowired
+  private BlockService blockService;
+
   @Override
   public void configure(
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
@@ -49,14 +52,8 @@ public class CheckForNewTaskActionTransition implements Transition {
     List<String> tasksList = Arrays.asList(tasksForUsers);
 
     int i = (Integer) stateContext.getExtendedState().getVariables().get("taskNumber");
-    String taskMessage =
-        "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Here is your next <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/"
-            + tasksList.get(i) + "|TASK>.\"}}]";
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
     messageService.sendBlocksMessage(messageService.getUserById(user),
-        messageService.createBlockMessage(taskMessage,
-            new EmbedBuilder()
-                .addField("", Messages.NEXT_TASK + tasksList.get(i) + ") :link:", false)
-                .build()));
+        blockService.nextTaskMessage(tasksList, i));
   }
 }

@@ -1,44 +1,14 @@
 package com.community.tools.service;
 
-import com.community.tools.model.UsedPlatforms;
-import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import java.util.List;
+import net.dv8tion.jda.api.EmbedBuilder;
 
-@Service
-@RequiredArgsConstructor
-public class BlockService {
+public interface BlockService<T> {
 
-  @Value("${spring.profiles.active}")
-  private UsedPlatforms activePlatform;
+  T nextTaskMessage(List<String> tasksList, int numberTask);
 
-  /**
-   * Selected message for the active service.
-   * @param messages array messages for different services
-   * @param <T> type messages
-   * @return block message
-   */
-  public <T> T createBlockMessage(T... messages) {
-    switch (activePlatform) {
-      case slack: {
-        for (T message : messages) {
-          if (message instanceof String) {
-            return message;
-          }
-        }
-        break;
-      }
-      case discord: {
-        for (T message : messages) {
-          if (message instanceof MessageEmbed) {
-            return message;
-          }
-        }
-        break;
-      }
-      default:
-    }
-    throw new UnsupportedOperationException("This message block is not supported.");
-  }
+  T ratingMessage(String url, String img);
+
+  T statisticMessage(StringBuilder messageBuilder, EmbedBuilder embedBuilder);
+
 }

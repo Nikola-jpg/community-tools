@@ -4,16 +4,12 @@ import static com.community.tools.util.statemachine.Event.GET_THE_FIRST_TASK;
 import static com.community.tools.util.statemachine.State.ADDED_GIT;
 import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
 
-import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.MessagesToPlatform;
-import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.payload.SinglePayload;
-import com.community.tools.service.slack.MessagesToSlack;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -53,6 +49,6 @@ public class GetTheFirstTaskActionTransition implements Transition {
         .get("dataPayload");
     String user = payload.getId();
     messageService.sendBlocksMessage(messageService.getUserById(user),
-        messageService.createBlockMessage(messagesToPlatform.GET_FIRST_TASK));
+        messagesToPlatform.getFirstTask);
   }
 }

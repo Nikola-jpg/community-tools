@@ -1,6 +1,5 @@
 package com.community.tools.service.discord;
 
-import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Data
 @RequiredArgsConstructor
 @Profile("discord")
-public class DiscordService extends BlockService implements MessageService {
+public class DiscordService implements MessageService {
 
   private JDA jda;
 

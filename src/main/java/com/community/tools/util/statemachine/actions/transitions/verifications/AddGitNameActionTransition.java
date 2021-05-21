@@ -5,10 +5,8 @@ import static com.community.tools.util.statemachine.State.CHECK_LOGIN;
 import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
 
 import com.community.tools.model.User;
-import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.MessagesToPlatform;
-import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.VerificationPayload;
@@ -17,7 +15,6 @@ import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import java.io.IOException;
-import java.util.Map;
 import lombok.SneakyThrows;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,14 +82,13 @@ public class AddGitNameActionTransition implements Transition {
           .get().add(userGitLogin);
     } catch (IOException e) {
       messageService.sendBlocksMessage(messageService.getUserById(user),
-          messageService.createBlockMessage(errorWithAddingGitName,
-              messagesToPlatform.ERROR_WITH_ADDING_GIT_NAME));
+          messagesToPlatform.errorWithAddingGitName);
     }
     messageService.sendMessageToConversation(channel,
         generalInformationAboutUserToChannel(user, userGitLogin)
             + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
     messageService.sendBlocksMessage(messageService.getUserById(user),
-        messageService.createBlockMessage(getFirstTask, messagesToPlatform.GET_FIRST_TASK));
+        messagesToPlatform.getFirstTask);
     stateContext.getExtendedState().getVariables().put("gitNick", nickname);
   }
 

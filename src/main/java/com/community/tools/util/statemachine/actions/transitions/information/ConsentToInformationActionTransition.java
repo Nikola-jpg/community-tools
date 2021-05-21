@@ -1,17 +1,13 @@
 package com.community.tools.util.statemachine.actions.transitions.information;
 
 import com.community.tools.model.User;
-import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.MessagesToPlatform;
-import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.payload.QuestionPayload;
-import com.community.tools.service.slack.MessagesToSlack;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -49,10 +45,10 @@ public class ConsentToInformationActionTransition implements Transition {
     stateEntity.setThirdAnswerAboutRules(payloadThirdAnswer.getAnswer());
     stateMachineRepository.save(stateEntity);
     messageService
-        .sendBlocksMessage(messageService.getUserById(id), messageService.createBlockMessage(
-            messagesToPlatform.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL));
+        .sendBlocksMessage(messageService.getUserById(id),
+            messagesToPlatform.messageAboutSeveralInfoChannel);
     messageService.sendBlocksMessage(messageService.getUserById(id),
-        messageService.createBlockMessage(messagesToPlatform.ADD_GIT_NAME));
+        messagesToPlatform.addGitName);
   }
 
   @Override

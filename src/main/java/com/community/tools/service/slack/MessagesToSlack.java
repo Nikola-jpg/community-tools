@@ -12,46 +12,39 @@ public class MessagesToSlack extends MessagesToPlatform<String> {
   MessagesToSlack() {
 
     //messages for bot
-    GET_FIRST_TASK = "[{\"type\": \"section\",\"text\": {"
+    getFirstTask = "[{\"type\": \"section\",\"text\": {"
         + "\"type\":\"mrkdwn\",\"text\": \"" + Messages.CONGRATS_AVAILABLE_NICK + "\n\n"
         + Messages.GET_FIRST_TASK + " <"
         + Messages.LINK_FIRST_TASK + "|TASK> :link:\"}}]";
-    ADD_GIT_NAME = "[{\"type\": \"section\",\"text\": {"
+    addGitName = "[{\"type\": \"section\",\"text\": {"
         + "\"type\":\"mrkdwn\",\"text\": \"" + Messages.ADD_GIT_NAME + "\"}}]";
-    NO_ONE_CASE = "[{\"type\": \"divider\"},{\"type\": \"section\","
+    noOneCase = "[{\"type\": \"divider\"},{\"type\": \"section\","
         + "\"text\": {\"type\": \"mrkdwn\",\"text\": \"" + Messages.NO_ONE_CASE + "\"},"
         + "\"accessory\": {\"type\": \"button\",\"text\": {\"type\": \"plain_text\","
         + "\"text\": \"Button\",\"emoji\": true},\"value\": \"Button\"}}]";
-    NOT_THAT_MESSAGE = "[{\"type\": \"section\",\"text\": {"
+    notThatMessage = "[{\"type\": \"section\",\"text\": {"
         + "\"type\": \"mrkdwn\",\"text\": \"" + Messages.NOT_THAT_MESSAGE + "\"}}]";
-    ABILITY_REVIEW_MESSAGE = "[{\"type\": \"context\","
+    abilityReviewMessage = "[{\"type\": \"context\","
         + " \"elements\": [{\"type\": \"mrkdwn\",\"text\": \""
         + Messages.ABILITY_REVIEW_MESSAGE + "\"}]}]";
-    FIRST_QUESTION = "[ {\"type\": \"context\", \"elements\": [{"
+    firstQuestion = "[ {\"type\": \"context\", \"elements\": [{"
         + " \"type\": \"mrkdwn\", \"text\": \"```" + Messages.FIRST_QUESTION + "```\" } ] } ]";
-    SECOND_QUESTION = "[ {\"type\": \"context\", \"elements\": [{"
+    secondQuestion = "[ {\"type\": \"context\", \"elements\": [{"
         + " \"type\": \"mrkdwn\", \"text\": \"```" + Messages.SECOND_QUESTION + "```\" } ] } ]";
-    THIRD_QUESTION = "[ {\"type\": \"context\", \"elements\": [{"
+    thirdQuestion = "[ {\"type\": \"context\", \"elements\": [{"
         + " \"type\": \"mrkdwn\", \"text\": \"```" + Messages.THIRD_QUESTION + "```\" } ] } ]";
-    MESSAGE_ABOUT_RULES = "[{ \"type\": \"section\", \"text\": {"
+    messageAboutRules = "[{ \"type\": \"section\", \"text\": {"
         + " \"type\": \"mrkdwn\", \"text\": \"" + Messages.MESSAGE_ABOUT_RULES_1 + "\" }}, {"
         + " \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \""
         + Messages.MESSAGE_ABOUT_RULES_2 + "|Rules> :link:\" } }, { \"type\": \"section\","
         + " \"text\": {\"type\": \"mrkdwn\", \"text\": \"" + Messages.MESSAGE_ABOUT_RULES_3
         + "\"} }, {\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\",\"text\": \""
         + Messages.MESSAGE_ABOUT_RULES_4 + "\"}]}]";
-
-    //////
-
-
-
-
-    /////
-    ERROR_WITH_ADDING_GIT_NAME = "[{\"type\": \"section\",\"text\":"
+    errorWithAddingGitName = "[{\"type\": \"section\",\"text\":"
         + " {\"type\": \"mrkdwn\",\"text\": \""
         + Messages.ERROR_WITH_ADDING_GIT_NAME
         + "\n*<https://broscorp-community.slack.com/archives/D01QZ9U2GH5|Liliya Stepanovna>*\"}}]";
-    ESTIMATE_THE_TASK = "[ {\"type\": \"section\",\"text\": {\"type\":"
+    estimateTheTask = "[ {\"type\": \"section\",\"text\": {\"type\":"
         + " \"mrkdwn\",\"text\": \""
         + Messages.ESTIMATE_HEADER + "\n *1*"
         + Messages.ESTIMATE_QUESTION_FIRST + "\n *2*"
@@ -62,7 +55,7 @@ public class MessagesToSlack extends MessagesToPlatform<String> {
         + Messages.ESTIMATE_FOOTER + "*\"}}]";
 
     //Information channels message
-    MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL = "[{\"type\": \"header\","
+    messageAboutSeveralInfoChannel = "[{\"type\": \"header\","
         + "\"text\": {\"type\": \"plain_text\",\"text\": \""
         + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_1 + "\"}},{\"type\": \"context\","
         + "\"elements\": [{\"type\": \"mrkdwn\",\"text\": \"#welcome \n "
@@ -92,6 +85,7 @@ public class MessagesToSlack extends MessagesToPlatform<String> {
       + "\":loudspeaker:\",\"emoji\": true},\"value\": \"click_me_123\", \"url\": \"%s\","
       + "\"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"%s\","
       + "\"alt_text\": \"inspiration\"}]";
-  public static final String CHECK_NEXT_TASK = "[{\"type\": \"section\",\"text\":"
-      + " {\"type\": \"mrkdwn\",\"text\": \"" + Messages.NEXT_TASK;
+  public static final String NEXT_TASK = "[{\"type\": \"section\",\"text\":"
+      + " {\"type\": \"mrkdwn\",\"text\": \"Here is your next"
+      + " <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
 }

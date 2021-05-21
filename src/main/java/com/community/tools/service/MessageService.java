@@ -12,8 +12,6 @@ public interface MessageService extends UserService {
 
   <T> void sendBlockMessageToConversation(String channelName, T message);
 
-  <T> T createBlockMessage(T... messages);
-
   String getIdByChannelName(String channelName);
 
   void sendAnnouncement(String message);

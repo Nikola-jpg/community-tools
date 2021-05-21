@@ -4,14 +4,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.community.tools.model.User;
-import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
+import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.Payload;
@@ -42,9 +43,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.StateMachine;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ActiveProfiles("slack")
 public class AddGitNameActionTest {
 
   @InjectMocks
@@ -59,6 +62,8 @@ public class AddGitNameActionTest {
   private GitHubService gitHubService;
   @Mock
   private MessageService messageService;
+  @Mock
+  private MessagesToPlatform messagesToPlatform;
   @Mock
   private SlackHandlerService slackHandlerService;
   @Mock
@@ -97,6 +102,11 @@ public class AddGitNameActionTest {
     messageService.setAccessible(true);
     messageService.set(addGitNameAction, this.messageService);
 
+    Field messagesToPlatform = AddGitNameActionTransition.class
+        .getDeclaredField("messagesToPlatform");
+    messagesToPlatform.setAccessible(true);
+    messagesToPlatform.set(addGitNameAction, this.messagesToPlatform);
+
     ReflectionTestUtils.setField(addGitNameAction, "channel", "test_3");
     ReflectionTestUtils.setField(addGitNameAction, "getFirstTask", getFirstTask);
     ReflectionTestUtils
@@ -113,11 +123,12 @@ public class AddGitNameActionTest {
     Set<GHTeam> mockSet = new HashSet<>();
     mockSet.add(team);
 
-    User entity = new User();
+    final User entity = new User();
+
+    messagesToPlatform.getFirstTask = getFirstTask;
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
-    when(messageService.createBlockMessage(anyString(), any())).thenReturn(getFirstTask);
     when(repository.findByUserID("U0191K2V20K")).thenReturn(Optional.of(entity));
 
     when(gitHubService.getUserByLoginInGitHub("likeRewca")).thenReturn(user);
@@ -127,8 +138,8 @@ public class AddGitNameActionTest {
     doNothing().when(team).add(user);
 
     when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
-
     addGitNameAction.execute(stateContext);
+
     verify(stateContext, times(4)).getExtendedState();
     verify(gitHubService, times(2)).getUserByLoginInGitHub("likeRewca");
     verify(gitHubConnectService, times(2)).getGitHubRepository();
@@ -152,15 +163,14 @@ public class AddGitNameActionTest {
     Set<GHTeam> mockSet = new HashSet<>();
     mockSet.add(team);
 
-    User entity = new User();
+    final User entity = new User();
+
+    messagesToPlatform.getFirstTask = getFirstTask;
+    messagesToPlatform.errorWithAddingGitName = errorWithAddingGitName;
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
-    when(messageService.createBlockMessage(eq(errorWithAddingGitName), any()))
-        .thenReturn(errorWithAddingGitName);
-    when(messageService.createBlockMessage(eq(getFirstTask), any())).thenReturn(getFirstTask);
     when(repository.findByUserID("U0191K2V20K")).thenReturn(Optional.of(entity));
-
     when(gitHubService.getUserByLoginInGitHub("likeRewca")).thenReturn(user);
     when(gitHubConnectService.getGitHubRepository()).thenReturn(ghRepository);
     when(ghRepository.getTeams()).thenReturn(mockSet);

@@ -6,11 +6,9 @@ import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
 import static com.community.tools.util.statemachine.State.NEW_USER;
 import static org.springframework.http.ResponseEntity.ok;
 
-import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.StateMachineService;
-import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.github.GitHubService;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.model.User.Profile;
@@ -20,7 +18,6 @@ import com.google.gson.Gson;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -111,9 +108,7 @@ public class GitSlackUsersController {
     switch (action) {
       case "AGREE_LICENSE":
         if (!stateMachineService.doAction(userId, NEW_USER, QUESTION_FIRST)) {
-          messageService.sendBlocksMessage(user,
-              messageService.createBlockMessage(notThatMessage,
-                  messagesToPlatform.NOT_THAT_MESSAGE));
+          messageService.sendBlocksMessage(user, messagesToPlatform.notThatMessage);
         }
         break;
       case "theEnd":
@@ -121,14 +116,11 @@ public class GitSlackUsersController {
           messageService
               .sendPrivateMessage(user, "that was the end, congrats");
         } else {
-          messageService.sendBlocksMessage(user,
-              messageService.createBlockMessage(notThatMessage,
-                  messagesToPlatform.NOT_THAT_MESSAGE));
+          messageService.sendBlocksMessage(user, messagesToPlatform.notThatMessage);
         }
         break;
       default:
-        messageService.sendBlocksMessage(user, messageService.createBlockMessage(noOneCase,
-            messagesToPlatform.NO_ONE_CASE));
+        messageService.sendBlocksMessage(user, messagesToPlatform.noOneCase);
     }
   }
 }

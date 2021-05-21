@@ -61,8 +61,6 @@ public class Messages {
   public static final String ERROR_WITH_ADDING_GIT_NAME =
       "Something went wrong with adding to the team. Please, contact ";
   public static final String CONGRATS = "That was The End, Congrats";
-  public static final String NEXT_TASK = "Here is your next [TASK]("
-      + "https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
   public static final String NO_ACTIVITY_MESSAGE = "There was no activity last week :pensive:";
   public static final String ESTIMATE_HEADER = "Please, rate the usefulness of the task for you:";
   public static final String ESTIMATE_QUESTION_FIRST = " - not at all useful;";
