@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie.actions;
+package com.community.tools.util.statemachie.actions.guard;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -12,6 +12,7 @@ import com.community.tools.service.slack.SlackHandlerService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.actions.guard.HideGuard;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 

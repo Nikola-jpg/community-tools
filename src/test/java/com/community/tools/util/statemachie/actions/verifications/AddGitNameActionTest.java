@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie.actions;
+package com.community.tools.util.statemachie.actions.verifications;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -8,25 +8,25 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.community.tools.model.User;
+import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
+import com.community.tools.service.payload.Payload;
+import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.service.slack.SlackHandlerService;
-import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.actions.transitions.verifications.AddGitNameActionTransition;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
 import lombok.SneakyThrows;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -36,7 +36,6 @@ import org.kohsuke.github.GHUser;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.StateMachine;
@@ -46,7 +45,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class AddGitNameActionTest {
 
   @InjectMocks
-  private AddGitNameAction addGitNameAction;
+  private AddGitNameActionTransition addGitNameAction;
   @Mock
   private StateMachineRepository repository;
   @Mock
@@ -56,7 +55,7 @@ public class AddGitNameActionTest {
   @Mock
   private GitHubService gitHubService;
   @Mock
-  private SlackService slackSer;
+  private MessageService messageService;
   @Mock
   private SlackHandlerService slackHandlerService;
   @Mock
@@ -70,36 +69,42 @@ public class AddGitNameActionTest {
   @Mock
   private GHRepository ghRepository;
 
+  private final String getFirstTask = "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Hurray! Your nick is available. Nice to meet you :smile:\n\nThis is your first <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/checkstyle|TASK>. gl\"}}]";
+
+  private final String errorWithAddingGitName = "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Something went wrong with adding to the team. Please, contact *<https://broscorp-community.slack.com/archives/D01QZ9U2GH5|Liliya Stepanovna>*\"}}]";
+
   /**
    * This method init fields in the AddGitNameAction.
+   *
    * @throws Exception Exception
    */
   @BeforeAll
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
 
-    Field repoField = AddGitNameAction.class.getDeclaredField("gitHubConnectService");
+    Field repoField = AddGitNameActionTransition.class.getDeclaredField("gitHubConnectService");
     repoField.setAccessible(true);
     repoField.set(addGitNameAction, gitHubConnectService);
 
-    Field repoService = AddGitNameAction.class.getDeclaredField("gitHubService");
+    Field repoService = AddGitNameActionTransition.class.getDeclaredField("gitHubService");
     repoService.setAccessible(true);
     repoService.set(addGitNameAction, gitHubService);
 
-    Field slackService = AddGitNameAction.class.getDeclaredField("slackService");
-    slackService.setAccessible(true);
-    slackService.set(addGitNameAction, slackSer);
-
-    ReflectionTestUtils.setField(addGitNameAction, "congratsAvailableNick",
-            "Hurray! Your nick is available. Nice to meet you :smile:");
+    Field messageService = AddGitNameActionTransition.class.getDeclaredField("messageService");
+    messageService.setAccessible(true);
+    messageService.set(addGitNameAction, this.messageService);
     ReflectionTestUtils.setField(addGitNameAction, "channel", "test_3");
+    ReflectionTestUtils.setField(addGitNameAction, "getFirstTask", getFirstTask);
+    ReflectionTestUtils
+        .setField(addGitNameAction, "errorWithAddingGitName", errorWithAddingGitName);
   }
 
   @Test
   public void executeTest() throws Exception {
     Map<Object, Object> mockData = new HashMap<>();
-    mockData.put("id", "U0191K2V20K");
-    mockData.put("gitNick", "likeRewca");
+
+    Payload payload = new VerificationPayload("U0191K2V20K", "likeRewca");
+    mockData.put("dataPayload", payload);
 
     Set<GHTeam> mockSet = new HashSet<>();
     mockSet.add(team);
@@ -117,20 +122,21 @@ public class AddGitNameActionTest {
     when(team.getName()).thenReturn("trainees");
     doNothing().when(team).add(user);
 
-    when(slackSer.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
-    when(slackSer.sendPrivateMessage("Горб Юра",
-            "Hurray! Your nick is available. Nice to meet you :smile:")).thenReturn("");
-    when(slackSer.sendMessageToConversation(anyString(), anyString())).thenReturn("");
+    when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
+    when(messageService.sendMessageToConversation(anyString(), anyString())).thenReturn("");
+    when(messageService.sendBlocksMessage("Горб Юра",
+        getFirstTask)).thenReturn("");
 
     addGitNameAction.execute(stateContext);
     verify(stateContext, times(4)).getExtendedState();
     verify(gitHubService, times(2)).getUserByLoginInGitHub("likeRewca");
     verify(gitHubConnectService, times(2)).getGitHubRepository();
-    verify(slackSer, times(5)).getUserById("U0191K2V20K");
-    verify(slackSer, times(2))
-            .sendPrivateMessage("Горб Юра",
-                    "Hurray! Your nick is available. Nice to meet you :smile:");
-    verify(slackSer, times(2)).sendMessageToConversation(anyString(), anyString());
+    verify(messageService, times(5)).getUserById("U0191K2V20K");
+
+    verify(messageService, times(2)).sendMessageToConversation(anyString(), anyString());
+    verify(messageService, times(2))
+        .sendBlocksMessage("Горб Юра",
+            getFirstTask);
   }
 
 
@@ -138,8 +144,9 @@ public class AddGitNameActionTest {
   @Test
   public void shouldGetExceptionWhenAddingToRole() throws IOException {
     Map<Object, Object> mockData = new HashMap<>();
-    mockData.put("id", "U0191K2V20K");
-    mockData.put("gitNick", "likeRewca");
+
+    Payload payload = new VerificationPayload("U0191K2V20K", "likeRewca");
+    mockData.put("dataPayload", payload);
 
     Set<GHTeam> mockSet = new HashSet<>();
     mockSet.add(team);
@@ -157,22 +164,23 @@ public class AddGitNameActionTest {
     when(team.getName()).thenReturn("trainees");
     doThrow(IOException.class).when(team).add(user);
 
-    when(slackSer.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
-    when(slackSer.sendPrivateMessage("Горб Юра",
-            "Something went wrong when adding to role. You need to contact the admin!"))
-            .thenReturn("");
+    when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
+    when(messageService.sendBlocksMessage("Горб Юра",
+        errorWithAddingGitName))
+        .thenReturn("");
 
     addGitNameAction.execute(stateContext);
     verify(stateContext, times(2)).getExtendedState();
     verify(gitHubService, times(1)).getUserByLoginInGitHub("likeRewca");
     verify(gitHubConnectService, times(1)).getGitHubRepository();
-    verify(slackSer, times(3)).getUserById("U0191K2V20K");
-    verify(slackSer, times(1))
-            .sendPrivateMessage("Горб Юра",
-                    "Hurray! Your nick is available. Nice to meet you :smile:");
-    verify(slackSer, times(1))
-            .sendPrivateMessage("Горб Юра",
-                    "Something went wrong when adding to role. You need to contact the admin!");
-    verify(slackSer, times(1)).sendMessageToConversation(anyString(), anyString());
+    verify(messageService, times(3)).getUserById("U0191K2V20K");
+    verify(messageService, times(1))
+        .sendBlocksMessage("Горб Юра",
+            errorWithAddingGitName);
+    verify(messageService, times(1)).sendMessageToConversation(anyString(), anyString());
+    verify(messageService, times(1))
+        .sendBlocksMessage("Горб Юра",
+            getFirstTask);
+
   }
 }

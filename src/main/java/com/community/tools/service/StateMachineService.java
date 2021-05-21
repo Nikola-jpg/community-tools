@@ -1,21 +1,12 @@
 package com.community.tools.service;
 
-import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
-import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.Event.QUESTION_FIRST;
-import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
-import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.State.NEW_USER;
-
 import com.community.tools.model.User;
-import com.community.tools.service.github.GitHubService;
-import com.community.tools.service.slack.SlackService;
+import com.community.tools.service.payload.Payload;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.persist.StateMachinePersister;
@@ -27,102 +18,14 @@ public class StateMachineService {
 
   @Autowired
   private StateMachineRepository stateMachineRepository;
-
-  @Value("${welcome}")
-  private String welcome;
-  @Value("${checkNickName}")
-  private String checkNickName;
-
-  @Value("${failedCheckNickName}")
-  private String failedCheckNickName;
-  @Value("${doNotUnderstandWhatTodo}")
-  private String doNotUnderstandWhatTodo;
-
-  @Value("${noOneCase}")
-  private String noOneCase;
-  @Value("${notThatMessage}")
-  private String notThatMessage;
   @Autowired
   private StateMachineFactory<State, Event> factory;
   @Autowired
   private StateMachinePersister<State, Event, String> persister;
 
-  private final GitHubService gitHubService;
-  private final SlackService slackService;
-
   /**
-   * Check Slack`s user and Github login.
-   * @param nickName GitHub login
-   * @param userId Slack`s userId
-   * @throws Exception Exception
-   */
-  public void agreeForGitHubNickName(String nickName, String userId) throws Exception {
-    String user = slackService.getUserById(userId);
-
-    StateMachine<State, Event> machine = restoreMachine(userId);
-
-    if (machine.getState().getId() == AGREED_LICENSE) {
-      slackService.sendPrivateMessage(user,
-              checkNickName + nickName);
-
-      boolean nicknameMatch = gitHubService.getGitHubAllUsers().stream()
-              .anyMatch(e -> e.getLogin().equals(nickName));
-      if (nicknameMatch) {
-
-        machine.sendEvent(ADD_GIT_NAME);
-        machine.sendEvent(GET_THE_FIRST_TASK);
-        persistMachine(machine, userId);
-
-        User stateEntity = stateMachineRepository.findByUserID(userId).get();
-        stateEntity.setGitName(nickName);
-        stateMachineRepository.save(stateEntity);
-
-      } else {
-        slackService.sendPrivateMessage(user, failedCheckNickName);
-      }
-
-    } else {
-      slackService.sendPrivateMessage(user, doNotUnderstandWhatTodo);
-
-    }
-  }
-
-  /**
-   * Check action from Slack`s user.
-   * @param action action
-   * @param userId Slack`s userId
-   * @throws Exception Exception
-   */
-  public void checkActionsFromButton(String action, String userId) throws Exception {
-    StateMachine<State, Event> machine = restoreMachine(userId);
-    String user = slackService.getUserById(userId);
-    switch (action) {
-      case "AGREE_LICENSE":
-        if (machine.getState().getId() == NEW_USER) {
-          machine.sendEvent(QUESTION_FIRST);
-          persistMachine(machine, userId);
-        } else {
-          slackService.sendBlocksMessage(user, notThatMessage);
-        }
-        break;
-      case "theEnd":
-
-        if (machine.getState().getId() == GOT_THE_FIRST_TASK) {
-          machine.sendEvent(GET_THE_FIRST_TASK);
-          slackService
-              .sendPrivateMessage(user, "that was the end, congrats");
-        } else {
-          slackService.sendBlocksMessage(user, notThatMessage);
-        }
-        break;
-      default:
-        slackService.sendBlocksMessage(user, noOneCase);
-
-    }
-  }
-
-  /**
-   *  Restore machine by Slack`s userId.
+   * Restore machine by Slack`s userId.
+   *
    * @param id Slack`s userId
    * @return StateMachine
    * @throws Exception Exception
@@ -136,6 +39,7 @@ public class StateMachineService {
 
   /**
    * Restore machine by GitHub Login.
+   *
    * @param nick GitHub login
    * @return StateMachine
    */
@@ -157,8 +61,9 @@ public class StateMachineService {
 
   /**
    * Persist machine for User by userId.
+   *
    * @param machine StateMachine
-   * @param id Slack`s userId
+   * @param id      Slack`s userId
    */
   public void persistMachine(StateMachine<State, Event> machine, String id) {
     try {
@@ -170,6 +75,7 @@ public class StateMachineService {
 
   /**
    * Persist machine for new User by userId.
+   *
    * @param id Slack`s userId
    * @throws Exception Exception
    */
@@ -180,5 +86,36 @@ public class StateMachineService {
     machine.getExtendedState().getVariables().put("mentor", "NO_MENTOR");
     machine.start();
     persister.persist(machine, id);
+  }
+
+  /**
+   * Method to start the action.
+   *
+   * @param payload - payload that stores data to execute Actions
+   * @param event   - event for StateMachine
+   */
+  public void doAction(StateMachine<State, Event> machine, Payload payload, Event event) {
+    machine.getExtendedState().getVariables().put("dataPayload", payload);
+    machine.sendEvent(event);
+    persistMachine(machine, payload.getId());
+  }
+
+  /**
+   * Method to start the event by state.
+   *
+   * @param userId - id users
+   * @param state  - state id
+   * @param event  - event for state machine
+   * @return - true if state id equals machine.stateId
+   */
+  public boolean doAction(String userId, State state, Event event) throws Exception {
+    StateMachine<State, Event> machine = restoreMachine(userId);
+    if (machine.getState().getId().equals(state)) {
+      machine.sendEvent(event);
+      persister.persist(machine, userId);
+      return true;
+    } else {
+      return false;
+    }
   }
 }
