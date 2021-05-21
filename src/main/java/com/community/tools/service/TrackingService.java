@@ -26,6 +26,9 @@ public class TrackingService {
 
   private final StateMachineRepository stateMachineRepository;
 
+  @Autowired
+  private MessagesToPlatform messagesToPlatform;
+
   /**
    * Method to start the event by state.
    *
@@ -110,7 +113,6 @@ public class TrackingService {
         Messages.WELCOME);
     messageService
         .sendBlocksMessage(user, messageService
-            .createBlockMessage(MessagesToSlack.MESSAGE_ABOUT_RULES,
-                MessagesToDiscord.MESSAGE_ABOUT_RULES));
+            .createBlockMessage(messagesToPlatform.MESSAGE_ABOUT_RULES));
   }
 }

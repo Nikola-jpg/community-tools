@@ -8,6 +8,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
+import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.github.GitHubService;
@@ -51,6 +52,9 @@ public class GitSlackUsersController {
 
   @Autowired
   private MessageService messageService;
+
+  @Autowired
+  private MessagesToPlatform messagesToPlatform;
 
   /**
    * Endpoint /git. Method GET.
@@ -109,7 +113,7 @@ public class GitSlackUsersController {
         if (!stateMachineService.doAction(userId, NEW_USER, QUESTION_FIRST)) {
           messageService.sendBlocksMessage(user,
               messageService.createBlockMessage(notThatMessage,
-                  MessagesToDiscord.NOT_THAT_MESSAGE));
+                  messagesToPlatform.NOT_THAT_MESSAGE));
         }
         break;
       case "theEnd":
@@ -119,12 +123,12 @@ public class GitSlackUsersController {
         } else {
           messageService.sendBlocksMessage(user,
               messageService.createBlockMessage(notThatMessage,
-                  MessagesToDiscord.NOT_THAT_MESSAGE));
+                  messagesToPlatform.NOT_THAT_MESSAGE));
         }
         break;
       default:
         messageService.sendBlocksMessage(user, messageService.createBlockMessage(noOneCase,
-            MessagesToDiscord.NO_ONE_CASE));
+            messagesToPlatform.NO_ONE_CASE));
     }
   }
 }

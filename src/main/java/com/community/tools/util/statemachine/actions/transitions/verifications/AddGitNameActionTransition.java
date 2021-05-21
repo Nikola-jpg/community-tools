@@ -7,6 +7,7 @@ import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
 import com.community.tools.model.User;
 import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
+import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
@@ -48,6 +49,9 @@ public class AddGitNameActionTransition implements Transition {
   @Autowired
   private MessageService messageService;
 
+  @Autowired
+  private MessagesToPlatform messagesToPlatform;
+
   @Override
   public void configure(
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
@@ -82,13 +86,13 @@ public class AddGitNameActionTransition implements Transition {
     } catch (IOException e) {
       messageService.sendBlocksMessage(messageService.getUserById(user),
           messageService.createBlockMessage(errorWithAddingGitName,
-              MessagesToDiscord.ERROR_WITH_ADDING_GIT_NAME));
+              messagesToPlatform.ERROR_WITH_ADDING_GIT_NAME));
     }
     messageService.sendMessageToConversation(channel,
         generalInformationAboutUserToChannel(user, userGitLogin)
             + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
     messageService.sendBlocksMessage(messageService.getUserById(user),
-        messageService.createBlockMessage(getFirstTask, MessagesToDiscord.GET_FIRST_TASK));
+        messageService.createBlockMessage(getFirstTask, messagesToPlatform.GET_FIRST_TASK));
     stateContext.getExtendedState().getVariables().put("gitNick", nickname);
   }
 

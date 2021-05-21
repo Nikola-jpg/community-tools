@@ -6,6 +6,7 @@ import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
 
 import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
+import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.payload.SinglePayload;
 import com.community.tools.service.slack.MessagesToSlack;
@@ -32,6 +33,9 @@ public class GetTheFirstTaskActionTransition implements Transition {
   @Autowired
   private Action<State, Event> errorAction;
 
+  @Autowired
+  private MessagesToPlatform messagesToPlatform;
+
   @Override
   public void configure(
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
@@ -49,7 +53,6 @@ public class GetTheFirstTaskActionTransition implements Transition {
         .get("dataPayload");
     String user = payload.getId();
     messageService.sendBlocksMessage(messageService.getUserById(user),
-        messageService.createBlockMessage(
-            MessagesToSlack.GET_FIRST_TASK, MessagesToDiscord.GET_FIRST_TASK));
+        messageService.createBlockMessage(messagesToPlatform.GET_FIRST_TASK));
   }
 }

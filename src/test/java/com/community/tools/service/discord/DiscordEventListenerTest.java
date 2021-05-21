@@ -4,6 +4,7 @@ import com.community.tools.model.Messages;
 
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
+import com.community.tools.service.TrackingService;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.service.payload.SinglePayload;
@@ -14,19 +15,25 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("discord")
 class DiscordEventListenerTest {
 
   @Autowired
   private StateMachineService stateMachineService;
+
+  @Autowired
+  private TrackingService trackingService;
 
   @Autowired
   private MessageService messageService;
@@ -43,7 +50,7 @@ class DiscordEventListenerTest {
   @DisplayName("Should on private message received")
   void shouldOnPrivateMessageReceived() throws Exception {
     String id = "830117510543441930";
-    stateMachineService.resetUser("830117510543441930");
+    trackingService.resetUser("830117510543441930");
     StateMachine<State, Event> machine = stateMachineService
         .restoreMachine(id);
 
