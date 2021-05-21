@@ -3,7 +3,7 @@ package com.community.tools.service.github;
 import com.community.tools.model.GitHubComment;
 import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;

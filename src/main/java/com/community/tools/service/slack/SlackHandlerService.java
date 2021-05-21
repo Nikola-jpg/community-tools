@@ -1,6 +1,6 @@
 package com.community.tools.service.slack;
 
-import static com.community.tools.util.statemachine.Event.SEND_ESTIMATE_TASK;
+import static com.community.tools.util.statemachie.Event.SEND_ESTIMATE_TASK;
 
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
@@ -10,9 +10,9 @@ import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.service.payload.SinglePayload;
 import com.community.tools.service.payload.VerificationPayload;
-import com.community.tools.util.statemachine.Event;
-import com.community.tools.util.statemachine.State;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import com.community.tools.util.statemachie.Event;
+import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import com.github.seratch.jslack.api.model.event.MessageEvent;
 import com.github.seratch.jslack.app_backend.events.EventsDispatcher;

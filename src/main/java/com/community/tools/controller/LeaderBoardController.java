@@ -4,7 +4,7 @@ import static com.community.tools.util.GetServerAddress.getAddress;
 
 import com.community.tools.model.User;
 import com.community.tools.service.LeaderBoardService;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.io.IOException;
 import java.util.Comparator;

@@ -2,9 +2,9 @@ package com.community.tools.service;
 
 import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
-import com.community.tools.util.statemachine.Event;
-import com.community.tools.util.statemachine.State;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import com.community.tools.util.statemachie.Event;
+import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.util.Map;
 
