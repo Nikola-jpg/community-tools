@@ -1,5 +1,6 @@
 package com.community.tools.util.statemachie.actions.guard;
 
+import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
@@ -24,7 +25,7 @@ public class HideGuard implements Guard<State, Event> {
   @Value("${addGitName}")
   private String addGitName;
   @Autowired
-  private SlackService slackService;
+  private MessageService messageService;
   @Autowired
   private GitHubService gitHubService;
 
@@ -33,13 +34,13 @@ public class HideGuard implements Guard<State, Event> {
   public boolean evaluate(StateContext<State, Event> stateContext) {
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
     String nickName = stateContext.getExtendedState().getVariables().get("gitNick").toString();
-    slackService.sendPrivateMessage(slackService.getUserById(user),
+    messageService.sendPrivateMessage(messageService.getUserById(user),
           checkNickName + nickName);
     boolean nicknameMatch = false;
     try {
       nicknameMatch = gitHubService.getUserByLoginInGitHub(nickName).getLogin().equals(nickName);
     } catch (IOException e) {
-      slackService.sendPrivateMessage(slackService.getUserById(user), failedNickName);
+      messageService.sendPrivateMessage(messageService.getUserById(user), failedNickName);
     }
     return nicknameMatch;
   }
