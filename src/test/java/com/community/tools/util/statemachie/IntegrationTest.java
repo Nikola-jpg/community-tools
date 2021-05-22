@@ -207,11 +207,11 @@ class IntegrationTest {
     machine.getStateMachineAccessor().doWithAllRegions(access -> access
         .resetStateMachine(new DefaultStateMachineContext<>(THIRD_QUESTION,
             null, null, null)));
-    Payload payload = new QuestionPayload(USER_ID, "Third", userForQuestion);
-
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
-    when(messageService.sendBlocksMessage(USER_NAME, messageAboutSeveralInfoChannel)).thenReturn("");
+    when(messageService.sendBlocksMessage(USER_NAME,
+        messageAboutSeveralInfoChannel)).thenReturn("");
     when(messageService.sendBlocksMessage(USER_NAME, addGitName)).thenReturn("");
+    Payload payload = new QuestionPayload(USER_ID, "Third", userForQuestion);
 
     stateMachineService.doAction(machine, payload, Event.CONSENT_TO_INFORMATION);
 
@@ -251,8 +251,6 @@ class IntegrationTest {
     machine.getStateMachineAccessor().doWithAllRegions(access -> access
         .resetStateMachine(new DefaultStateMachineContext<>(CHECK_LOGIN,
             null, null, null)));
-    VerificationPayload payload = new VerificationPayload(USER_ID, USER_NAME);
-
     Set<GHTeam> mockSet = new HashSet<>();
     mockSet.add(team);
     when(gitHubService.getUserByLoginInGitHub(USER_NAME)).thenReturn(user);
@@ -262,6 +260,7 @@ class IntegrationTest {
     doNothing().when(team).add(user);
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
     when(messageService.sendMessageToConversation(channel, "")).thenReturn("");
+    VerificationPayload payload = new VerificationPayload(USER_ID, USER_NAME);
 
     stateMachineService.doAction(machine, payload, Event.ADD_GIT_NAME_AND_FIRST_TASK);
 
