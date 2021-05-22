@@ -23,8 +23,9 @@ public class User {
   private String secondAnswerAboutRules;
   private String thirdAnswerAboutRules;
 
-  @Transient
-  private String slackLogin;
+  private String platformName;
+
+  private Integer completedTasks;
 
   @OneToMany(mappedBy = "user")
   private List<TaskStatus> taskStatuses;
@@ -35,5 +36,9 @@ public class User {
    */
   public Integer getTotalPoints() {
     return this.karma + this.pointByTask;
+  }
+
+  public void addCompletedTask() {
+    completedTasks++;
   }
 }

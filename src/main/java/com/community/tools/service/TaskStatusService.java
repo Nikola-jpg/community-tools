@@ -35,6 +35,13 @@ public class TaskStatusService {
   @Autowired
   private StateMachineRepository stateMachineRepository;
 
+  /**
+   * Sorted by fields.
+   * @param pageNumber page number
+   * @param sortByField field for sort
+   * @param sortDirection sort dir
+   * @return sorting page
+   */
   public Page<User> findAll(int pageNumber, String sortByField, String sortDirection) {
     Sort sort = Sort.by(sortByField);
     sort = sortDirection.equals("asc") ? sort.ascending() : sort.descending();
@@ -49,7 +56,7 @@ public class TaskStatusService {
    * @param taskStatus task status
    * @return new task status
    */
-  public TaskStatus create(User user, String taskName, String taskStatus) {
+  public TaskStatus createTaskStatus(User user, String taskName, String taskStatus) {
     TaskStatus newTaskStatus = new TaskStatus();
     newTaskStatus.setCreated(new Date());
     newTaskStatus.setUser(user);
@@ -65,7 +72,7 @@ public class TaskStatusService {
    * @param newStatus new status
    * @return updated task status
    */
-  public TaskStatus update(TaskStatus taskStatus, String newStatus) {
+  public TaskStatus updateTaskStatus(TaskStatus taskStatus, String newStatus) {
     taskStatus.setUpdated(new Date());
     taskStatus.setTaskStatus(newStatus);
     taskStatusRepository.save(taskStatus);
@@ -76,7 +83,7 @@ public class TaskStatusService {
    * Save into data base users task status.
    * @param ghPullRequests github pull requests
    */
-  public void downloadTasksStatus(List<GHPullRequest> ghPullRequests) {
+  public void cleanBootTasksStatus(List<GHPullRequest> ghPullRequests) {
     ghPullRequests.forEach(ghPullRequest -> {
       String gitName;
       try {
@@ -93,13 +100,22 @@ public class TaskStatusService {
                 .findTaskStatusByUserAndTaskName(user, task).orElse(null);
             String status = pullRequestsService.getLastLabel(ghPullRequest);
             if (!(taskStatus == null)) {
-              update(taskStatus, status);
+              updateTaskStatus(taskStatus, status);
             } else {
-              create(user, task, status);
+              createTaskStatus(user, task, status);
             }
           }
         });
       }
+    });
+    stateMachineRepository.findAll().forEach(user -> {
+      user.setCompletedTasks(0);
+      user.getTaskStatuses().forEach(task -> {
+        if (task.getTaskStatus().equals("done")) {
+          user.addCompletedTask();
+        }
+      });
+      stateMachineRepository.save(user);
     });
   }
 
@@ -130,9 +146,13 @@ public class TaskStatusService {
           TaskStatus taskStatus = taskStatusRepository
               .findTaskStatusByUserAndTaskName(user, task).orElse(null);
           if (!(taskStatus == null)) {
-            update(taskStatus, status);
+            updateTaskStatus(taskStatus, status);
           } else {
-            create(user, task, status);
+            createTaskStatus(user, task, status);
+          }
+          if (status.equals("done")) {
+            user.addCompletedTask();
+            stateMachineRepository.save(user);
           }
         }
       });

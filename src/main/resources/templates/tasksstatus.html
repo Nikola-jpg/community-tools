@@ -65,7 +65,7 @@
                     <a th:href="@{/tasksstatus/(sortByField = ${'gitName'}, sortDirection = ${reverseSortDirection})}">GitName</a>
                 </th>
                 <th class="tdposition">
-                    <a th:href="@{/tasksstatus/(sortByField = ${'completedTask'}, sortDirection = ${reverseSortDirection})}">Completed tasks</a>
+                    <a th:href="@{/tasksstatus/(sortByField = ${'completedTasks'}, sortDirection = ${reverseSortDirection})}">Completed tasks</a>
                 </th>
                 <th class="tdposition"
                     th:each="task : ${tasksForUsers}"

@@ -13,7 +13,7 @@ public class UserTasksStatusDto {
 
   private String loginGithub;
 
-  private int completedTasks;
+  private Integer completedTasks;
 
   private Map<String, String> taskStatusMap;
 
@@ -25,8 +25,9 @@ public class UserTasksStatusDto {
    */
   public static UserTasksStatusDto fromUser(User user, String[] tasksForUsers) {
     UserTasksStatusDto userTasksStatusDto = new UserTasksStatusDto();
-    userTasksStatusDto.setLoginPlatform(user.getSlackLogin());
+    userTasksStatusDto.setLoginPlatform(user.getPlatformName());
     userTasksStatusDto.setLoginGithub(user.getGitName());
+    userTasksStatusDto.setCompletedTasks(user.getCompletedTasks());
     userTasksStatusDto.setTaskStatusMap(new HashMap<>());
 
     Arrays.stream(tasksForUsers).forEach(task -> {
@@ -55,19 +56,10 @@ public class UserTasksStatusDto {
             }
           }
           userTasksStatusDto.getTaskStatusMap().put(task, viewTaskStatus);
-          if (viewTaskStatus.equals("done")) {
-            userTasksStatusDto.addCompletedTask();
-          }
         }
 
       });
     });
     return userTasksStatusDto;
   }
-
-  public void addCompletedTask() {
-    completedTasks++;
-  }
-
-
 }
