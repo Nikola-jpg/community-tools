@@ -50,12 +50,13 @@ public class TasksStatusController {
   @RequestMapping(value = "", method = RequestMethod.GET)
   public String getTaskStatus(Model model,
       @RequestParam(name = "sortByField", required = false, defaultValue = "gitName")
-          String sortByField) {
+          String sortByField,
+      @RequestParam(name = "sortDirection", required = false, defaultValue = "asc")
+          String sortDirection) {
 
     List<UserTasksStatusDto> userTasksStatusDtoList = new ArrayList<>();
-    Page<User> page = stateMachineRepository.findAll(
-        PageRequest.of(0, 100, Sort.by(Sort.Direction.ASC, sortByField)));
-    //List<User> users = stateMachineRepository.findAll();
+
+    Page<User> page = taskStatusService.findAll(1, sortByField, sortDirection);
     List<User> users = page.getContent();
     users.forEach(user -> {
       userTasksStatusDtoList.add(UserTasksStatusDto.fromUser(user, tasksForUsers));
@@ -63,6 +64,9 @@ public class TasksStatusController {
 
     model.addAttribute("tasksForUsers", tasksForUsers);
     model.addAttribute("userTasksStatuses", userTasksStatusDtoList);
+    model.addAttribute("sortDirection", sortDirection);
+    String reverseSortDirection = sortDirection.equals("asc") ? "desc" : "asc";
+    model.addAttribute("reverseSortDirection", reverseSortDirection);
 
     return "tasksstatus";
   }

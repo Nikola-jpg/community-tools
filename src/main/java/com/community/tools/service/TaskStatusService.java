@@ -14,6 +14,10 @@ import org.json.JSONObject;
 import org.kohsuke.github.GHPullRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,6 +34,13 @@ public class TaskStatusService {
 
   @Autowired
   private StateMachineRepository stateMachineRepository;
+
+  public Page<User> findAll(int pageNumber, String sortByField, String sortDirection) {
+    Sort sort = Sort.by(sortByField);
+    sort = sortDirection.equals("asc") ? sort.ascending() : sort.descending();
+    Pageable pageable = PageRequest.of(pageNumber - 1, 100, sort);
+    return stateMachineRepository.findAll(pageable);
+  }
 
   /**
    * Create new task status.
