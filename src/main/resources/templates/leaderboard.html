@@ -24,7 +24,7 @@
             <thead>
             <tr>
                 <th>#</th>
-                <th>SlackName</th>
+                <th>SlackName/DiscordName</th>
                 <th>GitName</th>
                 <th>Points for tasks</th>
                 <th>Karma</th>
@@ -35,7 +35,7 @@
             <tr th:each="entity, rowStat: ${entities}"
                 th:style="${rowStat.odd} ? 'background-color: #F0F8FF;' : 'background-color: #FFFFFF;'">
                 <td th:text="${rowStat.count}"></td>
-                <td th:text="${entity.getPlatformName}"></td>
+                <td th:text="${entity.platformName}"></td>
                 <td th:text="${entity.gitName}"></td>
                 <td th:text="${entity.pointByTask}"></td>
                 <td th:text="${entity.karma}"></td>

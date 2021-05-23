@@ -1,18 +1,23 @@
 package com.community.tools.controller;
 
+import static com.community.tools.util.GetServerAddress.getAddress;
+
 import com.community.tools.dto.UserTasksStatusDto;
 import com.community.tools.model.User;
 import com.community.tools.service.PullRequestsService;
 import com.community.tools.service.TaskStatusService;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.kohsuke.github.GHPullRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -87,6 +92,21 @@ public class TasksStatusController {
     JSONObject json = new JSONObject(body);
     taskStatusService.updateTasksStatus(json);
     response.getStatus();
+  }
+
+  /**
+   * This method return image with table, which contains first 5 trainees of leaderboard.
+   * @param response HttpServletResponse
+   * @throws EntityNotFoundException EntityNotFoundException
+   * @throws IOException IOException
+   */
+  @RequestMapping(value = "/img/{date}", method = RequestMethod.GET)
+  public void getImage(HttpServletResponse response) throws EntityNotFoundException, IOException {
+    String url = getAddress();
+    byte[] data = taskStatusService.createImage(url);
+    response.setContentType(MediaType.IMAGE_PNG_VALUE);
+    response.getOutputStream().write(data);
+    response.setContentLength(data.length);
   }
 
 }

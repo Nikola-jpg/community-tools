@@ -65,7 +65,7 @@ public class LeaderBoardService {
    */
   public String getLeaderboardTemplate() {
     final Context ctx = new Context();
-    List<User> list = addSlackNameToUser();
+    List<User> list = stateMachineRepository.findAll();
     list.sort(Comparator.comparing(User::getTotalPoints).reversed());
     List<User> listFirst = list.stream().limit(5).collect(Collectors.toList());
     ctx.setVariable("entities", listFirst);
@@ -89,5 +89,4 @@ public class LeaderBoardService {
     }
     return list;
   }
-
 }
