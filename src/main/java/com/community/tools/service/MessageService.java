@@ -1,6 +1,10 @@
 package com.community.tools.service;
 
-public interface MessageService extends UserService {
+import com.community.tools.model.EventData;
+import java.util.List;
+import net.dv8tion.jda.api.EmbedBuilder;
+
+public interface MessageService<T> extends UserService {
 
   void sendPrivateMessage(String username, String messageText);
 
@@ -11,6 +15,12 @@ public interface MessageService extends UserService {
   void sendMessageToConversation(String channelName, String messageText);
 
   <T> void sendBlockMessageToConversation(String channelName, T message);
+
+  T nextTaskMessage(List<String> tasksList, int numberTask);
+
+  T ratingMessage(String url, String img);
+
+  T statisticMessage(List<EventData> events);
 
   String getIdByChannelName(String channelName);
 

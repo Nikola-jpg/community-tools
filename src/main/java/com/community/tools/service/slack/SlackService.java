@@ -1,6 +1,9 @@
 package com.community.tools.service.slack;
 
+import com.community.tools.model.Event;
+import com.community.tools.model.EventData;
 import com.community.tools.service.MessageService;
+import com.community.tools.service.PublishWeekStatsService;
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
@@ -10,10 +13,19 @@ import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.webhook.Payload;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import net.dv8tion.jda.api.EmbedBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -21,7 +33,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Profile("slack")
-public class SlackService implements MessageService {
+public class SlackService implements MessageService<String> {
 
   @Value("${slack.token}")
   private String token;
@@ -129,6 +141,68 @@ public class SlackService implements MessageService {
     } catch (IOException | SlackApiException exception) {
       throw new RuntimeException(exception);
     }
+  }
+
+  @Override
+  public String nextTaskMessage(List<String> tasksList, int numberTask) {
+    return MessagesToSlack.NEXT_TASK + tasksList.get(numberTask) + "|TASK>.\"}}]";
+  }
+
+  @Override
+  public String ratingMessage(String url, String img) {
+    return String.format(MessagesToSlack.LINK_PUBLISH_WEEK_STATS, url, img);
+  }
+
+  @Override
+  public String statisticMessage(List<EventData> events) {
+
+    StringBuilder messageBuilder = new StringBuilder();
+
+    Map<String, List<EventData>> sortedMapGroupByActors = new HashMap<>();
+    events.stream().filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
+        .forEach(ed -> sortedMapGroupByActors.put(ed.getActorLogin(), new ArrayList<>()));
+
+    messageBuilder.append("[{\"type\": \"header\",\t\"text\": {\"type\":"
+        + " \"plain_text\",\"text\": \"Statistic:\"}},"
+        + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"");
+    events.stream()
+        .collect(Collectors.groupingBy(EventData::getType))
+        .entrySet().stream()
+        .sorted(Comparator
+            .comparingInt((Entry<Event, List<EventData>> entry)
+                -> entry.getValue().size()).reversed())
+        .forEach(entry -> {
+          entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
+          messageBuilder.append("\n");
+          messageBuilder.append(PublishWeekStatsService.getTypeTitleBold(entry.getKey()))
+              .append(PublishWeekStatsService.emojiGen(entry.getKey()));
+          messageBuilder.append(": ");
+          messageBuilder.append(entry.getValue().size());
+
+        });
+    messageBuilder.append("\"\t}]},{\"type\": \"header\",\"text\": "
+        + "{\"type\": \"plain_text\",\"text\": \"Activity:\"}}");
+    sortedMapGroupByActors.entrySet().stream()
+        .sorted(Comparator
+            .comparingInt((Entry<String, List<EventData>> entry)
+                -> entry.getValue().size()).reversed())
+        .forEach(name -> {
+          StringBuilder authorsActivMessage = new StringBuilder();
+          name.getValue()
+              .forEach(eventData -> {
+                authorsActivMessage.append(PublishWeekStatsService.emojiGen(eventData.getType()));
+              });
+          messageBuilder.append(",{\"type\": \"context\",\n"
+              + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*");
+
+          messageBuilder.append(name.getKey());
+          messageBuilder.append("*: ");
+          messageBuilder.append(authorsActivMessage);
+          messageBuilder.append("\"}]}");
+        });
+    messageBuilder.append("]");
+
+    return messageBuilder.toString();
   }
 
   /**

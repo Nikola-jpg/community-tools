@@ -4,16 +4,12 @@ import static com.community.tools.util.statemachine.Event.GET_THE_NEW_TASK;
 import static com.community.tools.util.statemachine.State.CHECK_FOR_NEW_TASK;
 import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
 
-import com.community.tools.model.Messages;
-import com.community.tools.service.BlockService;
 import com.community.tools.service.MessageService;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import net.dv8tion.jda.api.EmbedBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
@@ -33,9 +29,6 @@ public class CheckForNewTaskActionTransition implements Transition {
   @Autowired
   private Action<State, Event> errorAction;
 
-  @Autowired
-  private BlockService blockService;
-
   @Override
   public void configure(
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
@@ -54,6 +47,6 @@ public class CheckForNewTaskActionTransition implements Transition {
     int i = (Integer) stateContext.getExtendedState().getVariables().get("taskNumber");
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
     messageService.sendBlocksMessage(messageService.getUserById(user),
-        blockService.nextTaskMessage(tasksList, i));
+        messageService.nextTaskMessage(tasksList, i));
   }
 }
