@@ -3,6 +3,7 @@ package com.community.tools.service.github;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
+import com.community.tools.service.TaskStatusService;
 import com.community.tools.service.slack.SlackService;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
@@ -37,6 +38,8 @@ public class GitHubHookService {
   private KarmaService karmaService;
   @Autowired
   private PointsTaskService pointsTaskService;
+  @Autowired
+  private TaskStatusService taskStatusService;
 
   /**
    * Methid receive data from Github and check it.
@@ -49,6 +52,7 @@ public class GitHubHookService {
     addMentorIfEventIsReview(json);
     addPointIfPullLabeledDone(json);
     checkReactionToChangeKarma(json);
+    taskStatusService.updateTasksStatus(json);
   }
 
 

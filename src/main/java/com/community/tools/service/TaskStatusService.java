@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 import javax.swing.JEditorPane;
 import lombok.SneakyThrows;
 import org.apache.commons.text.similarity.LevenshteinDistance;
@@ -31,6 +32,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -220,9 +223,22 @@ public class TaskStatusService {
         .limit(5).collect(Collectors.toList());
     ctx.setVariable("tasksForUsers", tasksForUsers);
     ctx.setVariable("userTasksStatuses", listFirst);
+    ctx.setVariable("baseUrl", getCurrentBaseUrl());
 
     final String htmlContent = this.templateEngine.process("tasksstatus.html", ctx);
     return  htmlContent;
+  }
+
+  /**
+   * Get current base url.
+   * @return base url
+   */
+  public String getCurrentBaseUrl() {
+    ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder
+        .getRequestAttributes();
+    HttpServletRequest req = sra.getRequest();
+    return req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort()
+        + req.getContextPath();
   }
 
 }

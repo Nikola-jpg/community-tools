@@ -62,11 +62,13 @@ public class TasksStatusController {
       userTasksStatusDtoList.add(UserTasksStatusDto.fromUser(user, tasksForUsers));
     });
 
+    String baseUrl = taskStatusService.getCurrentBaseUrl();
     model.addAttribute("tasksForUsers", tasksForUsers);
     model.addAttribute("userTasksStatuses", userTasksStatusDtoList);
     model.addAttribute("sortDirection", sortDirection);
     String reverseSortDirection = sortDirection.equals("asc") ? "desc" : "asc";
     model.addAttribute("reverseSortDirection", reverseSortDirection);
+    model.addAttribute("baseUrl", baseUrl);
 
     return "tasksstatus";
   }

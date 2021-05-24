@@ -124,6 +124,24 @@ public class PublishWeekStatsService {
     messageService.sendBlockMessageToConversation(channel, message);
   }
 
+  /**
+   * Publish message with link to trainee`s tasks status and image (first 5 record of rating).
+   */
+  @Scheduled(cron = "0 20 0 * * ?")
+  public void publishTasksStatus() {
+    String url = urlServer + "tasksstatus";
+    String date = LocalDate.now().toString();
+    String img = url + "img/" + date;
+    String message = String.format("[{\"type\": \"section\", \"text\": "
+        + "{\"type\": \"mrkdwn\",\"text\": \"Прогресс выполнения задач доступен по ссылке: \"},"
+        + "\"accessory\": {\"type\": \"button\",\t\"text\": "
+        + "{\"type\": \"plain_text\",\"text\": \":loudspeaker:\",\"emoji\": true},"
+        + "\"value\": \"click_me_123\", \"url\": \"%s"
+        + "\", \"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"%s"
+        + "\",\"alt_text\": \"inspiration\"}]", url, img);
+    messageService.sendBlockMessageToConversation(channel, message);
+  }
+
   private String emojiGen(Event type) {
     switch (type) {
       case COMMENT:
