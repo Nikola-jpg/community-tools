@@ -22,12 +22,6 @@ public class StateMachineService {
   private StateMachineFactory<State, Event> factory;
   @Autowired
   private StateMachinePersister<State, Event, String> persister;
-  @Autowired
-  GiveNewTaskService giveNewTaskService;
-  @Autowired
-  EstimateTaskService estimateTaskService;
-  @Autowired
-  MessageService messageService;
 
   /**
    * Restore machine by Slack`s userId.
@@ -63,10 +57,6 @@ public class StateMachineService {
 
   public String getIdByNick(String nick) {
     return stateMachineRepository.findByGitName(nick).get().getUserID();
-  }
-
-  public String getUserByNick(String nick) {
-    return messageService.getUserById(getIdByNick(nick));
   }
 
   /**
@@ -127,19 +117,5 @@ public class StateMachineService {
     } else {
       return false;
     }
-  }
-
-  /**
-   * Method for save ask estimate and get new task.
-   *
-   * @param userId - id users
-   */
-  public void estimate(String userId) throws Exception {
-    StateMachine<State, Event> machine = restoreMachine(userId);
-    Integer taskNumber = (Integer) machine.getExtendedState().getVariables().get("taskNumber");
-    Integer value = (Integer) machine.getExtendedState().getVariables().get("value");
-
-    estimateTaskService.saveEstimateTask(userId, taskNumber, value);
-    giveNewTaskService.giveNewTask(userId, taskNumber);
   }
 }

@@ -3,6 +3,7 @@ package com.community.tools.service.slack;
 import static com.community.tools.util.statemachie.Event.SEND_ESTIMATE_TASK;
 
 import com.community.tools.model.User;
+import com.community.tools.service.EstimateTaskService;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.payload.EstimatePayload;
@@ -58,6 +59,8 @@ public class SlackHandlerService {
   private final StateMachineService stateMachineService;
   @Autowired
   private StateMachineRepository stateMachineRepository;
+  @Autowired
+  private EstimateTaskService estimateTaskService;
 
   private TeamJoinHandler teamJoinHandler = new TeamJoinHandler() {
     @Override
@@ -170,7 +173,7 @@ public class SlackHandlerService {
                 break;
               case GOT_THE_TASK:
                 if (messageEvent.getText().equals("yes")) {
-                  stateMachineService.estimate(id);
+                  estimateTaskService.estimate(id);
                   return;
                 } else if (messageEvent.getText().equals("no")) {
                   event = SEND_ESTIMATE_TASK;

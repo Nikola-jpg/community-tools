@@ -161,8 +161,9 @@ public class GitHubHookService {
     if (json.get("action").toString().equals(opened)) {
       String userNick = json.getJSONObject("sender").getString("login");
 
+      String id = stateMachineService.getIdByNick(userNick);
       messageService
-          .sendBlocksMessage(stateMachineService.getUserByNick(userNick), estimateTheTask);
+          .sendBlocksMessage(messageService.getUserById(id), estimateTheTask);
     }
   }
 }

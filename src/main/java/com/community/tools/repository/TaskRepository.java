@@ -8,8 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Integer> {
 
-  @Override
-  <S extends Task> S save(S s);
-
   Task findByUserIdAndTaskNumber(String userId, Integer taskNumber);
 }
