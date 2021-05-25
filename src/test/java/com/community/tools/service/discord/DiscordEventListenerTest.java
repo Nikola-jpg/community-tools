@@ -17,11 +17,12 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -29,11 +30,12 @@ import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 
-@ExtendWith(SpringExtension.class)
+@RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("discord")
-class DiscordEventListenerTest {
+public class DiscordEventListenerTest {
 
   @MockBean
   private StateMachineService stateMachineService;
@@ -60,10 +62,10 @@ class DiscordEventListenerTest {
   @AfterEach
   void tearDown() {
   }
-  /*
+
   @Test
   @DisplayName("Should on private message received")
-  void shouldOnPrivateMessageReceived() throws Exception {
+  public void shouldOnPrivateMessageReceived() throws Exception {
     String id = "830117510543441930";
     String gitNick = "GrPerets";
     trackingService.resetUser(id);
@@ -136,5 +138,5 @@ class DiscordEventListenerTest {
     }
     verify(stateMachineService, times(7))
         .doAction(machine, payload, stateMachineEvent);
-  }*/
+  }
 }
