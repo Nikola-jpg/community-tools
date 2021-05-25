@@ -4,6 +4,8 @@ import com.community.tools.model.Event;
 import com.community.tools.model.EventData;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.PublishWeekStatsService;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -100,8 +102,20 @@ public class DiscordService implements MessageService<MessageEmbed> {
    */
   @Override
   public <T> void sendBlockMessageToConversation(String channelName, T message) {
-    jda.getTextChannelById(getIdByChannelName(channelName))
-        .sendMessage((MessageEmbed) message).queue();
+    MessageEmbed messageEmbed = (MessageEmbed) message;
+
+    if (!(messageEmbed.getImage() == null)) {
+      try {
+        InputStream file = new URL(messageEmbed.getImage().getUrl()).openStream();
+        jda.getTextChannelById(getIdByChannelName(channelName))
+            .sendMessage(messageEmbed).addFile(file, "image.png").queue();
+      } catch (Exception exception) {
+        throw new RuntimeException(exception);
+      }
+    } else {
+      jda.getTextChannelById(getIdByChannelName(channelName))
+          .sendMessage(messageEmbed).queue();
+    }
   }
 
   @Override
@@ -114,9 +128,9 @@ public class DiscordService implements MessageService<MessageEmbed> {
   @Override
   public MessageEmbed ratingMessage(String url, String img) {
     return  new EmbedBuilder()
-        .addField("","Рейтинг этой недели доступен по ссылке: ", false)
-        .addField("","[:loudspeaker: click_me_123](" + url + ")", false)
-        .addField("","[Image](" + img + ")", true)
+        .setTitle(":point_right: Рейтинг этой недели :point_left:", url)
+        .setImage(img)
+
         .build();
   }
 
@@ -222,7 +236,6 @@ public class DiscordService implements MessageService<MessageEmbed> {
     User user = jda.getUsers().stream().filter(u -> u.getName().equals(username)).findFirst().get();
     return user.getId();
   }
-
 
   /**
    * Get all Discord`s user.

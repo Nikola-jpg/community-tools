@@ -21,8 +21,9 @@ public class User {
   private String secondAnswerAboutRules;
   private String thirdAnswerAboutRules;
 
-  @Transient
-  private String slackLogin;
+  private String platformName;
+
+  private Integer completedTasks;
 
   /**
    * This method summ karma and pointsBy task. If fields null, return 0.

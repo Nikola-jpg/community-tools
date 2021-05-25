@@ -101,15 +101,18 @@ public class TrackingService {
    */
   public void resetUser(String userId) throws Exception {
 
+    String userName = messageService.getUserById(userId);
     User stateEntity = new User();
     stateEntity.setUserID(userId);
+    stateEntity.setPlatformName(userName);
+
     stateMachineRepository.save(stateEntity);
     stateMachineService.persistMachineForNewUser(userId);
 
-    String user = messageService.getUserById(userId);
-    messageService.sendPrivateMessage(user,
+
+    messageService.sendPrivateMessage(userName,
         Messages.WELCOME);
     messageService
-        .sendBlocksMessage(user, messagesToPlatform.messageAboutRules);
+        .sendBlocksMessage(userName, messagesToPlatform.messageAboutRules);
   }
 }

@@ -17,8 +17,6 @@ import javax.swing.JEditorPane;
 
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -67,7 +65,7 @@ public class LeaderBoardService {
    */
   public String getLeaderboardTemplate() {
     final Context ctx = new Context();
-    List<User> list = addSlackNameToUser();
+    List<User> list = stateMachineRepository.findAll();
     list.sort(Comparator.comparing(User::getTotalPoints).reversed());
     List<User> listFirst = list.stream().limit(5).collect(Collectors.toList());
     ctx.setVariable("entities", listFirst);
@@ -87,7 +85,7 @@ public class LeaderBoardService {
             .collect(Collectors.toMap(user -> user.getId(), user -> user.getRealName()));
     for (User user: list) {
       String slackName = map.get(user.getUserID());
-      user.setSlackLogin(slackName);
+      user.setPlatformName(slackName);
     }
     return list;
   }
