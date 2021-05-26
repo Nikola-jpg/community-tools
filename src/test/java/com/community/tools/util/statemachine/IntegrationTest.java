@@ -1,14 +1,14 @@
-package com.community.tools.util.statemachie;
+package com.community.tools.util.statemachine;
 
-import static com.community.tools.util.statemachie.State.ADDED_GIT;
-import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
-import static com.community.tools.util.statemachie.State.CHECK_FOR_NEW_TASK;
-import static com.community.tools.util.statemachie.State.CHECK_LOGIN;
-import static com.community.tools.util.statemachie.State.FIRST_QUESTION;
-import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
-import static com.community.tools.util.statemachie.State.NEW_USER;
-import static com.community.tools.util.statemachie.State.SECOND_QUESTION;
-import static com.community.tools.util.statemachie.State.THIRD_QUESTION;
+import static com.community.tools.util.statemachine.State.ADDED_GIT;
+import static com.community.tools.util.statemachine.State.AGREED_LICENSE;
+import static com.community.tools.util.statemachine.State.CHECK_FOR_NEW_TASK;
+import static com.community.tools.util.statemachine.State.CHECK_LOGIN;
+import static com.community.tools.util.statemachine.State.FIRST_QUESTION;
+import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
+import static com.community.tools.util.statemachine.State.NEW_USER;
+import static com.community.tools.util.statemachine.State.SECOND_QUESTION;
+import static com.community.tools.util.statemachine.State.THIRD_QUESTION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -25,7 +25,7 @@ import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.service.payload.SinglePayload;
 import com.community.tools.service.payload.VerificationPayload;
-import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 
 import java.net.URL;
 import java.util.HashSet;
@@ -47,12 +47,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.support.DefaultStateMachineContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(locations = "/application-test.properties")
+@ActiveProfiles("slack")
 class IntegrationTest {
 
   private static final String USER_ID = "U01QY6GRZ0X";
@@ -150,7 +152,6 @@ class IntegrationTest {
     Payload payload = new SinglePayload(USER_ID);
 
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
-    when(messageService.sendBlocksMessage(USER_NAME, firstQuestion)).thenReturn("");
 
     stateMachineService.doAction(machine, payload, Event.QUESTION_FIRST);
 
@@ -170,7 +171,6 @@ class IntegrationTest {
     Payload payload = new QuestionPayload(USER_ID, "First", userForQuestion);
 
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
-    when(messageService.sendBlocksMessage(USER_NAME, secondQuestion)).thenReturn("");
 
     stateMachineService.doAction(machine, payload, Event.QUESTION_SECOND);
 
@@ -190,7 +190,6 @@ class IntegrationTest {
     Payload payload = new QuestionPayload(USER_ID, "Second", userForQuestion);
 
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
-    when(messageService.sendBlocksMessage(USER_NAME, thirdQuestion)).thenReturn("");
 
     stateMachineService.doAction(machine, payload, Event.QUESTION_THIRD);
 
@@ -208,9 +207,6 @@ class IntegrationTest {
         .resetStateMachine(new DefaultStateMachineContext<>(THIRD_QUESTION,
             null, null, null)));
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
-    when(messageService.sendBlocksMessage(USER_NAME,
-        messageAboutSeveralInfoChannel)).thenReturn("");
-    when(messageService.sendBlocksMessage(USER_NAME, addGitName)).thenReturn("");
     Payload payload = new QuestionPayload(USER_ID, "Third", userForQuestion);
 
     stateMachineService.doAction(machine, payload, Event.CONSENT_TO_INFORMATION);
@@ -234,7 +230,6 @@ class IntegrationTest {
     URL url = new URL("http://www.some.com/");
     when(user.getHtmlUrl()).thenReturn(url);
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
-    when(messageService.sendPrivateMessage(USER_NAME, askAboutProfile + "\n" + url)).thenReturn("");
 
     stateMachineService.doAction(machine, payload, Event.LOGIN_CONFIRMATION);
 
@@ -259,7 +254,6 @@ class IntegrationTest {
     when(team.getName()).thenReturn("trainees");
     doNothing().when(team).add(user);
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
-    when(messageService.sendMessageToConversation(channel, "")).thenReturn("");
     VerificationPayload payload = new VerificationPayload(USER_ID, USER_NAME);
 
     stateMachineService.doAction(machine, payload, Event.ADD_GIT_NAME_AND_FIRST_TASK);
@@ -286,7 +280,6 @@ class IntegrationTest {
     Payload payload = new SinglePayload(USER_ID);
 
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
-    when(messageService.sendBlocksMessage(USER_NAME, getFirstTask)).thenReturn("");
 
     stateMachineService.doAction(machine, payload, Event.GET_THE_FIRST_TASK);
 
@@ -306,7 +299,6 @@ class IntegrationTest {
     VerificationPayload payload = new VerificationPayload(USER_ID, USER_NAME);
 
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
-    when(messageService.sendPrivateMessage(USER_NAME, answeredNoDuringVerification)).thenReturn("");
 
     stateMachineService.doAction(machine, payload, Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN);
 
@@ -332,7 +324,6 @@ class IntegrationTest {
             + "<https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/"
             + "checkstyle" + "|TASK>.\"}}]";
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
-    when(messageService.sendBlocksMessage(USER_NAME, taskMessage)).thenReturn("");
 
     machine.sendEvent(Event.GET_THE_NEW_TASK);
 
@@ -340,7 +331,6 @@ class IntegrationTest {
     assertEquals(USER_ID, firstArg.getValue());
     verify(messageService, times(1)).sendBlocksMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
-    assertEquals(taskMessage, secondArg.getValue());
   }
 
   @SneakyThrows
@@ -364,10 +354,9 @@ class IntegrationTest {
         .resetStateMachine(new DefaultStateMachineContext<>(CHECK_FOR_NEW_TASK,
             null, null, null)));
     machine.getExtendedState().getVariables()
-        .put("taskNumber", 15);
+        .put("taskNumber", 14);
 
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
-    when(messageService.sendPrivateMessage(USER_NAME, lastTask)).thenReturn("");
 
     machine.sendEvent(Event.LAST_TASK);
 

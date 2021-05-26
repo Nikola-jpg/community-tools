@@ -22,9 +22,9 @@ public class Messages {
   public static final String GET_FIRST_TASK = "This is your first";
   public static final String LINK_FIRST_TASK = "https://github.com/Broscorp-net/traineeship/tree/"
       + "master/module1/src/main/java/net/broscorp/checkstyle";
-  public static final String LAST_TASK = "You are so cool! :tada: \nJust one step away from"
-      + " finishing your set of tasks. \nMake your last task, send it and wait for the review."
-      + " \nAlso you can help your colleagues on their journey :hugging_face:";
+  public static final String LAST_TASK = "You are so cool! :tada:\nJust one step away from"
+      + " finishing your set of tasks.\nMake your last task, send it and wait for the review."
+      + "\nAlso you can help your colleagues on their journey :hugging_face:";
   public static final String USERS_AGREE_MESSAGE = "I agree";
   public static final String WELCOME = "Welcome to the club buddy :handshake:";
   public static final String ADD_GIT_NAME = "So, that's it. You've read through all our rules."
