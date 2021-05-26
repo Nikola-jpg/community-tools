@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
+import com.community.tools.service.discord.DiscordConfig;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.Payload;
@@ -104,6 +105,9 @@ class IntegrationTest {
 
   @MockBean
   private GitHubConnectService gitHubConnectService;
+
+  @MockBean
+  private DiscordConfig discordConfig;
 
   @Mock
   private GHUser user;
