@@ -65,7 +65,7 @@ public class LeaderBoardService {
    */
   public String getLeaderboardTemplate() {
     final Context ctx = new Context();
-    List<User> list = stateMachineRepository.findAll();
+    List<User> list = addSlackNameToUser();
     list.sort(Comparator.comparing(User::getTotalPoints).reversed());
     List<User> listFirst = list.stream().limit(5).collect(Collectors.toList());
     ctx.setVariable("entities", listFirst);
@@ -85,7 +85,7 @@ public class LeaderBoardService {
             .collect(Collectors.toMap(user -> user.getId(), user -> user.getRealName()));
     for (User user: list) {
       String slackName = map.get(user.getUserID());
-      user.setPlatformName(slackName);
+      user.setSlackLogin(slackName);
     }
     return list;
   }
