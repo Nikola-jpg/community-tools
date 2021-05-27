@@ -1,10 +1,16 @@
 package com.community.tools.service;
 
+import com.community.tools.model.Messages;
 import com.community.tools.model.User;
+import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.payload.Payload;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+import com.community.tools.service.payload.QuestionPayload;
+import com.community.tools.service.payload.SinglePayload;
+import com.community.tools.service.payload.VerificationPayload;
+import com.community.tools.service.slack.MessagesToSlack;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
+import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
@@ -22,6 +28,8 @@ public class StateMachineService {
   private StateMachineFactory<State, Event> factory;
   @Autowired
   private StateMachinePersister<State, Event, String> persister;
+  @Autowired
+  private MessageService messageService;
 
   /**
    * Restore machine by Slack`s userId.

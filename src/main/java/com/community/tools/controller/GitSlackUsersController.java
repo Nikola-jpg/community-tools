@@ -1,12 +1,13 @@
 package com.community.tools.controller;
 
-import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.Event.QUESTION_FIRST;
-import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
-import static com.community.tools.util.statemachie.State.NEW_USER;
+import static com.community.tools.util.statemachine.Event.GET_THE_FIRST_TASK;
+import static com.community.tools.util.statemachine.Event.QUESTION_FIRST;
+import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
+import static com.community.tools.util.statemachine.State.NEW_USER;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.service.MessageService;
+import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.GitHubService;
 import com.github.seratch.jslack.api.model.User;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHPerson;
 import org.kohsuke.github.GHUser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,13 +40,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class GitSlackUsersController {
 
   private final StateMachineService stateMachineService;
-  private final MessageService messageService;
   private final GitHubService gitService;
 
   @Value("${noOneCase}")
   private String noOneCase;
   @Value("${notThatMessage}")
   private String notThatMessage;
+
+  @Autowired
+  private MessageService messageService;
+
+  @Autowired
+  private MessagesToPlatform messagesToPlatform;
 
   /**
    * Endpoint /git. Method GET.
@@ -101,7 +108,7 @@ public class GitSlackUsersController {
     switch (action) {
       case "AGREE_LICENSE":
         if (!stateMachineService.doAction(userId, NEW_USER, QUESTION_FIRST)) {
-          messageService.sendBlocksMessage(user, notThatMessage);
+          messageService.sendBlocksMessage(user, messagesToPlatform.notThatMessage);
         }
         break;
       case "theEnd":
@@ -109,11 +116,11 @@ public class GitSlackUsersController {
           messageService
               .sendPrivateMessage(user, "that was the end, congrats");
         } else {
-          messageService.sendBlocksMessage(user, notThatMessage);
+          messageService.sendBlocksMessage(user, messagesToPlatform.notThatMessage);
         }
         break;
       default:
-        messageService.sendBlocksMessage(user, noOneCase);
+        messageService.sendBlocksMessage(user, messagesToPlatform.noOneCase);
     }
   }
 }

@@ -3,13 +3,13 @@ package com.community.tools.service.github;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
-import com.community.tools.service.slack.SlackService;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +25,7 @@ public class GitHubHookService {
   private String opened;
   @Value("${generalInformationChannel}")
   private String channel;
-  @Autowired
-  private MessageService messageService;
+
   @Autowired
   private GitHubGiveNewTask gitHubGiveNewTask;
   @Autowired
@@ -37,6 +36,8 @@ public class GitHubHookService {
   private KarmaService karmaService;
   @Autowired
   private PointsTaskService pointsTaskService;
+  @Autowired
+  private MessageService messageService;
 
   /**
    * Methid receive data from Github and check it.

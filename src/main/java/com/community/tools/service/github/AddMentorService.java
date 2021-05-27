@@ -3,12 +3,13 @@ package com.community.tools.service.github;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.jpa.MentorsRepository;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
 
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import java.io.IOException;
 
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateMachine;
@@ -22,6 +23,7 @@ public class AddMentorService {
   private StateMachineService stateMachineService;
   @Autowired
   private MentorsRepository mentorsRepository;
+
   @Autowired
   private MessageService messageService;
 

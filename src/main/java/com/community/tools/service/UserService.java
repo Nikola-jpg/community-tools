@@ -1,9 +1,8 @@
 package com.community.tools.service;
 
-import com.github.seratch.jslack.api.model.User;
 import java.util.Set;
 
-public interface UserService {
+public interface UserService<E> {
 
   String getUserById(String id);
 
@@ -11,6 +10,6 @@ public interface UserService {
 
   String getIdByUsername(String username);
 
-  Set<User> getAllUsers();
+  Set<E> getAllUsers();
 
 }
