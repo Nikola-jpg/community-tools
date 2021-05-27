@@ -102,20 +102,8 @@ public class DiscordService implements MessageService<MessageEmbed> {
    */
   @Override
   public <T> void sendBlockMessageToConversation(String channelName, T message) {
-    MessageEmbed messageEmbed = (MessageEmbed) message;
-
-    if (!(messageEmbed.getImage() == null)) {
-      try {
-        InputStream file = new URL(messageEmbed.getImage().getUrl()).openStream();
-        jda.getTextChannelById(getIdByChannelName(channelName))
-            .sendMessage(messageEmbed).addFile(file, "image.png").queue();
-      } catch (Exception exception) {
-        throw new RuntimeException(exception);
-      }
-    } else {
-      jda.getTextChannelById(getIdByChannelName(channelName))
-          .sendMessage(messageEmbed).queue();
-    }
+    jda.getTextChannelById(getIdByChannelName(channelName))
+        .sendMessage((MessageEmbed) message).queue();
   }
 
   @Override
