@@ -18,11 +18,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TrackingService {
 
-  private final MessageService messageService;
+  @Autowired
+  private MessageService messageService;
 
-  private final StateMachineService stateMachineService;
+  @Autowired
+  private StateMachineService stateMachineService;
 
-  private final StateMachineRepository stateMachineRepository;
+  @Autowired
+  private StateMachineRepository stateMachineRepository;
 
   @Autowired
   private MessagesToPlatform messagesToPlatform;

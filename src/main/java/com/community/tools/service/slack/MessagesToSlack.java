@@ -35,7 +35,7 @@ public class MessagesToSlack extends MessagesToPlatform<String> {
         + " \"type\": \"mrkdwn\", \"text\": \"```" + Messages.THIRD_QUESTION + "```\" } ] } ]";
     messageAboutRules = "[{ \"type\": \"section\", \"text\": {"
         + " \"type\": \"mrkdwn\", \"text\": \"" + Messages.MESSAGE_ABOUT_RULES_1 + "\" }}, {"
-        + " \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \""
+        + " \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"<"
         + Messages.MESSAGE_ABOUT_RULES_2 + "|Rules> :link:\" } }, { \"type\": \"section\","
         + " \"text\": {\"type\": \"mrkdwn\", \"text\": \"" + Messages.MESSAGE_ABOUT_RULES_3
         + "\"} }, {\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\",\"text\": \""

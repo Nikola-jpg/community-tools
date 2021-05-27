@@ -32,16 +32,8 @@ import org.springframework.stereotype.Service;
 @Profile("discord")
 public class DiscordService implements MessageService<MessageEmbed> {
 
+  @Autowired
   private JDA jda;
-
-  @Autowired
-  private DiscordEventListener discordEventListener;
-
-  @Autowired
-  public void setJda(JDA jda) {
-    jda.addEventListener(discordEventListener);
-    this.jda = jda;
-  }
 
   /**
    * Send private message with messageText to username.
