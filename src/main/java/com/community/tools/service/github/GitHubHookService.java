@@ -4,6 +4,8 @@ import com.community.tools.service.MessageService;
 import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
 import java.io.IOException;
@@ -45,7 +47,7 @@ public class GitHubHookService {
    *
    * @param json JSON with data from Github webhook
    */
-  public void doActionsAfterReceiveHook(JSONObject json) {
+  public void doActionsAfterReceiveHook(JSONObject json) throws Exception{
     sendNotificationMessageAboutPR(json);
     giveNewTaskIfPrOpened(json);
     addMentorIfEventIsReview(json);
@@ -160,13 +162,13 @@ public class GitHubHookService {
     return checkComment;
   }
 
-  private void giveNewTaskIfPrOpened(JSONObject json) {
+  private void giveNewTaskIfPrOpened(JSONObject json) throws Exception{
     if (json.get("action").toString().equals(opened)) {
       String userNick = json.getJSONObject("sender").getString("login");
 
-      String id = stateMachineService.getIdByNick(userNick);
-      messageService
-          .sendBlocksMessage(messageService.getUserById(id), messagesToPlatform.estimateTheTask);
+      stateMachineService
+          .doAction(stateMachineService.getIdByNick(userNick), State.GETTING_PULL_REQUEST,
+              Event.SEND_ESTIMATE_TASK);
     }
   }
 }

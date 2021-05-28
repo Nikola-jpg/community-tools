@@ -1,7 +1,5 @@
 package com.community.tools.service;
 
-import static com.community.tools.util.statemachine.Event.SEND_ESTIMATE_TASK;
-
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.service.payload.EstimatePayload;
@@ -102,7 +100,7 @@ public class TrackingService {
           estimateTaskService.estimate(userId);
           return;
         } else if (messageFromUser.equals("no")) {
-          event = SEND_ESTIMATE_TASK;
+          event = Event.RESENDING_ESTIMATE_TASK;
           payload = new SinglePayload(userId);
         }
         break;

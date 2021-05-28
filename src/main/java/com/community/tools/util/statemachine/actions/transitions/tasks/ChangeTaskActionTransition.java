@@ -3,6 +3,7 @@ package com.community.tools.util.statemachine.actions.transitions.tasks;
 import static com.community.tools.util.statemachine.Event.CHANGE_TASK;
 import static com.community.tools.util.statemachine.State.CHECK_FOR_NEW_TASK;
 import static com.community.tools.util.statemachine.State.ESTIMATE_THE_TASK;
+import static com.community.tools.util.statemachine.State.GETTING_PULL_REQUEST;
 
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
@@ -25,7 +26,7 @@ public class ChangeTaskActionTransition implements Transition {
     transitions
         .withExternal()
         .source(CHECK_FOR_NEW_TASK)
-        .target(ESTIMATE_THE_TASK)
+        .target(GETTING_PULL_REQUEST)
         .event(CHANGE_TASK)
         .action(this, errorAction);
   }
