@@ -1,9 +1,9 @@
 package com.community.tools.controller;
 
-import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.Event.QUESTION_FIRST;
-import static com.community.tools.util.statemachie.State.GOT_THE_TASK;
-import static com.community.tools.util.statemachie.State.NEW_USER;
+import static com.community.tools.util.statemachine.Event.GET_THE_FIRST_TASK;
+import static com.community.tools.util.statemachine.Event.QUESTION_FIRST;
+import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
+import static com.community.tools.util.statemachine.State.NEW_USER;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.service.MessageService;

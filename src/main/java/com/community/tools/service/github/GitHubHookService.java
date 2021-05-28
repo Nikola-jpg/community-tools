@@ -1,6 +1,7 @@
 package com.community.tools.service.github;
 
 import com.community.tools.service.MessageService;
+import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
 import com.github.seratch.jslack.api.methods.SlackApiException;
@@ -36,6 +37,8 @@ public class GitHubHookService {
   private KarmaService karmaService;
   @Autowired
   private PointsTaskService pointsTaskService;
+  @Autowired
+  private MessagesToPlatform messagesToPlatform;
 
   /**
    * Methid receive data from Github and check it.
@@ -163,7 +166,7 @@ public class GitHubHookService {
 
       String id = stateMachineService.getIdByNick(userNick);
       messageService
-          .sendBlocksMessage(messageService.getUserById(id), estimateTheTask);
+          .sendBlocksMessage(messageService.getUserById(id), messagesToPlatform.estimateTheTask);
     }
   }
 }

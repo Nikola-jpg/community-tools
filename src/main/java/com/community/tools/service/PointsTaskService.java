@@ -2,9 +2,9 @@ package com.community.tools.service;
 
 import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.jpa.StateMachineRepository;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
+import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 
 import java.util.Map;
 
@@ -27,8 +27,7 @@ public class PointsTaskService {
   @Value("#{${pointsForTask}}")
   private Map<String, Integer> pointsForTask;
 
-  @Autowired
-  private MessageService messageService;
+  final int numberPullsAbilityReview = 3;
 
   @Autowired
   StateMachineService stateMachineService;
@@ -39,9 +38,11 @@ public class PointsTaskService {
   @Autowired
   StateMachineRepository stateMachineRepository;
 
-  final int numberPullsAbilityReview = 3;
+  @Autowired
+  private MessageService messageService;
 
-
+  @Autowired
+  private MessagesToPlatform messagesToPlatform;
 
   /**
    * This method adds points to the trainee, when mentor labeled pull as "done".
@@ -85,7 +86,8 @@ public class PointsTaskService {
    * @param id Slack User Id
    */
   public void sendAbilityReviewMess(String id) {
-    messageService.sendBlocksMessage(messageService.getUserById(id), abilityReviewMessage);
+    messageService.sendBlocksMessage(messageService.getUserById(id),
+        messagesToPlatform.abilityReviewMessage);
   }
 
   /**
@@ -94,6 +96,7 @@ public class PointsTaskService {
    */
   public void sendMessageWhichDescribesZeroPoints(String id, String pullName) {
     String messageDescribesZero = zeroPointsMessage.replace("pull_name", pullName);
-    messageService.sendPrivateMessage(messageService.getUserById(id), messageDescribesZero);
+    messageService.sendPrivateMessage(messageService.getUserById(id),
+        messageDescribesZero);
   }
 }

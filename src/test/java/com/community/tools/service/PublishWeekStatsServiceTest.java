@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import java.util.Map;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -20,9 +22,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ActiveProfiles("slack")
 class PublishWeekStatsServiceTest {
 
   @InjectMocks
@@ -62,10 +66,11 @@ class PublishWeekStatsServiceTest {
         new EventData(new Date(), "roman", Event.COMMENT));
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
+    Mockito.when(messageService.statisticMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();
-      Mockito.verify(messageService).sendBlockMessageToConversation(anyString(), eq(message));
+      Mockito.verify(messageService).sendBlockMessageToConversation(any(), eq(message));
     });
   }
 
@@ -104,6 +109,7 @@ class PublishWeekStatsServiceTest {
     );
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
+    Mockito.when(messageService.statisticMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();
@@ -149,6 +155,7 @@ class PublishWeekStatsServiceTest {
     );
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
+    Mockito.when(messageService.statisticMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();
