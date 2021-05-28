@@ -17,6 +17,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
@@ -93,6 +94,9 @@ class IntegrationTest {
 
   @Value("${generalInformationChannel}")
   private String channel;
+
+  @Value("${estimateTheTask}")
+  String estimateTheTask;
 
   @Autowired
   private StateMachineService stateMachineService;
@@ -331,9 +335,9 @@ class IntegrationTest {
 
     verify(messageService, times(1)).getUserById(firstArg.capture());
     assertEquals(USER_ID, firstArg.getValue());
-    verify(messageService, times(1)).sendBlocksMessage(firstArg.capture(), secondArg.capture());
+    verify(messageService, times(1)).sendPrivateMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
-    assertEquals(getFirstTask, secondArg.getValue());
+    assertEquals(Messages.CONFIRM_ESTIMATE, secondArg.getValue());
     assertEquals(VALUE_FOR_ESTIMATE, machine.getExtendedState().getVariables().get("value"));
   }
 
@@ -353,7 +357,7 @@ class IntegrationTest {
     assertEquals(USER_ID, firstArg.getValue());
     verify(messageService, times(1)).sendBlocksMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
-    assertEquals(getFirstTask, secondArg.getValue());
+    assertEquals(estimateTheTask, secondArg.getValue());
   }
 
   @SneakyThrows

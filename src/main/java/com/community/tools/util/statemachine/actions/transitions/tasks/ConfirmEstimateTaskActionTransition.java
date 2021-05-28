@@ -17,7 +17,7 @@ import org.springframework.statemachine.annotation.WithStateMachine;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
 @WithStateMachine
-public class EstimateTaskActionTransition implements Transition {
+public class ConfirmEstimateTaskActionTransition implements Transition {
 
   @Autowired
   private MessageService messageService;
