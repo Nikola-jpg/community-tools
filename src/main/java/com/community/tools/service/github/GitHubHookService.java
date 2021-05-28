@@ -47,7 +47,7 @@ public class GitHubHookService {
    *
    * @param json JSON with data from Github webhook
    */
-  public void doActionsAfterReceiveHook(JSONObject json) throws Exception{
+  public void doActionsAfterReceiveHook(JSONObject json) throws Exception {
     sendNotificationMessageAboutPR(json);
     giveNewTaskIfPrOpened(json);
     addMentorIfEventIsReview(json);
@@ -69,8 +69,8 @@ public class GitHubHookService {
         }
       } else {
         messageService.sendMessageToConversation(channel,
-                  "User " + user
-                          + " created a pull request \n url: " + url);
+            "User " + user
+                + " created a pull request \n url: " + url);
       }
     }
   }
@@ -79,7 +79,7 @@ public class GitHubHookService {
     if (json.get("action").toString().equals(labeledStr)) {
       List<Object> list = json.getJSONObject("pull_request").getJSONArray("labels").toList();
       return list.stream().map(o -> (HashMap) o)
-              .anyMatch(e -> e.get("name").equals("ready for review"));
+          .anyMatch(e -> e.get("name").equals("ready for review"));
     }
     return false;
   }
@@ -100,14 +100,13 @@ public class GitHubHookService {
         creator = json.getJSONObject("issue").getJSONObject("user").getString("login");
       }
 
-
       addMentorService.addMentor(mentor, creator);
     }
   }
 
   private void addPointIfPullLabeledDone(JSONObject json) {
     if (json.get("action").toString().equals(labeledStr)
-            && json.getJSONObject("label").getString("name").equals("done")) {
+        && json.getJSONObject("label").getString("name").equals("done")) {
       List<Object> list = json.getJSONObject("pull_request").getJSONArray("labels").toList();
       String sender = json.getJSONObject("sender").getString("login");
       String creator = json.getJSONObject("pull_request").getJSONObject("user").getString("login");
@@ -122,12 +121,12 @@ public class GitHubHookService {
     if (json.get("action").equals("created") && hasIssueAndComment(json)) {
       traineeReviewer = json.getJSONObject("comment").getJSONObject("user").getString("login");
       checkCommentApproved = json.getJSONObject("comment")
-              .getString("body").equalsIgnoreCase("approved");
+          .getString("body").equalsIgnoreCase("approved");
     } else if (json.get("action").equals("submitted")) {
       traineeReviewer = json.getJSONObject("review").getJSONObject("user").getString("login");
       if (json.getJSONObject("review").getString("body") != null) {
         checkCommentApproved = json.getJSONObject("review")
-                .getString("body").equalsIgnoreCase("approved");
+            .getString("body").equalsIgnoreCase("approved");
       }
     }
     if (checkCommentApproved) {
@@ -137,7 +136,7 @@ public class GitHubHookService {
 
   private void checkReactionToChangeKarma(JSONObject json) {
     if (json.get("action").equals(labeledStr)
-            && json.getJSONObject("label").getString("name").equals("done")) {
+        && json.getJSONObject("label").getString("name").equals("done")) {
       int numberOfPullRequest = json.getInt("number");
       karmaService.changeKarmaBasedOnReaction(numberOfPullRequest);
     }
@@ -162,7 +161,7 @@ public class GitHubHookService {
     return checkComment;
   }
 
-  private void giveNewTaskIfPrOpened(JSONObject json) throws Exception{
+  private void giveNewTaskIfPrOpened(JSONObject json) throws Exception {
     if (json.get("action").toString().equals(opened)) {
       String userNick = json.getJSONObject("sender").getString("login");
 
