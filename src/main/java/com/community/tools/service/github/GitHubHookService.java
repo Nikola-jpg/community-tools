@@ -27,8 +27,6 @@ public class GitHubHookService {
   private String opened;
   @Value("${generalInformationChannel}")
   private String channel;
-  @Value("${estimateTheTask}")
-  private String estimateTheTask;
   @Autowired
   private MessageService messageService;
   @Autowired
@@ -39,15 +37,13 @@ public class GitHubHookService {
   private KarmaService karmaService;
   @Autowired
   private PointsTaskService pointsTaskService;
-  @Autowired
-  private MessagesToPlatform messagesToPlatform;
 
   /**
    * Methid receive data from Github and check it.
    *
    * @param json JSON with data from Github webhook
    */
-  public void doActionsAfterReceiveHook(JSONObject json) throws Exception {
+  public void doActionsAfterReceiveHook(JSONObject json) {
     sendNotificationMessageAboutPR(json);
     giveNewTaskIfPrOpened(json);
     addMentorIfEventIsReview(json);
@@ -161,7 +157,7 @@ public class GitHubHookService {
     return checkComment;
   }
 
-  private void giveNewTaskIfPrOpened(JSONObject json) throws Exception {
+  private void giveNewTaskIfPrOpened(JSONObject json) {
     if (json.get("action").toString().equals(opened)) {
       String userNick = json.getJSONObject("sender").getString("login");
 

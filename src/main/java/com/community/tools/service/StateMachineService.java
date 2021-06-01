@@ -1,13 +1,7 @@
 package com.community.tools.service;
 
-import com.community.tools.model.Messages;
 import com.community.tools.model.User;
-import com.community.tools.service.discord.MessagesToDiscord;
 import com.community.tools.service.payload.Payload;
-import com.community.tools.service.payload.QuestionPayload;
-import com.community.tools.service.payload.SinglePayload;
-import com.community.tools.service.payload.VerificationPayload;
-import com.community.tools.service.slack.MessagesToSlack;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
@@ -116,14 +110,18 @@ public class StateMachineService {
    * @param event  - event for state machine
    * @return - true if state id equals machine.stateId
    */
-  public boolean doAction(String userId, State state, Event event) throws Exception {
-    StateMachine<State, Event> machine = restoreMachine(userId);
-    if (machine.getState().getId().equals(state)) {
-      machine.sendEvent(event);
-      persister.persist(machine, userId);
-      return true;
-    } else {
-      return false;
+  public boolean doAction(String userId, State state, Event event) {
+    try {
+      StateMachine<State, Event> machine = restoreMachine(userId);
+      if (machine.getState().getId().equals(state)) {
+        machine.sendEvent(event);
+        persister.persist(machine, userId);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (Exception e) {
+      throw new RuntimeException("Exception in stateMachine by id" + userId, e);
     }
   }
 }

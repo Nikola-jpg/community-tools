@@ -40,7 +40,7 @@ public class GitHubHookController {
   @PostMapping
   public void getHookData(@RequestBody String body,
                           @RequestHeader("X-Hub-Signature") String header,
-                          HttpServletResponse resp) throws Exception {
+                          HttpServletResponse resp) {
 
     JSONObject json = new JSONObject(body);
     gitHookDataService.saveDataIntoDB(json);

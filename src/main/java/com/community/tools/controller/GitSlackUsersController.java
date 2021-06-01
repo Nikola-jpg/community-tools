@@ -98,29 +98,24 @@ public class GitSlackUsersController {
     String action = pl.getActions().get(0).getActionId();
 
     String user = messageService.getUserById(userId);
-    try {
-      switch (action) {
-        case "AGREE_LICENSE":
-          if (!stateMachineService.doAction(userId, NEW_USER, QUESTION_FIRST)) {
-            messageService.sendBlocksMessage(user, notThatMessage);
-          }
-          break;
-        case "theEnd":
-          if (stateMachineService.doAction(userId, GOT_THE_TASK, GET_THE_FIRST_TASK)) {
-            messageService
-                .sendPrivateMessage(user, "that was the end, congrats");
-          } else {
-            messageService.sendBlocksMessage(user, notThatMessage);
-          }
-          break;
-        default:
-          messageService.sendBlocksMessage(user, noOneCase);
-      }
-      return new ResponseEntity<>("Action: " + action,
-          HttpStatus.OK);
-    } catch (Exception ex) {
-      return new ResponseEntity<>("Exception " + ex,
-          HttpStatus.BAD_REQUEST);
+    switch (action) {
+      case "AGREE_LICENSE":
+        if (!stateMachineService.doAction(userId, NEW_USER, QUESTION_FIRST)) {
+          messageService.sendBlocksMessage(user, notThatMessage);
+        }
+        break;
+      case "theEnd":
+        if (stateMachineService.doAction(userId, GOT_THE_TASK, GET_THE_FIRST_TASK)) {
+          messageService
+              .sendPrivateMessage(user, "that was the end, congrats");
+        } else {
+          messageService.sendBlocksMessage(user, notThatMessage);
+        }
+        break;
+      default:
+        messageService.sendBlocksMessage(user, noOneCase);
     }
+    return new ResponseEntity<>("Action: " + action,
+        HttpStatus.OK);
   }
 }
