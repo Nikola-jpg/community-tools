@@ -92,7 +92,8 @@ public class GitSlackUsersController {
   @ApiImplicitParam(name = "payload", dataType = "string", paramType = "query",
       required = true, value = "payload")
   @RequestMapping(value = "/slack/action", method = RequestMethod.POST)
-  public ResponseEntity<String> action(@RequestParam(name = "payload") String payload) throws Exception{
+  public ResponseEntity<String> action(@RequestParam(name = "payload") String payload)
+      throws Exception {
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
 

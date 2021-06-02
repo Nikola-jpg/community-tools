@@ -38,7 +38,7 @@ public class TrackingService {
    * Method to start the event by state.
    *
    * @param messageFromUser message from user
-   * @param userId user id
+   * @param userId          user id
    * @throws Exception Exception
    */
   public void doAction(String messageFromUser, String userId) throws Exception {
