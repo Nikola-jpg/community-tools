@@ -1,19 +1,26 @@
 package com.community.tools.service;
 
-public interface MessageService extends UserService {
+import com.community.tools.model.EventData;
+import java.util.List;
+import net.dv8tion.jda.api.EmbedBuilder;
 
-  String sendPrivateMessage(String username, String messageText);
+public interface MessageService<T> extends UserService {
 
-  String sendBlocksMessage(String username, String messageText);
+  void sendPrivateMessage(String username, String messageText);
 
-  String sendAttachmentsMessage(String username, String messageText);
+  <T> void sendBlocksMessage(String username, T message);
 
-  String sendMessageToConversation(String channelName, String messageText);
+  <T> void sendAttachmentsMessage(String username, T message);
 
-  String sendBlockMessageToConversation(String channelName, String messageText);
+  void sendMessageToConversation(String channelName, String messageText);
 
-  String sendMessageToChat(String channelName, String messageText);
+  <T> void sendBlockMessageToConversation(String channelName, T message);
 
+  T nextTaskMessage(List<String> tasksList, int numberTask);
+
+  T ratingMessage(String url, String img);
+
+  T statisticMessage(List<EventData> events);
 
   String getIdByChannelName(String channelName);
 
