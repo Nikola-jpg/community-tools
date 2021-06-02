@@ -154,6 +154,11 @@ public class SlackService implements MessageService<String> {
   }
 
   @Override
+  public String tasksStatusMessage(String url, String img) {
+    return String.format(MessagesToSlack.LINK_TASKS_STATUS, url, img);
+  }
+
+  @Override
   public String statisticMessage(List<EventData> events) {
 
     StringBuilder messageBuilder = new StringBuilder();

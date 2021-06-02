@@ -88,4 +88,11 @@ public class MessagesToSlack extends MessagesToPlatform<String> {
   public static final String NEXT_TASK = "[{\"type\": \"section\",\"text\":"
       + " {\"type\": \"mrkdwn\",\"text\": \"Here is your next"
       + " <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
+  public static final String LINK_TASKS_STATUS = "[{\"type\": \"section\", \"text\": "
+      + "{\"type\": \"mrkdwn\",\"text\": \"Прогресс выполнения задач доступен по ссылке: \"},"
+      + "\"accessory\": {\"type\": \"button\",\t\"text\": "
+      + "{\"type\": \"plain_text\",\"text\": \":loudspeaker:\",\"emoji\": true},"
+      + "\"value\": \"click_me_123\", \"url\": \"%s"
+      + "\", \"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"%s"
+      + "\",\"alt_text\": \"inspiration\"}]";
 }

@@ -77,6 +77,19 @@ public class PublishWeekStatsService {
   }
 
   /**
+   * Publish message with link to trainee`s tasks status and image (first 5 record of rating).
+   */
+  @Scheduled(cron = "0 20 0 * * ?")
+  public void publishTasksStatus() {
+    String url = urlServer + "tasksstatus";
+    String date = LocalDate.now().toString();
+    String img = url + "img/" + date;
+
+    messageService.sendBlockMessageToConversation(channel,
+        messageService.tasksStatusMessage(url, img));
+  }
+
+  /**
    * Get emoji by event type.
    * @param type event type
    * @return emoji

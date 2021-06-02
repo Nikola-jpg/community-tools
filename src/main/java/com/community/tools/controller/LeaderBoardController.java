@@ -40,7 +40,7 @@ public class LeaderBoardController {
    */
   @GetMapping("/")
   public String getLeaderboard(Model model) {
-    List<User> list = stateMachineRepository.findAll();
+    List<User> list = leaderBoardService.addSlackNameToUser();
     list.sort(Comparator.comparing(User::getTotalPoints).reversed());
     model.addAttribute("entities", list);
     return "leaderboard";

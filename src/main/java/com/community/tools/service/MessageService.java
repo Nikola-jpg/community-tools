@@ -20,6 +20,8 @@ public interface MessageService<T> extends UserService {
 
   T ratingMessage(String url, String img);
 
+  T tasksStatusMessage(String url, String img);
+
   T statisticMessage(List<EventData> events);
 
   String getIdByChannelName(String channelName);

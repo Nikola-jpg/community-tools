@@ -115,6 +115,15 @@ public class DiscordService implements MessageService<MessageEmbed> {
   }
 
   @Override
+  public MessageEmbed tasksStatusMessage(String url, String img) {
+    return  new EmbedBuilder()
+        .setTitle(":point_right: Прогресс выполнения заданий :point_left:", url)
+        .setImage(img)
+
+        .build();
+  }
+
+  @Override
   public MessageEmbed statisticMessage(List<EventData> events) {
 
     EmbedBuilder embedBuilder = new EmbedBuilder();
