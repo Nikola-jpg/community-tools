@@ -58,6 +58,6 @@ public class EstimateTaskService {
     Integer value = (Integer) machine.getExtendedState().getVariables().get("value");
 
     saveEstimateTask(userId, taskNumber, value);
-    giveNewTaskService.giveNewTask(userId, taskNumber);
+    giveNewTaskService.giveNewTask(machine, userId, taskNumber);
   }
 }

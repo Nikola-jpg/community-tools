@@ -1,11 +1,10 @@
 package com.community.tools.service.github;
 
 import com.community.tools.service.MessageService;
-import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
+import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.util.statemachine.Event;
-import com.community.tools.util.statemachine.State;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
 import java.io.IOException;
@@ -161,8 +160,9 @@ public class GitHubHookService {
     if (json.get("action").toString().equals(opened)) {
       String userNick = json.getJSONObject("sender").getString("login");
 
+      String userId = stateMachineService.getIdByNick(userNick);
       stateMachineService
-          .doAction(stateMachineService.getIdByNick(userNick), State.GETTING_PULL_REQUEST,
+          .doAction(stateMachineService.restoreMachineByNick(userNick), new SimplePayload(userId),
               Event.SEND_ESTIMATE_TASK);
     }
   }

@@ -5,7 +5,7 @@ import com.community.tools.model.User;
 import com.community.tools.service.payload.EstimatePayload;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.QuestionPayload;
-import com.community.tools.service.payload.SinglePayload;
+import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
@@ -53,7 +53,7 @@ public class TrackingService {
     switch (machine.getState().getId()) {
       case NEW_USER:
         if (messageFromUser.equalsIgnoreCase("ready")) {
-          payload = new SinglePayload(userId);
+          payload = new SimplePayload(userId);
           event = Event.QUESTION_FIRST;
         } else {
           message = Messages.NOT_THAT_MESSAGE;
@@ -101,7 +101,7 @@ public class TrackingService {
           return;
         } else if (messageFromUser.equals("no")) {
           event = Event.RESENDING_ESTIMATE_TASK;
-          payload = new SinglePayload(userId);
+          payload = new SimplePayload(userId);
         }
         break;
       default:
@@ -111,9 +111,7 @@ public class TrackingService {
     if (event == null) {
       messageService.sendPrivateMessage(messageService.getUserById(userId), message);
     } else {
-      machine.getExtendedState().getVariables().put("dataPayload", payload);
-      machine.sendEvent(event);
-      stateMachineService.persistMachine(machine, payload.getId());
+      stateMachineService.doAction(machine, payload, event);
     }
   }
 

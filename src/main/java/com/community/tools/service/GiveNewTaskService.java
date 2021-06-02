@@ -15,17 +15,14 @@ public class GiveNewTaskService {
   private Integer numberOfTasks;
   @Autowired
   private StateMachinePersister<State, Event, String> persister;
-  @Autowired
-  private StateMachineService stateMachineService;
 
   /**
    * Give new Task to the trainee. Checks for the last task.
    *
    * @param userId - id user
    */
-  public void giveNewTask(String userId, Integer taskNumber) {
+  public void giveNewTask(StateMachine<State, Event> machine, String userId, Integer taskNumber) {
     try {
-      StateMachine<State, Event> machine = stateMachineService.restoreMachine(userId);
       machine.sendEvent(Event.GET_THE_NEW_TASK);
       if (taskNumber.equals(numberOfTasks - 1)) {
         machine.sendEvent(Event.LAST_TASK);

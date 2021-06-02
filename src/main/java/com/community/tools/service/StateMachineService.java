@@ -101,27 +101,4 @@ public class StateMachineService {
     machine.sendEvent(event);
     persistMachine(machine, payload.getId());
   }
-
-  /**
-   * Method to start the event by state.
-   *
-   * @param userId - id users
-   * @param state  - state id
-   * @param event  - event for state machine
-   * @return - true if state id equals machine.stateId
-   */
-  public boolean doAction(String userId, State state, Event event) {
-    try {
-      StateMachine<State, Event> machine = restoreMachine(userId);
-      if (machine.getState().getId().equals(state)) {
-        machine.sendEvent(event);
-        persister.persist(machine, userId);
-        return true;
-      } else {
-        return false;
-      }
-    } catch (Exception e) {
-      throw new RuntimeException("Exception in stateMachine by id" + userId, e);
-    }
-  }
 }

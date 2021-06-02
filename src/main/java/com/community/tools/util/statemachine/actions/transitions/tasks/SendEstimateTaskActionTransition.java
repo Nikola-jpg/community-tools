@@ -7,6 +7,8 @@ import static com.community.tools.util.statemachine.State.GETTING_PULL_REQUEST;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.StateMachineService;
+import com.community.tools.service.payload.Payload;
+import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
@@ -44,7 +46,9 @@ public class SendEstimateTaskActionTransition implements Transition {
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    String user = stateContext.getExtendedState().getVariables().get("id").toString();
+    SimplePayload payload = (SimplePayload) stateContext.getExtendedState()
+        .getVariables().get("dataPayload");
+    String user = payload.getId();
     messageService
         .sendBlocksMessage(messageService.getUserById(user), messagesToPlatform.estimateTheTask);
   }

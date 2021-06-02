@@ -1,14 +1,13 @@
 package com.community.tools.util.statemachine.actions.transitions.tasks;
 
 import static com.community.tools.util.statemachine.Event.RESENDING_ESTIMATE_TASK;
-import static com.community.tools.util.statemachine.Event.SEND_ESTIMATE_TASK;
 import static com.community.tools.util.statemachine.State.ESTIMATE_THE_TASK;
 import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
 
 import com.community.tools.service.MessageService;
 import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.StateMachineService;
-import com.community.tools.service.payload.SinglePayload;
+import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
@@ -50,7 +49,7 @@ public class ResendingEstimateActionTask implements Transition {
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    SinglePayload payload = (SinglePayload) stateContext.getExtendedState()
+    SimplePayload payload = (SimplePayload) stateContext.getExtendedState()
         .getVariables().get("dataPayload");
     String user = payload.getId();
 

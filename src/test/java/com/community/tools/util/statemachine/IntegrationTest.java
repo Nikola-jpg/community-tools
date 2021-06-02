@@ -28,7 +28,7 @@ import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.EstimatePayload;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.QuestionPayload;
-import com.community.tools.service.payload.SinglePayload;
+import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 
@@ -161,7 +161,7 @@ class IntegrationTest {
     machine.getStateMachineAccessor().doWithAllRegions(access -> access
         .resetStateMachine(new DefaultStateMachineContext<>(NEW_USER,
             null, null, null)));
-    Payload payload = new SinglePayload(USER_ID);
+    Payload payload = new SimplePayload(USER_ID);
 
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
 
@@ -290,7 +290,7 @@ class IntegrationTest {
     machine.getStateMachineAccessor().doWithAllRegions(access -> access
         .resetStateMachine(new DefaultStateMachineContext<>(ADDED_GIT,
             null, null, null)));
-    Payload payload = new SinglePayload(USER_ID);
+    Payload payload = new SimplePayload(USER_ID);
 
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
 
@@ -348,7 +348,7 @@ class IntegrationTest {
     machine.getStateMachineAccessor().doWithAllRegions(access -> access
         .resetStateMachine(new DefaultStateMachineContext<>(GOT_THE_TASK,
             null, null, null)));
-    Payload payload = new SinglePayload(USER_ID);
+    Payload payload = new SimplePayload(USER_ID);
 
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
 
@@ -367,7 +367,7 @@ class IntegrationTest {
     machine.getStateMachineAccessor().doWithAllRegions(access -> access
         .resetStateMachine(new DefaultStateMachineContext<>(GETTING_PULL_REQUEST,
             null, null, null)));
-    Payload payload = new SinglePayload(USER_ID);
+    Payload payload = new SimplePayload(USER_ID);
 
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
 
