@@ -7,7 +7,6 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.annotation.WithStateMachine;
@@ -15,9 +14,6 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 
 @WithStateMachine
 public class FirstQuestionActionTransition implements Transition {
-
-  @Value("${firstQuestion}")
-  private String firstQuestion;
 
   @Autowired
   private MessageService messageService;

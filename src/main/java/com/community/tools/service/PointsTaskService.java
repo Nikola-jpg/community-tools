@@ -1,5 +1,6 @@
 package com.community.tools.service;
 
+import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
 import com.community.tools.util.statemachine.Event;
@@ -17,12 +18,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PointsTaskService {
-
-  @Value("${abilityReviewMessage}")
-  private String abilityReviewMessage;
-
-  @Value("${zeroPointsMessage}")
-  private String zeroPointsMessage;
 
   @Value("#{${pointsForTask}}")
   private Map<String, Integer> pointsForTask;
@@ -95,7 +90,7 @@ public class PointsTaskService {
    * @param id Slack User Id
    */
   public void sendMessageWhichDescribesZeroPoints(String id, String pullName) {
-    String messageDescribesZero = zeroPointsMessage.replace("pull_name", pullName);
+    String messageDescribesZero = Messages.ZERO_POINTS_MESSAGE.replace("pull_name", pullName);
     messageService.sendPrivateMessage(messageService.getUserById(id),
         messageDescribesZero);
   }

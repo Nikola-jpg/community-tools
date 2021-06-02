@@ -24,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHPerson;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,11 +40,6 @@ public class GitSlackUsersController {
 
   private final StateMachineService stateMachineService;
   private final GitHubService gitService;
-
-  @Value("${noOneCase}")
-  private String noOneCase;
-  @Value("${notThatMessage}")
-  private String notThatMessage;
 
   @Autowired
   private MessageService messageService;
