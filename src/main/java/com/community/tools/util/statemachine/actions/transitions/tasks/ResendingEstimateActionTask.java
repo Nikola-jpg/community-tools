@@ -33,8 +33,6 @@ public class ResendingEstimateActionTask implements Transition {
   @Autowired
   MessagesToPlatform messagesToPlatform;
 
-  @Value("${estimateTheTask}")
-  String estimateTheTask;
 
   @Override
   public void configure(StateMachineTransitionConfigurer<State, Event> transitions)

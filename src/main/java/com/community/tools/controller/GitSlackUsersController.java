@@ -6,10 +6,14 @@ import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
 import static com.community.tools.util.statemachine.State.NEW_USER;
 import static org.springframework.http.ResponseEntity.ok;
 
+import com.community.tools.model.Messages;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.GitHubService;
+import com.community.tools.service.payload.SimplePayload;
+import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.State;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.model.User.Profile;
 import com.github.seratch.jslack.app_backend.interactive_messages.payload.BlockActionPayload;
@@ -24,15 +28,17 @@ import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHPerson;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.statemachine.StateMachine;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
+@Deprecated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("app")
@@ -91,30 +97,31 @@ public class GitSlackUsersController {
   @ApiImplicitParam(name = "payload", dataType = "string", paramType = "query",
       required = true, value = "payload")
   @RequestMapping(value = "/slack/action", method = RequestMethod.POST)
-  public void action(@RequestParam(name = "payload") String payload) throws Exception {
+  public ResponseEntity<String> action(@RequestParam(name = "payload") String payload)
+      throws Exception {
 
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
-    String action = pl.getActions().get(0).getValue();
-    String userId = pl.getUser().getId();
 
+    String userId = pl.getUser().getId();
+    String action = pl.getActions().get(0).getActionId();
+
+    StateMachine<State, Event> machine = stateMachineService.restoreMachine(userId);
     String user = messageService.getUserById(userId);
     switch (action) {
       case "AGREE_LICENSE":
-        if (!stateMachineService.doAction(userId, NEW_USER, QUESTION_FIRST)) {
-          messageService.sendBlocksMessage(user, messagesToPlatform.notThatMessage);
-        }
+        stateMachineService.doAction(machine, new SimplePayload(userId), QUESTION_FIRST);
+        messageService.sendBlocksMessage(user, messagesToPlatform.notThatMessage);
         break;
       case "theEnd":
-        if (stateMachineService.doAction(userId, GOT_THE_TASK, GET_THE_FIRST_TASK)) {
-          messageService
-              .sendPrivateMessage(user, "that was the end, congrats");
-        } else {
-          messageService.sendBlocksMessage(user, messagesToPlatform.notThatMessage);
-        }
+        stateMachineService.doAction(machine, new SimplePayload(userId), GET_THE_FIRST_TASK);
+        messageService
+            .sendPrivateMessage(user, "that was the end, congrats");
         break;
       default:
         messageService.sendBlocksMessage(user, messagesToPlatform.noOneCase);
     }
+    return new ResponseEntity<>("Action: " + action,
+        HttpStatus.OK);
   }
 }
