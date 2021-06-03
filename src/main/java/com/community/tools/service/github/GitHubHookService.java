@@ -5,12 +5,15 @@ import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.TaskStatusService;
 import com.community.tools.service.slack.SlackService;
+import com.community.tools.service.payload.SimplePayload;
+import com.community.tools.util.statemachine.Event;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +29,7 @@ public class GitHubHookService {
   private String opened;
   @Value("${generalInformationChannel}")
   private String channel;
-  @Autowired
-  private MessageService messageService;
+
   @Autowired
   private GitHubGiveNewTask gitHubGiveNewTask;
   @Autowired
@@ -39,7 +41,7 @@ public class GitHubHookService {
   @Autowired
   private PointsTaskService pointsTaskService;
   @Autowired
-  private TaskStatusService taskStatusService;
+  private MessageService messageService;
 
   /**
    * Methid receive data from Github and check it.
@@ -164,8 +166,12 @@ public class GitHubHookService {
 
   private void giveNewTaskIfPrOpened(JSONObject json) {
     if (json.get("action").toString().equals(opened)) {
-      String user = json.getJSONObject("sender").getString("login");
-      gitHubGiveNewTask.giveNewTask(user);
+      String userNick = json.getJSONObject("sender").getString("login");
+
+      String userId = stateMachineService.getIdByNick(userNick);
+      stateMachineService
+          .doAction(stateMachineService.restoreMachineByNick(userNick), new SimplePayload(userId),
+              Event.SEND_ESTIMATE_TASK);
     }
   }
 }

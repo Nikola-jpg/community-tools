@@ -18,9 +18,6 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 @WithStateMachine
 public class SecondQuestionActionTransition implements Transition {
 
-  @Value("${secondQuestion}")
-  private String secondQuestion;
-
   @Autowired
   private MessageService messageService;
 

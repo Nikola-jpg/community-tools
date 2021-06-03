@@ -111,6 +111,7 @@ public class AddGitNameActionTest {
     ReflectionTestUtils.setField(addGitNameAction, "getFirstTask", getFirstTask);
     ReflectionTestUtils
         .setField(addGitNameAction, "errorWithAddingGitName", errorWithAddingGitName);
+
   }
 
   @Test
