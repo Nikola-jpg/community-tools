@@ -2,9 +2,10 @@ package com.community.tools.service;
 
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
+import com.community.tools.service.payload.EstimatePayload;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.QuestionPayload;
-import com.community.tools.service.payload.SinglePayload;
+import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
@@ -28,13 +29,16 @@ public class TrackingService {
   private StateMachineRepository stateMachineRepository;
 
   @Autowired
+  private EstimateTaskService estimateTaskService;
+
+  @Autowired
   private MessagesToPlatform messagesToPlatform;
 
   /**
    * Method to start the event by state.
    *
    * @param messageFromUser message from user
-   * @param userId user id
+   * @param userId          user id
    * @throws Exception Exception
    */
   public void doAction(String messageFromUser, String userId) throws Exception {
@@ -49,7 +53,7 @@ public class TrackingService {
     switch (machine.getState().getId()) {
       case NEW_USER:
         if (messageFromUser.equalsIgnoreCase("ready")) {
-          payload = new SinglePayload(userId);
+          payload = new SimplePayload(userId);
           event = Event.QUESTION_FIRST;
         } else {
           message = Messages.NOT_THAT_MESSAGE;
@@ -68,8 +72,7 @@ public class TrackingService {
         event = Event.CONSENT_TO_INFORMATION;
         break;
       case AGREED_LICENSE:
-        String gitNick = messageFromUser;
-        payload = new VerificationPayload(userId, gitNick);
+        payload = new VerificationPayload(userId, messageFromUser);
         event = Event.LOGIN_CONFIRMATION;
         break;
       case CHECK_LOGIN:
@@ -83,6 +86,24 @@ public class TrackingService {
         payload = (VerificationPayload) machine.getExtendedState().getVariables()
             .get("dataPayload");
         break;
+      case ESTIMATE_THE_TASK:
+        int value = Integer.parseInt(messageFromUser);
+        if (value > 0 && value < 6) {
+          event = Event.CONFIRM_ESTIMATE;
+          payload = new EstimatePayload(userId, value);
+        } else {
+          message = Messages.CHOOSE_AN_ANSWER;
+        }
+        break;
+      case GOT_THE_TASK:
+        if (messageFromUser.equals("yes")) {
+          estimateTaskService.estimate(userId);
+          return;
+        } else if (messageFromUser.equals("no")) {
+          event = Event.RESENDING_ESTIMATE_TASK;
+          payload = new SimplePayload(userId);
+        }
+        break;
       default:
         event = null;
         payload = null;
@@ -90,9 +111,7 @@ public class TrackingService {
     if (event == null) {
       messageService.sendPrivateMessage(messageService.getUserById(userId), message);
     } else {
-      machine.getExtendedState().getVariables().put("dataPayload", payload);
-      machine.sendEvent(event);
-      stateMachineService.persistMachine(machine, payload.getId());
+      stateMachineService.doAction(machine, payload, event);
     }
   }
 

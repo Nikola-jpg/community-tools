@@ -18,7 +18,7 @@ import org.springframework.statemachine.annotation.WithStateMachine;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
 @WithStateMachine
-public class CheckForNewTaskActionTransition implements Transition {
+public class GetTheNewTaskActionTransition implements Transition {
 
   @Autowired
   private MessageService messageService;

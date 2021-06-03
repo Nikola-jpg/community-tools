@@ -40,7 +40,7 @@ public class PointsTaskService {
   private MessagesToPlatform messagesToPlatform;
 
   /**
-   * This method adds points to the trainee, when menntor labeled pull as "done".
+   * This method adds points to the trainee, when mentor labeled pull as "done".
    If pull has wrong name, add 0 points
    * @param mentor GitNick of person, who add label "done" to  pull request
    * @param creator GitNick of person, who pull request

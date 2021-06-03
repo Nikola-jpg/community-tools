@@ -4,7 +4,9 @@ import static com.community.tools.util.statemachine.State.ADDED_GIT;
 import static com.community.tools.util.statemachine.State.AGREED_LICENSE;
 import static com.community.tools.util.statemachine.State.CHECK_FOR_NEW_TASK;
 import static com.community.tools.util.statemachine.State.CHECK_LOGIN;
+import static com.community.tools.util.statemachine.State.ESTIMATE_THE_TASK;
 import static com.community.tools.util.statemachine.State.FIRST_QUESTION;
+import static com.community.tools.util.statemachine.State.GETTING_PULL_REQUEST;
 import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
 import static com.community.tools.util.statemachine.State.NEW_USER;
 import static com.community.tools.util.statemachine.State.SECOND_QUESTION;
@@ -16,15 +18,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.discord.DiscordConfig;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
+import com.community.tools.service.payload.EstimatePayload;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.QuestionPayload;
-import com.community.tools.service.payload.SinglePayload;
+import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 
@@ -60,6 +64,7 @@ class IntegrationTest {
 
   private static final String USER_ID = "U01QY6GRZ0X";
   private static final String USER_NAME = "Some User";
+  private static final Integer VALUE_FOR_ESTIMATE = 1;
 
   @Value("${firstQuestion}")
   private String firstQuestion;
@@ -90,6 +95,9 @@ class IntegrationTest {
 
   @Value("${generalInformationChannel}")
   private String channel;
+
+  @Value("${estimateTheTask}")
+  String estimateTheTask;
 
   @Autowired
   private StateMachineService stateMachineService;
@@ -153,7 +161,7 @@ class IntegrationTest {
     machine.getStateMachineAccessor().doWithAllRegions(access -> access
         .resetStateMachine(new DefaultStateMachineContext<>(NEW_USER,
             null, null, null)));
-    Payload payload = new SinglePayload(USER_ID);
+    Payload payload = new SimplePayload(USER_ID);
 
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
 
@@ -238,7 +246,8 @@ class IntegrationTest {
     stateMachineService.doAction(machine, payload, Event.LOGIN_CONFIRMATION);
 
     verify(messageService, times(1)).getUserById(firstArg.capture());
-    assertEquals(USER_ID, firstArg.getValue());;
+    assertEquals(USER_ID, firstArg.getValue());
+    ;
     verify(messageService, times(1)).sendPrivateMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
     assertEquals(askAboutProfile + "\n" + url, secondArg.getValue());
@@ -281,7 +290,7 @@ class IntegrationTest {
     machine.getStateMachineAccessor().doWithAllRegions(access -> access
         .resetStateMachine(new DefaultStateMachineContext<>(ADDED_GIT,
             null, null, null)));
-    Payload payload = new SinglePayload(USER_ID);
+    Payload payload = new SimplePayload(USER_ID);
 
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
 
@@ -315,7 +324,65 @@ class IntegrationTest {
 
   @SneakyThrows
   @Test
-  void checkForNewTaskActionTest() {
+  void confirmEstimateTaskActionTest() {
+    machine.getStateMachineAccessor().doWithAllRegions(access -> access
+        .resetStateMachine(new DefaultStateMachineContext<>(ESTIMATE_THE_TASK,
+            null, null, null)));
+    Payload payload = new EstimatePayload(USER_ID, VALUE_FOR_ESTIMATE);
+
+    when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
+
+    stateMachineService.doAction(machine, payload, Event.CONFIRM_ESTIMATE);
+
+    verify(messageService, times(1)).getUserById(firstArg.capture());
+    assertEquals(USER_ID, firstArg.getValue());
+    verify(messageService, times(1)).sendPrivateMessage(firstArg.capture(), secondArg.capture());
+    assertEquals(USER_NAME, firstArg.getValue());
+    assertEquals(Messages.CONFIRM_ESTIMATE, secondArg.getValue());
+    assertEquals(VALUE_FOR_ESTIMATE, machine.getExtendedState().getVariables().get("value"));
+  }
+
+  @SneakyThrows
+  @Test
+  void resendingEstimateTaskActionTest() {
+    machine.getStateMachineAccessor().doWithAllRegions(access -> access
+        .resetStateMachine(new DefaultStateMachineContext<>(GOT_THE_TASK,
+            null, null, null)));
+    Payload payload = new SimplePayload(USER_ID);
+
+    when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
+
+    stateMachineService.doAction(machine, payload, Event.RESENDING_ESTIMATE_TASK);
+
+    verify(messageService, times(1)).getUserById(firstArg.capture());
+    assertEquals(USER_ID, firstArg.getValue());
+    verify(messageService, times(1)).sendBlocksMessage(firstArg.capture(), secondArg.capture());
+    assertEquals(USER_NAME, firstArg.getValue());
+    assertEquals(estimateTheTask, secondArg.getValue());
+  }
+
+  @SneakyThrows
+  @Test
+  void sendEstimateTaskActionTest() {
+    machine.getStateMachineAccessor().doWithAllRegions(access -> access
+        .resetStateMachine(new DefaultStateMachineContext<>(GETTING_PULL_REQUEST,
+            null, null, null)));
+    Payload payload = new SimplePayload(USER_ID);
+
+    when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
+
+    stateMachineService.doAction(machine, payload, Event.SEND_ESTIMATE_TASK);
+
+    verify(messageService, times(1)).getUserById(firstArg.capture());
+    assertEquals(USER_ID, firstArg.getValue());
+    verify(messageService, times(1)).sendBlocksMessage(firstArg.capture(), secondArg.capture());
+    assertEquals(USER_NAME, firstArg.getValue());
+    assertEquals(estimateTheTask, secondArg.getValue());
+  }
+
+  @SneakyThrows
+  @Test
+  void getTheNewTaskActionTest() {
     machine.getStateMachineAccessor().doWithAllRegions(access -> access
         .resetStateMachine(new DefaultStateMachineContext<>(GOT_THE_TASK,
             null, null, null)));
