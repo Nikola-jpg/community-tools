@@ -2,7 +2,8 @@ package com.community.tools.util.statemachine.actions.transitions.verifications;
 
 import static com.community.tools.util.statemachine.Event.ADD_GIT_NAME_AND_FIRST_TASK;
 import static com.community.tools.util.statemachine.State.CHECK_LOGIN;
-import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
+import static com.community.tools.util.statemachine.State.ESTIMATE_THE_TASK;
+import static com.community.tools.util.statemachine.State.GETTING_PULL_REQUEST;
 
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
@@ -55,7 +56,7 @@ public class AddGitNameActionTransition implements Transition {
     transitions
         .withExternal()
         .source(CHECK_LOGIN)
-        .target(GOT_THE_TASK)
+        .target(GETTING_PULL_REQUEST)
         .event(ADD_GIT_NAME_AND_FIRST_TASK)
         .action(this, errorAction);
   }

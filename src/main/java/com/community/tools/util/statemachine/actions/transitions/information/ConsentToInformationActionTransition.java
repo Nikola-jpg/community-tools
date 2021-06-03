@@ -18,12 +18,6 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 @WithStateMachine
 public class ConsentToInformationActionTransition implements Transition {
 
-  @Value("${messageAboutSeveralInfoChannel}")
-  private String messageAboutSeveralInfoChannel;
-
-  @Value("${addGitName}")
-  private String addGitName;
-
   @Autowired
   private Action<State, Event> errorAction;
 

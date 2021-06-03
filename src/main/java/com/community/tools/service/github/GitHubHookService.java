@@ -3,13 +3,14 @@ package com.community.tools.service.github;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
+import com.community.tools.service.payload.SimplePayload;
+import com.community.tools.util.statemachine.Event;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,8 @@ public class GitHubHookService {
   private String opened;
   @Value("${generalInformationChannel}")
   private String channel;
-
   @Autowired
-  private GitHubGiveNewTask gitHubGiveNewTask;
+  private MessageService messageService;
   @Autowired
   private AddMentorService addMentorService;
   @Autowired
@@ -36,8 +36,6 @@ public class GitHubHookService {
   private KarmaService karmaService;
   @Autowired
   private PointsTaskService pointsTaskService;
-  @Autowired
-  private MessageService messageService;
 
   /**
    * Methid receive data from Github and check it.
@@ -66,8 +64,8 @@ public class GitHubHookService {
         }
       } else {
         messageService.sendMessageToConversation(channel,
-                  "User " + user
-                          + " created a pull request \n url: " + url);
+            "User " + user
+                + " created a pull request \n url: " + url);
       }
     }
   }
@@ -76,7 +74,7 @@ public class GitHubHookService {
     if (json.get("action").toString().equals(labeledStr)) {
       List<Object> list = json.getJSONObject("pull_request").getJSONArray("labels").toList();
       return list.stream().map(o -> (HashMap) o)
-              .anyMatch(e -> e.get("name").equals("ready for review"));
+          .anyMatch(e -> e.get("name").equals("ready for review"));
     }
     return false;
   }
@@ -97,14 +95,13 @@ public class GitHubHookService {
         creator = json.getJSONObject("issue").getJSONObject("user").getString("login");
       }
 
-
       addMentorService.addMentor(mentor, creator);
     }
   }
 
   private void addPointIfPullLabeledDone(JSONObject json) {
     if (json.get("action").toString().equals(labeledStr)
-            && json.getJSONObject("label").getString("name").equals("done")) {
+        && json.getJSONObject("label").getString("name").equals("done")) {
       List<Object> list = json.getJSONObject("pull_request").getJSONArray("labels").toList();
       String sender = json.getJSONObject("sender").getString("login");
       String creator = json.getJSONObject("pull_request").getJSONObject("user").getString("login");
@@ -119,12 +116,12 @@ public class GitHubHookService {
     if (json.get("action").equals("created") && hasIssueAndComment(json)) {
       traineeReviewer = json.getJSONObject("comment").getJSONObject("user").getString("login");
       checkCommentApproved = json.getJSONObject("comment")
-              .getString("body").equalsIgnoreCase("approved");
+          .getString("body").equalsIgnoreCase("approved");
     } else if (json.get("action").equals("submitted")) {
       traineeReviewer = json.getJSONObject("review").getJSONObject("user").getString("login");
       if (json.getJSONObject("review").getString("body") != null) {
         checkCommentApproved = json.getJSONObject("review")
-                .getString("body").equalsIgnoreCase("approved");
+            .getString("body").equalsIgnoreCase("approved");
       }
     }
     if (checkCommentApproved) {
@@ -134,7 +131,7 @@ public class GitHubHookService {
 
   private void checkReactionToChangeKarma(JSONObject json) {
     if (json.get("action").equals(labeledStr)
-            && json.getJSONObject("label").getString("name").equals("done")) {
+        && json.getJSONObject("label").getString("name").equals("done")) {
       int numberOfPullRequest = json.getInt("number");
       karmaService.changeKarmaBasedOnReaction(numberOfPullRequest);
     }
@@ -161,8 +158,12 @@ public class GitHubHookService {
 
   private void giveNewTaskIfPrOpened(JSONObject json) {
     if (json.get("action").toString().equals(opened)) {
-      String user = json.getJSONObject("sender").getString("login");
-      gitHubGiveNewTask.giveNewTask(user);
+      String userNick = json.getJSONObject("sender").getString("login");
+
+      String userId = stateMachineService.getIdByNick(userNick);
+      stateMachineService
+          .doAction(stateMachineService.restoreMachineByNick(userNick), new SimplePayload(userId),
+              Event.SEND_ESTIMATE_TASK);
     }
   }
 }
