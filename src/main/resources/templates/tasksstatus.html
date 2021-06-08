@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <style>
-        .container {
+        div.container {
             height: 600px;
             margin: auto;
             overflow: auto;
@@ -14,7 +14,7 @@
 
         }
 
-        .table {
+        div.table {
             display: table;
             font-family: arial, sans-serif;
             border-collapse: collapse;
@@ -22,49 +22,44 @@
             table-layout: fixed;
         }
 
-        .thead {
+        div.thead {
             display: table-header-group;
             background: #FFFFFF;
             position: -webkit-sticky; /* for Safari */
             position: sticky;
             top: 0;
-            z-index: 2;
+            z-index: 1;
 
             border: 1px solid #dddddd;
             text-align: center;
             padding: 8px;
+
         }
 
-        .tbody {
+        div.tbody {
             display: table-row-group;
-        }
-
-        .th_left {
-
-            background: #FFFFFF;
-            position: -webkit-sticky; /* for Safari */
-            position: sticky;
-            left: 0;
-            z-index: 0;
-            text-align: center;
 
         }
 
-        .tdd {
-            background: #FFFFFF;
-            position: -webkit-sticky; /* for Safari */
-            position: sticky;
-            left: 0;
-            z-index: 0;
-
-        }
-
-        .tr {
+        div.tr {
             display: table-row;
+        }
+
+        p.td, p.th {
+            display: table-cell;
+
+            border: 1px solid #dddddd;
+            padding: 8px;
+
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            vertical-align: middle;
 
         }
 
-        .td, .th {
+        p.th_vertical{
+
             display: table-cell;
             border: 1px solid #dddddd;
 
@@ -74,65 +69,36 @@
             white-space: nowrap;
             text-overflow: ellipsis;
 
-            width: calc(80%);
+            width: calc(5%);
+            height: 100px;
 
+            writing-mode: vertical-lr;
+            vertical-align: middle;
         }
 
         #taskStatus {
             display: table-cell;
             border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
-
-        .colgroup {
-            display: table-column-group;
-
-        }
-
-        .col {
-            display: table-column;
-
         }
 
         .readyForReview {
             display: table-cell;
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
             background: #008672;
         }
 
         .changesRequest{
             display: table-cell;
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
             background: #d73a4a;
         }
 
         .done{
             display: table-cell;
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
             background: #3bbf5a;
         }
 
         .pullRequest{
             display: table-cell;
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
             background: #f6f8fa;
-        }
-
-        p.vertical{
-            -webkit-transform: rotate(-90deg);
-            -moz-transform: rotate(-90deg);
-            -ms-transform: rotate(-90deg);
-            -o-transform: rotate(-90deg);
-            transform: rotate(-90deg);
         }
 
     </style>
@@ -147,20 +113,20 @@
         <div class="thead">
             <div class="tr">
 
-                <div style="width: 5%;" class="th">#</div>
-                <div style="width: 25%;" class="th">
-                    <a th:href="@{|${baseUrl}/tasksstatus/|(sortByField = ${'platformName'}, sortDirection = ${reverseSortDirection})}">SlackName/DiscordName</a>
-                </div>
-                <div style="width: 25%;" class="th">
+                <p style="width: 5%;" class="th">#</p>
+                <p style="width: 22%;" class="th">
+                    <a th:href="@{|${baseUrl}/tasksstatus/|(sortByField = ${'platformName'}, sortDirection = ${reverseSortDirection})}">SlackName or<br>DiscordName</br></a>
+                </p>
+                <p style="width: 22%;" class="th">
                     <a th:href="@{|${baseUrl}/tasksstatus/|(sortByField = ${'gitName'}, sortDirection = ${reverseSortDirection})}">GitName</a>
-                </div>
-                <div style="width: 5%;" class="th">
-                    <a th:href="@{|${baseUrl}/tasksstatus/|(sortByField = ${'completedTasks'}, sortDirection = ${reverseSortDirection})}">Completed tasks</a>
-                </div>
+                </p>
+                <p style="width: 12%;" class="th">
+                    <a th:href="@{|${baseUrl}/tasksstatus/|(sortByField = ${'completedTasks'}, sortDirection = ${reverseSortDirection})}">Completed<br>tasks</br></a>
+                </p>
 
-                <div style="width: 5%; transform: rotate(-90deg); text-align: left;" class="th"
-                     th:each="task : ${tasksForUsers}"
-                     th:text="${task}"></div>
+                <p class="th_vertical"
+                   th:each="task : ${tasksForUsers}"
+                   th:text="${task}"></p>
 
             </div>
         </div>
@@ -169,16 +135,15 @@
             <div class="tr" th:each="user, rowStat: ${userTasksStatuses}">
                 <!--th:style="${rowStat.odd} ? 'background-color: #F0F8FF;' : 'background-color: #FFFFFF;'">-->
 
-                <div class="td" th:text="${rowStat.count}"></div>
-                <div class="td" th:text="${user.getLoginPlatform()}"></div>
-                <div class="td" th:text="${user.getLoginGithub()}"></div>
-                <div class="td" th:text="${user.getCompletedTasks()}"></div>
+                <p class="td" th:text="${rowStat.count}"></p>
+                <p class="td" th:text="${user.getLoginPlatform()}"></p>
+                <p class="td" th:text="${user.getLoginGithub()}"></p>
+                <p style="text-align: center;" class="td" th:text="${user.getCompletedTasks()}"></p>
 
 
-                <div id="taskStatus" th:each="task, numberTask: ${tasksForUsers}" th:class="${user.getTaskStatusMap().get(task)}">
-                </div>
+                <p id="taskStatus" th:each="task, numberTask: ${tasksForUsers}" th:class="${user.getTaskStatusMap().get(task)}">
+                </p>
             </div>
-
         </div>
     </div>
 </div>
