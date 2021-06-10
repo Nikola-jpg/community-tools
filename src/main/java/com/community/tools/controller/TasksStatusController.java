@@ -85,18 +85,6 @@ public class TasksStatusController {
   }
 
   /**
-   * Update from json.
-   * @param body json
-   * @param response status
-   */
-  @RequestMapping(value = "/update", method = RequestMethod.POST)
-  public void updateTasksStatus(@RequestBody String body, HttpServletResponse response) {
-    JSONObject json = new JSONObject(body);
-    taskStatusService.updateTasksStatus(json);
-    response.getStatus();
-  }
-
-  /**
    * This method return image with table, which contains first 5 trainees of leaderboard.
    * @param response HttpServletResponse
    * @throws EntityNotFoundException EntityNotFoundException

@@ -39,7 +39,4 @@ public class User {
     return this.karma + this.pointByTask;
   }
 
-  public void addCompletedTask() {
-    completedTasks++;
-  }
 }

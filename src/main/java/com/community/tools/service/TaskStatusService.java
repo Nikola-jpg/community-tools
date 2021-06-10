@@ -132,14 +132,26 @@ public class TaskStatusService {
       }
     });
     stateMachineRepository.findAll().forEach(user -> {
-      user.setCompletedTasks(0);
-      user.getTaskStatuses().forEach(task -> {
-        if (task.getTaskStatus().equals("done")) {
-          user.addCompletedTask();
-        }
-      });
+      user.setCompletedTasks(countCompletedTasksByUser(user));
       stateMachineRepository.save(user);
     });
+  }
+
+  /**
+   * Counts the number of completed tasks.
+   * @param user user
+   * @return number tasks
+   */
+  public int countCompletedTasksByUser(User user) {
+    int completedTasks = 0;
+    List<TaskStatus> taskStatusList = taskStatusRepository.findAllByUser(user);
+    for (TaskStatus taskStatus: taskStatusList) {
+      if (taskStatus.getTaskStatus().equals("done")) {
+        completedTasks++;
+      }
+    }
+    System.out.println(completedTasks);
+    return completedTasks;
   }
 
   /**
@@ -173,10 +185,8 @@ public class TaskStatusService {
           } else {
             createTaskStatus(user, task, status);
           }
-          if (status.equals("done")) {
-            user.addCompletedTask();
-            stateMachineRepository.save(user);
-          }
+          user.setCompletedTasks(countCompletedTasksByUser(user));
+          stateMachineRepository.save(user);
         }
       });
     }
