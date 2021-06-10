@@ -48,7 +48,7 @@ div.tr {
 
 .vertical{
   width: calc(5%);
-  height: 100px;
+  height: auto;
 
   writing-mode: vertical-lr;
 
