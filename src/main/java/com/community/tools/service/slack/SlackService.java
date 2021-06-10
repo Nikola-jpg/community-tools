@@ -312,6 +312,17 @@ public class SlackService implements MessageService<String> {
   }
 
   /**
+   * Get id with real name.
+   * @return map key id, value real name
+   */
+  @Override
+  public Map<String, String> getIdWithName() {
+    return getAllUsers().stream()
+        .filter(u -> u.getRealName() != null)
+        .collect(Collectors.toMap(user -> user.getId(), user -> user.getRealName()));
+  }
+
+  /**
    * Send announcement with message.
    *
    * @param message Text of message

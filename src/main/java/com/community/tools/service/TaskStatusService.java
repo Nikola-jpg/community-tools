@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +32,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.thymeleaf.TemplateEngine;
@@ -54,6 +54,9 @@ public class TaskStatusService {
 
   @Autowired
   private TemplateEngine templateEngine;
+
+  @Autowired
+  private MessageService messageService;
 
   /**
    * Sorted by fields.
@@ -241,4 +244,18 @@ public class TaskStatusService {
         + req.getContextPath();
   }
 
+  /**
+   * This method load slack users and add slackName to the User model.
+   * @return List of Users.
+   */
+  public List<User> addPlatformNameToUser(int pageNumber,
+      String sortByField, String sortDirection) {
+    List<User> list = findAll(pageNumber, sortByField, sortDirection).getContent();
+    Map<String, String> map = messageService.getIdWithName();
+    for (User user: list) {
+      String userPlatformName = map.get(user.getUserID());
+      user.setPlatformName(userPlatformName);
+    }
+    return list;
+  }
 }

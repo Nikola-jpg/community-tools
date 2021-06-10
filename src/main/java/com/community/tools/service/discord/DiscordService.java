@@ -237,4 +237,15 @@ public class DiscordService implements MessageService<MessageEmbed> {
 
     return users;
   }
+
+  /**
+   * Get id with real name.
+   * @return map key id, value real name
+   */
+  @Override
+  public Map<String, String> getIdWithName() {
+    return getAllUsers().stream()
+        .filter(u -> u.getName() != null)
+        .collect(Collectors.toMap(user -> user.getId(), user -> user.getName()));
+  }
 }

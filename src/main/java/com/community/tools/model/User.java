@@ -23,6 +23,7 @@ public class User {
   private String secondAnswerAboutRules;
   private String thirdAnswerAboutRules;
 
+  @Transient
   private String platformName;
 
   private Integer completedTasks;

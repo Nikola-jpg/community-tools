@@ -1,0 +1,93 @@
+div.container {
+  height: 600px;
+  margin: auto;
+  overflow: auto;
+}
+
+div.table {
+  display: table;
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.thead {
+  display: table-header-group;
+  background: #FFFFFF;
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  top: 0;
+  z-index: 1;
+
+  text-align: center;
+  border: 1px solid #dddddd;
+  padding: 8px;
+
+
+}
+
+.tbody {
+  display: table-row-group;
+  border: 1px solid #dddddd;
+  padding: 8px;
+
+}
+
+div.tr {
+  display: table-row;
+}
+
+.td, .th {
+  display: table-cell;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.vertical{
+  width: calc(5%);
+  height: 100px;
+
+  writing-mode: vertical-lr;
+
+}
+
+.th_numeration {
+  width: 5%;
+}
+
+
+.th_name {
+  width: 25%;
+}
+
+.th_done {
+  width: 8%;
+}
+
+#taskStatus {
+  display: table-cell;
+  border: 1px solid #dddddd;
+}
+
+.readyForReview {
+  display: table-cell;
+  background: #008672;
+}
+
+.changesRequest{
+  display: table-cell;
+  background: #d73a4a;
+}
+
+.done{
+  display: table-cell;
+  background: #3bbf5a;
+}
+
+.pullRequest{
+  display: table-cell;
+  background: #f6f8fa;
+}

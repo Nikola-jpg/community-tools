@@ -56,8 +56,8 @@ public class TasksStatusController {
 
     List<UserTasksStatusDto> userTasksStatusDtoList = new ArrayList<>();
 
-    Page<User> page = taskStatusService.findAll(1, sortByField, sortDirection);
-    List<User> users = page.getContent();
+    List<User> users = taskStatusService
+        .addPlatformNameToUser(1, sortByField, sortDirection);
     users.forEach(user -> {
       userTasksStatusDtoList.add(UserTasksStatusDto.fromUser(user, tasksForUsers));
     });
