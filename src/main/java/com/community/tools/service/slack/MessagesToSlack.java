@@ -88,4 +88,6 @@ public class MessagesToSlack extends MessagesToPlatform<String> {
   public static final String NEXT_TASK = "[{\"type\": \"section\",\"text\":"
       + " {\"type\": \"mrkdwn\",\"text\": \"Here is your next"
       + " <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
+  public static final String FAILED_BUILD = "[{\"type\": \"section\", \"text\": "
+      + "{ \"type\": \"mrkdwn\", \"text\": \"Oops, your build at the task <%s|%s> is down!\"}}]";
 }

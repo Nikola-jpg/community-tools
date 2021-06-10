@@ -44,6 +44,7 @@ public class GitHubHookService {
    */
   public void doActionsAfterReceiveHook(JSONObject json) {
     sendNotificationMessageAboutPR(json);
+    sendMessageAboutFailedBuild(json);
     giveNewTaskIfPrOpened(json);
     addMentorIfEventIsReview(json);
     addPointIfPullLabeledDone(json);
@@ -164,6 +165,21 @@ public class GitHubHookService {
       stateMachineService
           .doAction(stateMachineService.restoreMachineByNick(userNick), new SimplePayload(userId),
               Event.SEND_ESTIMATE_TASK);
+    }
+  }
+
+  private void sendMessageAboutFailedBuild(JSONObject json) {
+    if (json.get("action").toString().equals("completed") && json.has("check_run")) {
+      JSONObject checkRun = json.getJSONObject("check_run");
+      if (checkRun.getString("conclusion").equals("failure")) {
+
+        String url = checkRun.getString("html_url");
+        String task = checkRun.getJSONObject("check_suite").getString("head_branch");
+        String userNick = json.getJSONObject("sender").getString("login");
+        String userId = stateMachineService.getIdByNick(userNick);
+        messageService.sendBlocksMessage(messageService.getUserById(userId),
+            messageService.failedBuildMessage(url, task));
+      }
     }
   }
 }

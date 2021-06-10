@@ -154,6 +154,11 @@ public class SlackService implements MessageService<String> {
   }
 
   @Override
+  public String failedBuildMessage(String url, String task) {
+    return String.format(MessagesToSlack.FAILED_BUILD, url, task);
+  }
+
+  @Override
   public String statisticMessage(List<EventData> events) {
 
     StringBuilder messageBuilder = new StringBuilder();

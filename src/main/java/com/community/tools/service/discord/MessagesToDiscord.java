@@ -50,17 +50,18 @@ public class MessagesToDiscord extends MessagesToPlatform<MessageEmbed> {
         .addField("", Messages.ERROR_WITH_ADDING_GIT_NAME, false)
         .addField("",
             "[*Liliya Stepanovna*](https://discord.com/channels/@me/842774422792437781)", false)
-        .setThumbnail("https://cdn-0.emojis.wiki/emoji-pics/facebook/woman-technologist-facebook.png")
+        .setThumbnail(
+            "https://cdn-0.emojis.wiki/emoji-pics/facebook/woman-technologist-facebook.png")
         .build();
 
-    estimateTheTask = new  EmbedBuilder()
+    estimateTheTask = new EmbedBuilder()
         .setTitle(Messages.ESTIMATE_HEADER)
         .addField("", "*1*" + Messages.ESTIMATE_QUESTION_FIRST, false)
         .addField("", "*2*" + Messages.ESTIMATE_QUESTION_SECOND, false)
         .addField("", "*3*" + Messages.ESTIMATE_QUESTION_THIRD, false)
         .addField("", "*4*" + Messages.ESTIMATE_QUESTION_FOURTH, false)
         .addField("", "*5*" + Messages.ESTIMATE_QUESTION_FIFTH, false)
-        .addField("", "`" + Messages.ESTIMATE_FOOTER + "` :point_down:",false)
+        .addField("", "`" + Messages.ESTIMATE_FOOTER + "` :point_down:", false)
         .build();
 
     //Information channels message
@@ -87,4 +88,6 @@ public class MessagesToDiscord extends MessagesToPlatform<MessageEmbed> {
 
   public static final String NEXT_TASK = "Here is your next [TASK]("
       + "https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
+
+  public static final String FAILED_BUILD = "Oops, your build at the task [";
 }
