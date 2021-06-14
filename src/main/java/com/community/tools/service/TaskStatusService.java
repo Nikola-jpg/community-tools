@@ -150,7 +150,6 @@ public class TaskStatusService {
         completedTasks++;
       }
     }
-    System.out.println(completedTasks);
     return completedTasks;
   }
 
