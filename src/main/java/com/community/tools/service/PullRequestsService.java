@@ -29,21 +29,13 @@ public class PullRequestsService {
   public Map<String, List<GHPullRequest>> sortedByActors(List<GHPullRequest> pullRequests) {
     Map<String, List<GHPullRequest>> sortedMapGroupByActors = new HashMap<>();
 
-    pullRequests.stream().filter(ed -> {
+    pullRequests.stream().forEach(ed -> {
       try {
-        return !sortedMapGroupByActors
-            .containsKey(ed.getUser().getLogin());
+        sortedMapGroupByActors.put(ed.getUser().getLogin(), new ArrayList<>());
       } catch (IOException exception) {
         throw new RuntimeException(exception);
       }
-    })
-        .forEach(ed -> {
-          try {
-            sortedMapGroupByActors.put(ed.getUser().getLogin(), new ArrayList<>());
-          } catch (IOException exception) {
-            throw new RuntimeException(exception);
-          }
-        });
+    });
 
     pullRequests.stream().forEach(ed -> {
       try {
@@ -65,7 +57,7 @@ public class PullRequestsService {
       sortedByTitlePullRequest(List<GHPullRequest> pullRequests) {
     Map<String, List<GHPullRequest>> sortedMapGroupByTitles = new HashMap<>();
 
-    pullRequests.stream().filter(ed -> !sortedMapGroupByTitles.containsKey(ed.getTitle()))
+    pullRequests.stream()
         .forEach(ed -> sortedMapGroupByTitles.put(ed.getTitle(), new ArrayList<>()));
 
     pullRequests.stream().forEach(ed -> sortedMapGroupByTitles.get(ed.getTitle()).add(ed));

@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,7 +48,7 @@ public class TasksStatusController {
    * @param model Model
    * @return webpage with template "tasksstatus"
    */
-  @RequestMapping(value = "", method = RequestMethod.GET)
+  @GetMapping
   public String getTaskStatus(Model model,
       @RequestParam(name = "sortByField", required = false, defaultValue = "gitName")
           String sortByField,
@@ -74,14 +75,23 @@ public class TasksStatusController {
   }
 
   /**
+   * Page with confirmation.
+   * @return page confirmation
+   */
+  @RequestMapping(value = "/download", method = RequestMethod.GET)
+  public String confirmPage() {
+    return "tasksstatus_download";
+  }
+
+  /**
    * Download and save into data base all tasks status.
    * @param response response
    */
-  @RequestMapping(value = "/download", method = RequestMethod.GET)
-  public void downloadAllTasksStatus(HttpServletResponse response) {
+  @RequestMapping(value = "/download", method = RequestMethod.POST)
+  public String downloadAllTasksStatus(HttpServletResponse response) {
     List<GHPullRequest> ghPullRequests = pullRequestsService.getPullRequests();
     taskStatusService.cleanBootTasksStatus(ghPullRequests);
-    response.getStatus();
+    return "redirect:";
   }
 
   /**

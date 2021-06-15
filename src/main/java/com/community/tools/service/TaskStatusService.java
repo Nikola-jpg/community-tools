@@ -143,14 +143,9 @@ public class TaskStatusService {
    * @return number tasks
    */
   public int countCompletedTasksByUser(User user) {
-    int completedTasks = 0;
     List<TaskStatus> taskStatusList = taskStatusRepository.findAllByUser(user);
-    for (TaskStatus taskStatus: taskStatusList) {
-      if (taskStatus.getTaskStatus().equals("done")) {
-        completedTasks++;
-      }
-    }
-    return completedTasks;
+    return taskStatusList.stream().filter(taskStatus -> taskStatus.getTaskStatus().equals("done"))
+        .collect(Collectors.toList()).size();
   }
 
   /**
