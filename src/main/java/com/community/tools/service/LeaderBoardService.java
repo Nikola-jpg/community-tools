@@ -1,13 +1,17 @@
 package com.community.tools.service;
 
+import com.community.tools.model.EventData;
 import com.community.tools.model.User;
+import com.community.tools.service.github.GitHubService;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +36,9 @@ public class LeaderBoardService {
 
   @Autowired
   private MessageService messageService;
+
+  @Autowired
+  GitHubService gitHubService;
 
 
   /**
@@ -65,7 +72,7 @@ public class LeaderBoardService {
    */
   public String getLeaderboardTemplate() {
     final Context ctx = new Context();
-    List<User> list = addSlackNameToUser();
+    List<User> list = getActiveUsersFromPeriod(180);
     list.sort(Comparator.comparing(User::getTotalPoints).reversed());
     List<User> listFirst = list.stream().limit(5).collect(Collectors.toList());
     ctx.setVariable("entities", listFirst);
@@ -88,6 +95,28 @@ public class LeaderBoardService {
       user.setSlackLogin(slackName);
     }
     return list;
+  }
+
+  /**
+   * This method get active users from period in days
+   * and add their to the User model.
+   * @param days Period in days.
+   * @return List of Users.
+   */
+  public  List<User> getActiveUsersFromPeriod(int days) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.DATE,-days);
+    List<User> list = addSlackNameToUser();
+    Date endDate = new Date();
+    Date startDate = calendar.getTime();
+    List<EventData> events = gitHubService.getEvents(startDate,endDate);
+
+    Set<String> activeUsers = events.stream()
+            .map(EventData::getActorLogin).collect(Collectors.toSet());
+    List<User> userList = list.stream()
+            .filter(user -> activeUsers
+                    .contains(user.getGitName())).collect(Collectors.toList());
+    return userList;
   }
 
 }
