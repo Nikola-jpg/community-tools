@@ -42,8 +42,8 @@
                 <p class="tbody td" th:text="${user.getLoginGithub()}"></p>
                 <p class="tbody td" th:text="${user.getCompletedTasks()}"></p>
 
-
-                <p id="taskStatus" th:each="task, numberTask: ${tasksForUsers}" th:class="${user.getTaskStatusMap().get(task)}">
+                <p id="taskStatus" th:each="task, numberTask: ${tasksForUsers}"
+                   th:class='${user.getTaskStatusMap().get(task) == null ? "" : user.getTaskStatusMap().get(task).replaceAll(" ","_")}'>
                 </p>
             </div>
         </div>

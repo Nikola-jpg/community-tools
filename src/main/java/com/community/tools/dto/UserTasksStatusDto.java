@@ -33,31 +33,8 @@ public class UserTasksStatusDto {
     Arrays.stream(tasksForUsers).forEach(task -> {
       user.getTaskStatuses().forEach(taskStatus -> {
         if (task.equals(taskStatus.getTaskName())) {
-          String viewTaskStatus;
-          switch (taskStatus.getTaskStatus()) {
-            case "pull request": {
-              viewTaskStatus = "pullRequest";
-              break;
-            }
-            case "changes requested": {
-              viewTaskStatus = "changesRequest";
-              break;
-            }
-            case "ready for review": {
-              viewTaskStatus = "readyForReview";
-              break;
-            }
-            case "done": {
-              viewTaskStatus = "done";
-              break;
-            }
-            default: {
-              viewTaskStatus = "";
-            }
-          }
-          userTasksStatusDto.getTaskStatusMap().put(task, viewTaskStatus);
+          userTasksStatusDto.getTaskStatusMap().put(task, taskStatus.getTaskStatus());
         }
-
       });
     });
     return userTasksStatusDto;

@@ -72,22 +72,22 @@ div.tr {
   border: 1px solid #dddddd;
 }
 
-.readyForReview {
+.ready_for_review {
   display: table-cell;
   background: #008672;
 }
 
-.changesRequest{
+.changes_requested {
   display: table-cell;
   background: #d73a4a;
 }
 
-.done{
+.done {
   display: table-cell;
   background: #3bbf5a;
 }
 
-.pullRequest{
+.pull_request {
   display: table-cell;
   background: #f6f8fa;
 }
