@@ -1,6 +1,7 @@
 package com.community.tools.service.github;
 
 import com.community.tools.service.MessageService;
+import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.payload.SimplePayload;
@@ -28,6 +29,8 @@ public class GitHubHookService {
   private String channel;
   @Autowired
   private MessageService messageService;
+  @Autowired
+  private MessagesToPlatform messagesToPlatform;
   @Autowired
   private AddMentorService addMentorService;
   @Autowired
@@ -178,7 +181,7 @@ public class GitHubHookService {
         String userNick = json.getJSONObject("sender").getString("login");
         String userId = stateMachineService.getIdByNick(userNick);
         messageService.sendBlocksMessage(messageService.getUserById(userId),
-            messageService.failedBuildMessage(url, task));
+            messagesToPlatform.failedBuildMessage(url, task));
       }
     }
   }

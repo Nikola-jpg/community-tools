@@ -24,8 +24,6 @@ import java.util.Set;
 
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.api.EmbedBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -151,11 +149,6 @@ public class SlackService implements MessageService<String> {
   @Override
   public String ratingMessage(String url, String img) {
     return String.format(MessagesToSlack.LINK_PUBLISH_WEEK_STATS, url, img);
-  }
-
-  @Override
-  public String failedBuildMessage(String url, String task) {
-    return String.format(MessagesToSlack.FAILED_BUILD, url, task);
   }
 
   @Override

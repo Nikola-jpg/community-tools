@@ -72,6 +72,11 @@ public class MessagesToSlack extends MessagesToPlatform<String> {
         + Messages.MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_7 + "\"}]}]";
   }
 
+  @Override
+  public String failedBuildMessage(String url, String task) {
+    return String.format(MessagesToSlack.FAILED_BUILD, url, task);
+  }
+
   public static final String STATISTIC = "[{\"type\": \"header\",\t\"text\": {"
       + "\"type\":\"plain_text\",\"text\": \"Statistic:\"}},{\"type\": \"context\",\"elements\":"
       + " [{\"type\": \"mrkdwn\",\"text\": \"";

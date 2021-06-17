@@ -2,7 +2,6 @@ package com.community.tools.service;
 
 import com.community.tools.model.EventData;
 import java.util.List;
-import net.dv8tion.jda.api.EmbedBuilder;
 
 public interface MessageService<T> extends UserService {
 
@@ -19,8 +18,6 @@ public interface MessageService<T> extends UserService {
   T nextTaskMessage(List<String> tasksList, int numberTask);
 
   T ratingMessage(String url, String img);
-
-  T failedBuildMessage(String url, String task);
 
   T statisticMessage(List<EventData> events);
 

@@ -115,13 +115,6 @@ public class DiscordService implements MessageService<MessageEmbed> {
   }
 
   @Override
-  public MessageEmbed failedBuildMessage(String url, String task) {
-    return new EmbedBuilder()
-        .addField("", MessagesToDiscord.FAILED_BUILD + task + "](" + url + ") is down!", false)
-        .build();
-  }
-
-  @Override
   public MessageEmbed statisticMessage(List<EventData> events) {
 
     EmbedBuilder embedBuilder = new EmbedBuilder();
