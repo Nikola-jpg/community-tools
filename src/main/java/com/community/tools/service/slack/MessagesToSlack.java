@@ -74,7 +74,11 @@ public class MessagesToSlack extends MessagesToPlatform<String> {
 
   @Override
   public String failedBuildMessage(String url, String task) {
-    return String.format(MessagesToSlack.FAILED_BUILD, url, task);
+    return String
+        .format(
+            "[{\"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": "
+                + "\"Oops, your build at the task <%s|%s> is down!\"}}]",
+            url, task);
   }
 
   public static final String STATISTIC = "[{\"type\": \"header\",\t\"text\": {"
@@ -93,6 +97,4 @@ public class MessagesToSlack extends MessagesToPlatform<String> {
   public static final String NEXT_TASK = "[{\"type\": \"section\",\"text\":"
       + " {\"type\": \"mrkdwn\",\"text\": \"Here is your next"
       + " <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
-  public static final String FAILED_BUILD = "[{\"type\": \"section\", \"text\": "
-      + "{ \"type\": \"mrkdwn\", \"text\": \"Oops, your build at the task <%s|%s> is down!\"}}]";
 }

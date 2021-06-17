@@ -89,12 +89,10 @@ public class MessagesToDiscord extends MessagesToPlatform<MessageEmbed> {
   @Override
   public MessageEmbed failedBuildMessage(String url, String task) {
     return new EmbedBuilder()
-        .addField("", MessagesToDiscord.FAILED_BUILD + task + "](" + url + ") is down!", false)
+        .addField("", "Oops, your build at the task [" + task + "](" + url + ") is down!", false)
         .build();
   }
 
   public static final String NEXT_TASK = "Here is your next [TASK]("
       + "https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
-
-  public static final String FAILED_BUILD = "Oops, your build at the task [";
 }
