@@ -40,7 +40,7 @@ public class LeaderBoardController {
    */
   @GetMapping("/")
   public String getLeaderboard(Model model) {
-    List<User> list = leaderBoardService.getActiveUsersFromPeriod(90);
+    List<User> list = leaderBoardService.getActiveUsersFromPeriod(180);
     list.sort(Comparator.comparing(User::getTotalPoints).reversed());
     model.addAttribute("entities",list);
 
