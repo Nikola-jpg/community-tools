@@ -21,57 +21,6 @@ public class PullRequestsService {
   private final GitHubConnectService gitHubConnectService;
 
   /**
-   * Get sorted map group by actors.
-   * Key is actors name, value are list pull requests.
-   * @return sorted map
-   */
-  public Map<String, List<GHPullRequest>> sortedByActors(List<GHPullRequest> pullRequests) {
-    Map<String, List<GHPullRequest>> sortedMapGroupByActors = new HashMap<>();
-
-    pullRequests.stream().filter(ed -> {
-      try {
-        return !sortedMapGroupByActors.containsKey(ed.getUser().getLogin());
-      } catch (IOException exception) {
-        throw new RuntimeException(exception);
-      }
-    })
-        .forEach(ed -> {
-          try {
-            sortedMapGroupByActors.put(ed.getUser().getLogin(), new ArrayList<>());
-          } catch (IOException exception) {
-            throw new RuntimeException(exception);
-          }
-        });
-
-    pullRequests.stream().forEach(ed -> {
-      try {
-        sortedMapGroupByActors.get(ed.getUser().getLogin()).add(ed);
-      } catch (IOException exception) {
-        throw new RuntimeException(exception);
-      }
-    });
-
-    return sortedMapGroupByActors;
-  }
-
-  /**
-   * Get sorted map group by tasks.
-   * Key is task title, value are list pull requests.
-   * @return sorted map
-   */
-  public Map<String, List<GHPullRequest>>
-      sortedByTitlePullRequest(List<GHPullRequest> pullRequests) {
-    Map<String, List<GHPullRequest>> sortedMapGroupByTitles = new HashMap<>();
-
-    pullRequests.stream().filter(ed -> !sortedMapGroupByTitles.containsKey(ed.getTitle()))
-        .forEach(ed -> sortedMapGroupByTitles.put(ed.getTitle(), new ArrayList<>()));
-
-    pullRequests.stream().forEach(ed -> sortedMapGroupByTitles.get(ed.getTitle()).add(ed));
-
-    return sortedMapGroupByTitles;
-  }
-
-  /**
    * Get all pull requests.
    * @return all pull requests
    */
@@ -83,32 +32,6 @@ public class PullRequestsService {
       throw new RuntimeException(exception);
     }
     return pullRequests;
-  }
-
-  /**
-   * Get pull requests for the last days.
-   * @param lastDays number
-   * @return list pull requests
-   */
-  public List<GHPullRequest> getPullRequests(int lastDays) {
-    List<GHPullRequest> pullRequests;
-
-    Calendar cal = Calendar.getInstance();
-    cal.add(Calendar.DATE, -lastDays);
-    Date startDate = cal.getTime();
-    try {
-      pullRequests = gitHubConnectService.getGitHubRepository().getPullRequests(GHIssueState.ALL);
-
-    } catch (IOException exception) {
-      throw new RuntimeException(exception);
-    }
-    return pullRequests.stream().filter(pullRequest -> {
-      try {
-        return pullRequest.getCreatedAt().after(startDate);
-      } catch (IOException exception) {
-        throw new RuntimeException(exception);
-      }
-    }).collect(Collectors.toList());
   }
 
   /**
