@@ -114,26 +114,9 @@ public class TaskStatusService {
       } catch (IOException exception) {
         throw new RuntimeException(exception);
       }
-      User user = stateMachineRepository.findByGitName(gitName).orElse(null);
-      if (!(user == null)) {
-        String title = ghPullRequest.getTitle();
-        Arrays.stream(tasksForUsers).forEach(task -> {
-          if (new LevenshteinDistance().apply(task, title) < 3) {
-            TaskStatus taskStatus = taskStatusRepository
-                .findTaskStatusByUserAndTaskName(user, task).orElse(null);
-            String status = pullRequestsService.getLastLabel(ghPullRequest);
-            if (!(taskStatus == null)) {
-              updateTaskStatus(taskStatus, status);
-            } else {
-              createTaskStatus(user, task, status);
-            }
-          }
-        });
-      }
-    });
-    stateMachineRepository.findAll().forEach(user -> {
-      user.setCompletedTasks(countCompletedTasksByUser(user));
-      stateMachineRepository.save(user);
+      String title = ghPullRequest.getTitle();
+      String status = pullRequestsService.getLastLabel(ghPullRequest);
+      setTaskStatus(gitName, title, status);
     });
   }
 
@@ -168,10 +151,22 @@ public class TaskStatusService {
     } catch (JSONException exception) {
       throw new RuntimeException(exception);
     }
+    setTaskStatus(gitName, title, status);
+  }
+
+  /**
+   * Set task status for task's user.
+   * @param gitName user gitName
+   * @param title title pull request
+   * @param status task status
+   */
+  public void setTaskStatus(String gitName, String title, String status) {
+    LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
+    int distance = 3;
     User user = stateMachineRepository.findByGitName(gitName).orElse(null);
     if (!(user == null)) {
       Arrays.stream(tasksForUsers).forEach(task -> {
-        if (new LevenshteinDistance().apply(task, title) < 3) {
+        if (levenshteinDistance.apply(task, title) < distance) {
           TaskStatus taskStatus = taskStatusRepository
               .findTaskStatusByUserAndTaskName(user, task).orElse(null);
           if (!(taskStatus == null)) {
@@ -179,10 +174,10 @@ public class TaskStatusService {
           } else {
             createTaskStatus(user, task, status);
           }
-          user.setCompletedTasks(countCompletedTasksByUser(user));
-          stateMachineRepository.save(user);
         }
       });
+      user.setCompletedTasks(countCompletedTasksByUser(user));
+      stateMachineRepository.save(user);
     }
   }
 
