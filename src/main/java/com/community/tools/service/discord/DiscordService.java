@@ -51,8 +51,8 @@ public class DiscordService implements MessageService<MessageEmbed> {
   /**
    * Send block message with messageText to username.
    *
-   * @param username    Discord login
-   * @param message object of MessageEmbed
+   * @param username Discord login
+   * @param message  object of MessageEmbed
    */
   @Override
   public <T> void sendBlocksMessage(String username, T message) {
@@ -64,8 +64,8 @@ public class DiscordService implements MessageService<MessageEmbed> {
   /**
    * Send attachment message with messageText to username.
    *
-   * @param username    Discord login
-   * @param message object of MessageEmbed
+   * @param username Discord login
+   * @param message  object of MessageEmbed
    */
   @Override
   public <T> void sendAttachmentsMessage(String username, T message) {
@@ -83,14 +83,14 @@ public class DiscordService implements MessageService<MessageEmbed> {
   @Override
   public void sendMessageToConversation(String channelName, String messageText) {
     jda.getTextChannelById(getIdByChannelName(channelName))
-          .sendMessage(messageText).queue();
+        .sendMessage(messageText).queue();
   }
 
   /**
    * Send attachment message with blocks of Text to the channel.
    *
    * @param channelName Name of channel
-   * @param message object of MessageEmbed
+   * @param message     object of MessageEmbed
    */
   @Override
   public <T> void sendBlockMessageToConversation(String channelName, T message) {
@@ -107,7 +107,7 @@ public class DiscordService implements MessageService<MessageEmbed> {
 
   @Override
   public MessageEmbed ratingMessage(String url, String img) {
-    return  new EmbedBuilder()
+    return new EmbedBuilder()
         .setTitle(":point_right: Рейтинг этой недели :point_left:", url)
         .setImage(img)
 
@@ -151,7 +151,7 @@ public class DiscordService implements MessageService<MessageEmbed> {
                 authorsActivMessage.append(PublishWeekStatsService.emojiGen(eventData.getType()));
               });
           embedBuilder.addField("", name.getKey() + ": "
-              + authorsActivMessage,false);
+              + authorsActivMessage, false);
         });
     return embedBuilder.build();
   }
@@ -200,7 +200,7 @@ public class DiscordService implements MessageService<MessageEmbed> {
    */
   @Override
   public String getIdByUser(String id) {
-    User user =  jda.getUserById(id);
+    User user = jda.getUserById(id);
     return user.getName();
 
   }

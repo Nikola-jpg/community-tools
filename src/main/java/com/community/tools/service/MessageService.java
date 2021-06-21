@@ -2,7 +2,6 @@ package com.community.tools.service;
 
 import com.community.tools.model.EventData;
 import java.util.List;
-import net.dv8tion.jda.api.EmbedBuilder;
 
 public interface MessageService<T> extends UserService {
 
