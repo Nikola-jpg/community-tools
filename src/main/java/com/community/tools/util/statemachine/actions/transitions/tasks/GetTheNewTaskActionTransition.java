@@ -5,6 +5,7 @@ import static com.community.tools.util.statemachine.State.CHECK_FOR_NEW_TASK;
 import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
 
 import com.community.tools.service.MessageService;
+import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
@@ -22,6 +23,9 @@ public class GetTheNewTaskActionTransition implements Transition {
 
   @Autowired
   private MessageService messageService;
+
+  @Autowired
+  private MessagesToPlatform messagesToPlatform;
 
   @Value("${tasksForUsers}")
   private String[] tasksForUsers;
@@ -47,6 +51,6 @@ public class GetTheNewTaskActionTransition implements Transition {
     int i = (Integer) stateContext.getExtendedState().getVariables().get("taskNumber");
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
     messageService.sendBlocksMessage(messageService.getUserById(user),
-        messageService.nextTaskMessage(tasksList, i));
+        messagesToPlatform.nextTaskMessage(tasksList, i));
   }
 }
