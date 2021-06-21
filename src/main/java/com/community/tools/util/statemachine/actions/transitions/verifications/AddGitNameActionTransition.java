@@ -32,10 +32,6 @@ public class AddGitNameActionTransition implements Transition {
   private Action<State, Event> errorAction;
   @Value("${generalInformationChannel}")
   private String channel;
-  @Value("${getFirstTask}")
-  private String getFirstTask;
-  @Value("${errorWithAddingGitName}")
-  private String errorWithAddingGitName;
 
   @Autowired
   private StateMachineRepository stateMachineRepository;

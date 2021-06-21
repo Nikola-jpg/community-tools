@@ -9,7 +9,6 @@ import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.annotation.WithStateMachine;

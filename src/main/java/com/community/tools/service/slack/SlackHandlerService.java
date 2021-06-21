@@ -24,18 +24,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class SlackHandlerService {
 
-  @Value("${notThatMessage}")
-  private String notThatMessage;
-  @Value("${welcome}")
-  private String welcome;
-  @Value("${messageAboutRules}")
-  private String messageAboutRules;
   @Value("${idOfSlackBot}")
   private String idOfSlackBot;
-  @Value("${usersAgreeMessage}")
-  private String usersAgreeMessage;
-  @Value("${defaultMessage}")
-  private String defaultMessage;
   @Value("${testModeSwitcher}")
   private Boolean testModeSwitcher;
 

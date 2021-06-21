@@ -12,10 +12,8 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import java.io.IOException;
-import java.util.Map;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.annotation.WithStateMachine;
@@ -26,8 +24,6 @@ public class VerificationLoginActionTransition implements Transition {
 
   @Autowired
   private Action<State, Event> errorAction;
-  @Value("${askAboutProfile}")
-  private String askAboutProfile;
 
   @Autowired
   private GitHubService gitHubService;
