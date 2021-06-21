@@ -147,13 +147,8 @@ public class SlackService implements MessageService<String> {
   }
 
   @Override
-  public String ratingMessage(String url, String img) {
-    return String.format(MessagesToSlack.LINK_PUBLISH_WEEK_STATS, url, img);
-  }
-
-  @Override
-  public String tasksStatusMessage(String url, String img) {
-    return String.format(MessagesToSlack.LINK_TASKS_STATUS, url, img);
+  public String infoLinkMessage(String info, String url, String img) {
+    return String.format(MessagesToSlack.INFO_LINK_MESSAGE, info, url, img);
   }
 
   @Override

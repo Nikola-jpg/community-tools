@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHPullRequest;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,13 +28,20 @@ public class PullRequestsService {
   public Map<String, List<GHPullRequest>> sortedByActors(List<GHPullRequest> pullRequests) {
     Map<String, List<GHPullRequest>> sortedMapGroupByActors = new HashMap<>();
 
-    pullRequests.stream().forEach(ed -> {
+    pullRequests.stream().filter(ed -> {
       try {
-        sortedMapGroupByActors.put(ed.getUser().getLogin(), new ArrayList<>());
+        return !sortedMapGroupByActors.containsKey(ed.getUser().getLogin());
       } catch (IOException exception) {
         throw new RuntimeException(exception);
       }
-    });
+    })
+        .forEach(ed -> {
+          try {
+            sortedMapGroupByActors.put(ed.getUser().getLogin(), new ArrayList<>());
+          } catch (IOException exception) {
+            throw new RuntimeException(exception);
+          }
+        });
 
     pullRequests.stream().forEach(ed -> {
       try {
@@ -57,7 +63,7 @@ public class PullRequestsService {
       sortedByTitlePullRequest(List<GHPullRequest> pullRequests) {
     Map<String, List<GHPullRequest>> sortedMapGroupByTitles = new HashMap<>();
 
-    pullRequests.stream()
+    pullRequests.stream().filter(ed -> !sortedMapGroupByTitles.containsKey(ed.getTitle()))
         .forEach(ed -> sortedMapGroupByTitles.put(ed.getTitle(), new ArrayList<>()));
 
     pullRequests.stream().forEach(ed -> sortedMapGroupByTitles.get(ed.getTitle()).add(ed));

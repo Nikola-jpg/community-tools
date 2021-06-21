@@ -17,9 +17,7 @@ public interface MessageService<T> extends UserService {
 
   T nextTaskMessage(List<String> tasksList, int numberTask);
 
-  T ratingMessage(String url, String img);
-
-  T tasksStatusMessage(String url, String img);
+  T infoLinkMessage(String info, String url, String img);
 
   T statisticMessage(List<EventData> events);
 

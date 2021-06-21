@@ -106,18 +106,9 @@ public class DiscordService implements MessageService<MessageEmbed> {
   }
 
   @Override
-  public MessageEmbed ratingMessage(String url, String img) {
+  public MessageEmbed infoLinkMessage(String info, String url, String img) {
     return new EmbedBuilder()
-        .setTitle(":point_right: Рейтинг этой недели :point_left:", url)
-        .setImage(img)
-
-        .build();
-  }
-
-  @Override
-  public MessageEmbed tasksStatusMessage(String url, String img) {
-    return  new EmbedBuilder()
-        .setTitle(":point_right: Прогресс выполнения заданий :point_left:", url)
+        .setTitle(info, url)
         .setImage(img)
 
         .build();

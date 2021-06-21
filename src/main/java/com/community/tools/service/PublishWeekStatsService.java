@@ -70,7 +70,8 @@ public class PublishWeekStatsService {
     String date = LocalDate.now().toString();
     String img = url + "img/" + date;
 
-    messageService.sendBlockMessageToConversation(channel, messageService.ratingMessage(url, img));
+    messageService.sendBlockMessageToConversation(channel,
+        messageService.infoLinkMessage(Messages.RATING_MESSAGE, url, img));
   }
 
   /**
@@ -83,7 +84,7 @@ public class PublishWeekStatsService {
     String img = url + "img/" + date;
 
     messageService.sendBlockMessageToConversation(channel,
-        messageService.tasksStatusMessage(url, img));
+        messageService.infoLinkMessage(Messages.TASKS_STATUS_MESSAGE, url, img));
   }
 
   /**

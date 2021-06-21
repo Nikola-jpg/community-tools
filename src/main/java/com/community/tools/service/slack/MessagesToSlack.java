@@ -88,8 +88,8 @@ public class MessagesToSlack extends MessagesToPlatform<String> {
       + "\"type\": \"plain_text\",\"text\": \"Activity:\"}}";
   public static final String FINISH_PUBLISH_WEEK_STATS = ",{\"type\": \"context\",\n\"elements\":"
       + " [{\"type\": \"mrkdwn\",\t\"text\": \"*";
-  public static final String LINK_PUBLISH_WEEK_STATS = "[{\"type\": \"section\", \"text\": "
-      + "{\"type\": \"mrkdwn\",\"text\": \"Рейтинг этой недели доступен по ссылке: \"},"
+  public static final String INFO_LINK_MESSAGE = "[{\"type\": \"section\", \"text\": "
+      + "{\"type\": \"mrkdwn\",\"text\": \"%s \"},"
       + "\"accessory\": {\"type\": \"button\",\"text\": {\"type\": \"plain_text\",\"text\": "
       + "\":loudspeaker:\",\"emoji\": true},\"value\": \"click_me_123\", \"url\": \"%s\","
       + "\"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"%s\","
@@ -97,11 +97,5 @@ public class MessagesToSlack extends MessagesToPlatform<String> {
   public static final String NEXT_TASK = "[{\"type\": \"section\",\"text\":"
       + " {\"type\": \"mrkdwn\",\"text\": \"Here is your next"
       + " <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
-  public static final String LINK_TASKS_STATUS = "[{\"type\": \"section\", \"text\": "
-      + "{\"type\": \"mrkdwn\",\"text\": \"Прогресс выполнения задач доступен по ссылке: \"},"
-      + "\"accessory\": {\"type\": \"button\",\t\"text\": "
-      + "{\"type\": \"plain_text\",\"text\": \":loudspeaker:\",\"emoji\": true},"
-      + "\"value\": \"click_me_123\", \"url\": \"%s"
-      + "\", \"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"%s"
-      + "\",\"alt_text\": \"inspiration\"}]";
+
 }
