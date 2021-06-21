@@ -60,10 +60,9 @@ class PointsTaskServiceTest {
     ExpressionParser parser = new SpelExpressionParser();
     EvaluationContext context = new StandardEvaluationContext();
     Map pointsForTask = (Map) parser.parseExpression("{'checkstyle':1, 'primitives':2,"
-            + " 'boxing':2, 'valueref':3, 'equals/hashcode':3, 'patform':3,\n"
+            + " 'boxing':2, 'valueref':3, 'equals.hashcode':3, 'platform':3,\n"
             + "  'bytecode':2, 'gc':4, 'exceptions':4, 'classpath':3, 'generics':5,"
-            + " 'inner/classes':5, 'override/overload':4, 'strings':5}").getValue(context);
-    ReflectionTestUtils.setField(pointsTaskService, "abilityReviewMessage", "Ability message");
+            + " 'inner.classes':5, 'override.overload':4, 'strings':5}").getValue(context);
     ReflectionTestUtils.setField(pointsTaskService, "pointsForTask", (pointsForTask));
   }
 
@@ -96,8 +95,8 @@ class PointsTaskServiceTest {
   public void checkPointsTest() {
     String pullName = "valueref_test";
     String[] tasksForUsers =  ("checkstyle, primitives, boxing, valueref, "
-            + "equals/hashcode, patform, bytecode, gc, exceptions, classpath,"
-            + " generics, inner/classes, override/overload, strings").split(",");
+            + "equals.hashcode, platform, bytecode, gc, exceptions, classpath,"
+            + " generics, inner.classes, override.overload, strings").split(",");
     String[] pointsForTask = ("1,2,2,3,3,3,2,4,4,3,5,5,4,5").split(",");
     List<String> tasksList = Arrays.stream(tasksForUsers)
             .map(String::trim).collect(Collectors.toList());

@@ -6,9 +6,7 @@ import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.annotation.WithStateMachine;
@@ -19,8 +17,6 @@ public class DidNotPassVerificationGitLoginTrans implements Transition {
 
   @Autowired
   private Action<State, Event> errorAction;
-  @Value("${answeredNoDuringVerification}")
-  private String answeredNoDuringVerification;
 
   @Autowired
   private MessageService messageService;

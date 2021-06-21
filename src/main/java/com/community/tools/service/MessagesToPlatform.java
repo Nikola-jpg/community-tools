@@ -15,6 +15,8 @@ public abstract class MessagesToPlatform<T> {
   public T errorWithAddingGitName;
   public T estimateTheTask;
 
+  public abstract T failedBuildMessage(String url, String task);
+
   //Information channels message
   public T messageAboutSeveralInfoChannel;
 

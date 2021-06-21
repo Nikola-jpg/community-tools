@@ -108,10 +108,6 @@ public class AddGitNameActionTest {
     messagesToPlatform.set(addGitNameAction, this.messagesToPlatform);
 
     ReflectionTestUtils.setField(addGitNameAction, "channel", "test_3");
-    ReflectionTestUtils.setField(addGitNameAction, "getFirstTask", getFirstTask);
-    ReflectionTestUtils
-        .setField(addGitNameAction, "errorWithAddingGitName", errorWithAddingGitName);
-
   }
 
   @Test

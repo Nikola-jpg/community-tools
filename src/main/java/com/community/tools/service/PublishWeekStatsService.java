@@ -32,9 +32,6 @@ public class PublishWeekStatsService {
   @Value("${urlServer}")
   private String urlServer;
 
-  @Value("${noActivityMessage}")
-  private String noActivityMessage;
-
   @Autowired
   private MessageService messageService;
 

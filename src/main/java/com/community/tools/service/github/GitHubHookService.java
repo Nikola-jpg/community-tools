@@ -1,6 +1,7 @@
 package com.community.tools.service.github;
 
 import com.community.tools.service.MessageService;
+import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.TaskStatusService;
@@ -29,6 +30,8 @@ public class GitHubHookService {
   private String channel;
 
   @Autowired
+  private MessagesToPlatform messagesToPlatform;
+  @Autowired
   private AddMentorService addMentorService;
   @Autowired
   private StateMachineService stateMachineService;
@@ -48,6 +51,7 @@ public class GitHubHookService {
    */
   public void doActionsAfterReceiveHook(JSONObject json) {
     sendNotificationMessageAboutPR(json);
+    sendMessageAboutFailedBuild(json);
     giveNewTaskIfPrOpened(json);
     addMentorIfEventIsReview(json);
     addPointIfPullLabeledDone(json);
@@ -170,6 +174,21 @@ public class GitHubHookService {
       stateMachineService
           .doAction(stateMachineService.restoreMachineByNick(userNick), new SimplePayload(userId),
               Event.SEND_ESTIMATE_TASK);
+    }
+  }
+
+  private void sendMessageAboutFailedBuild(JSONObject json) {
+    if (json.get("action").toString().equals("completed") && json.has("check_run")) {
+      JSONObject checkRun = json.getJSONObject("check_run");
+      if (checkRun.getString("conclusion").equals("failure")) {
+
+        String url = checkRun.getString("html_url");
+        String task = checkRun.getJSONObject("check_suite").getString("head_branch");
+        String userNick = json.getJSONObject("sender").getString("login");
+        String userId = stateMachineService.getIdByNick(userNick);
+        messageService.sendBlocksMessage(messageService.getUserById(userId),
+            messagesToPlatform.failedBuildMessage(url, task));
+      }
     }
   }
 }
