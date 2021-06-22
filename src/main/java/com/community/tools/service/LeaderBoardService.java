@@ -38,7 +38,7 @@ public class LeaderBoardService {
   private MessageService messageService;
 
   @Autowired
-  GitHubService gitHubService;
+  private GitHubService gitHubService;
 
 
   /**

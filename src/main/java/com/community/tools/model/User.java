@@ -7,6 +7,7 @@ import javax.persistence.Transient;
 
 import lombok.Data;
 
+
 @Data
 @Entity
 @Table(name = "state_entity")
