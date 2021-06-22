@@ -70,7 +70,7 @@ public class LeaderBoardService {
    * This method return html-content with table, which contains first 5 trainees of leaderboard.
    * @return HtmlContent with leaderboard image
    */
-  public String getLeaderboardTemplate() {
+  public String getLeaderboardTemplate()  {
     final Context ctx = new Context();
     List<User> list = getActiveUsersFromPeriod(180);
     list.sort(Comparator.comparing(User::getTotalPoints).reversed());
@@ -103,18 +103,14 @@ public class LeaderBoardService {
    * @param days Period in days.
    * @return List of Users.
    */
-  public  List<User> getActiveUsersFromPeriod(int days) {
+  public  List<User> getActiveUsersFromPeriod(int days)  {
     Calendar calendar = Calendar.getInstance();
     calendar.add(Calendar.DATE,-days);
     List<User> list = addSlackNameToUser();
-    Date endDate = new Date();
     Date startDate = calendar.getTime();
-    List<EventData> events = gitHubService.getEvents(startDate,endDate);
-
-    Set<String> activeUsers = events.stream()
-            .map(EventData::getActorLogin).collect(Collectors.toSet());
+    Set<String> userNames = gitHubService.getActiveUsersFromGit(startDate);
     List<User> userList = list.stream()
-            .filter(user -> activeUsers
+            .filter(user -> userNames
                     .contains(user.getGitName())).collect(Collectors.toList());
     return userList;
   }

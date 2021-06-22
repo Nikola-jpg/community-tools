@@ -12,18 +12,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
 import lombok.RequiredArgsConstructor;
-import org.kohsuke.github.GHIssueState;
-import org.kohsuke.github.GHPullRequest;
-import org.kohsuke.github.GHPullRequestCommitDetail;
-import org.kohsuke.github.GHPullRequestReviewComment;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GHUser;
-import org.kohsuke.github.PagedIterable;
+import org.kohsuke.github.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -129,4 +125,26 @@ public class GitHubService {
       throw new RuntimeException(e);
     }
   }
+
+  /**
+   * Get all GitHub Collaborators.
+   * @return Set of GH Users
+   */
+  public Set<String> getActiveUsersFromGit(Date startDate)  {
+    Set<String> names = new HashSet<>();
+    try {
+      GHRepository repository = service.getGitHubRepository();
+      List<GHPullRequest> pullRequests = repository.getPullRequests(GHIssueState.ALL);
+
+      for (GHPullRequest pr : pullRequests) {
+        if (pr.getCreatedAt().after(startDate)) {
+          names.add(pr.getUser().getLogin());
+        }
+      }
+    } catch (IOException e) {
+      new RuntimeException(e);
+    }
+    return names;
+  }
+
 }
