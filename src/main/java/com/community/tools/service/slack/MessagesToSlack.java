@@ -1,7 +1,17 @@
 package com.community.tools.service.slack;
 
+import com.community.tools.model.Event;
+import com.community.tools.model.EventData;
 import com.community.tools.model.Messages;
 import com.community.tools.service.MessagesToPlatform;
+import com.community.tools.service.PublishWeekStatsService;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -81,6 +91,67 @@ public class MessagesToSlack extends MessagesToPlatform<String> {
             url, task);
   }
 
+  @Override
+  public String infoLinkMessage(String info, String url, String img) {
+    return String.format(INFO_LINK_MESSAGE, info, url, img);
+  }
+
+  @Override
+  public String statisticMessage(List<EventData> events) {
+    StringBuilder messageBuilder = new StringBuilder();
+
+    Map<String, List<EventData>> sortedMapGroupByActors = new HashMap<>();
+    events.stream().filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
+        .forEach(ed -> sortedMapGroupByActors.put(ed.getActorLogin(), new ArrayList<>()));
+
+    messageBuilder.append("[{\"type\": \"header\",\t\"text\": {\"type\":"
+        + " \"plain_text\",\"text\": \"Statistic:\"}},"
+        + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"");
+    events.stream()
+        .collect(Collectors.groupingBy(EventData::getType))
+        .entrySet().stream()
+        .sorted(Comparator
+            .comparingInt((Entry<Event, List<EventData>> entry)
+                -> entry.getValue().size()).reversed())
+        .forEach(entry -> {
+          entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
+          messageBuilder.append("\n");
+          messageBuilder.append(PublishWeekStatsService.getTypeTitleBold(entry.getKey()))
+              .append(PublishWeekStatsService.emojiGen(entry.getKey()));
+          messageBuilder.append(": ");
+          messageBuilder.append(entry.getValue().size());
+
+        });
+    messageBuilder.append("\"\t}]},{\"type\": \"header\",\"text\": "
+        + "{\"type\": \"plain_text\",\"text\": \"Activity:\"}}");
+    sortedMapGroupByActors.entrySet().stream()
+        .sorted(Comparator
+            .comparingInt((Entry<String, List<EventData>> entry)
+                -> entry.getValue().size()).reversed())
+        .forEach(name -> {
+          StringBuilder authorsActivMessage = new StringBuilder();
+          name.getValue()
+              .forEach(eventData -> {
+                authorsActivMessage.append(PublishWeekStatsService.emojiGen(eventData.getType()));
+              });
+          messageBuilder.append(",{\"type\": \"context\",\n"
+              + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*");
+
+          messageBuilder.append(name.getKey());
+          messageBuilder.append("*: ");
+          messageBuilder.append(authorsActivMessage);
+          messageBuilder.append("\"}]}");
+        });
+    messageBuilder.append("]");
+
+    return messageBuilder.toString();
+  }
+
+  @Override
+  public String nextTaskMessage(List<String> tasksList, int numberTask) {
+    return NEXT_TASK + tasksList.get(numberTask) + "|TASK>.\"}}]";
+  }
+
   public static final String STATISTIC = "[{\"type\": \"header\",\t\"text\": {"
       + "\"type\":\"plain_text\",\"text\": \"Statistic:\"}},{\"type\": \"context\",\"elements\":"
       + " [{\"type\": \"mrkdwn\",\"text\": \"";
@@ -88,8 +159,8 @@ public class MessagesToSlack extends MessagesToPlatform<String> {
       + "\"type\": \"plain_text\",\"text\": \"Activity:\"}}";
   public static final String FINISH_PUBLISH_WEEK_STATS = ",{\"type\": \"context\",\n\"elements\":"
       + " [{\"type\": \"mrkdwn\",\t\"text\": \"*";
-  public static final String LINK_PUBLISH_WEEK_STATS = "[{\"type\": \"section\", \"text\": "
-      + "{\"type\": \"mrkdwn\",\"text\": \"Рейтинг этой недели доступен по ссылке: \"},"
+  public static final String INFO_LINK_MESSAGE = "[{\"type\": \"section\", \"text\": "
+      + "{\"type\": \"mrkdwn\",\"text\": \"%s \"},"
       + "\"accessory\": {\"type\": \"button\",\"text\": {\"type\": \"plain_text\",\"text\": "
       + "\":loudspeaker:\",\"emoji\": true},\"value\": \"click_me_123\", \"url\": \"%s\","
       + "\"action_id\": \"button-action\"}},{\"type\": \"image\",\"image_url\": \"%s\","
@@ -97,4 +168,5 @@ public class MessagesToSlack extends MessagesToPlatform<String> {
   public static final String NEXT_TASK = "[{\"type\": \"section\",\"text\":"
       + " {\"type\": \"mrkdwn\",\"text\": \"Here is your next"
       + " <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
+
 }

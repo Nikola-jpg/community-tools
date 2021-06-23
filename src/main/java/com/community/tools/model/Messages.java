@@ -71,6 +71,9 @@ public class Messages {
   public static final String ESTIMATE_FOOTER = "Enter your rating:";
   public static final String CONFIRM_ESTIMATE = "Do you confirm this assessment (*yes*/*no*)?";
   public static final String CHOOSE_AN_ANSWER = "Choose an answer from 1 to 5.";
+  public static final String RATING_MESSAGE = ":point_right: Рейтинг этой недели :point_left:";
+  public static final String TASKS_STATUS_MESSAGE
+      = ":point_right: Прогресс выполнения заданий :point_left:";
 
 
   //Information channels message

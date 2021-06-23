@@ -38,6 +38,9 @@ class PublishWeekStatsServiceTest {
   @Mock
   private MessageService messageService;
 
+  @Mock
+  private MessagesToPlatform messagesToPlatform;
+
   @BeforeAll
   public void initMocks() {
     MockitoAnnotations.initMocks(this);
@@ -66,7 +69,7 @@ class PublishWeekStatsServiceTest {
         new EventData(new Date(), "roman", Event.COMMENT));
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
-    Mockito.when(messageService.statisticMessage(any())).thenReturn(message);
+    Mockito.when(messagesToPlatform.statisticMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();
@@ -109,7 +112,7 @@ class PublishWeekStatsServiceTest {
     );
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
-    Mockito.when(messageService.statisticMessage(any())).thenReturn(message);
+    Mockito.when(messagesToPlatform.statisticMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();
@@ -155,7 +158,7 @@ class PublishWeekStatsServiceTest {
     );
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
-    Mockito.when(messageService.statisticMessage(any())).thenReturn(message);
+    Mockito.when(messagesToPlatform.statisticMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(() -> {
       publishWeekStatsService.exportStat();

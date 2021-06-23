@@ -1,7 +1,17 @@
 package com.community.tools.service.discord;
 
+import com.community.tools.model.Event;
+import com.community.tools.model.EventData;
 import com.community.tools.model.Messages;
 import com.community.tools.service.MessagesToPlatform;
+import com.community.tools.service.PublishWeekStatsService;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.context.annotation.Profile;
@@ -90,6 +100,63 @@ public class MessagesToDiscord extends MessagesToPlatform<MessageEmbed> {
   public MessageEmbed failedBuildMessage(String url, String task) {
     return new EmbedBuilder()
         .addField("", "Oops, your build at the task [" + task + "](" + url + ") is down!", false)
+        .build();
+  }
+
+  @Override
+  public MessageEmbed infoLinkMessage(String info, String url, String img) {
+    return new EmbedBuilder()
+        .setTitle(info, url)
+        .setImage(img)
+
+        .build();
+  }
+
+  @Override
+  public MessageEmbed statisticMessage(List<EventData> events) {
+    EmbedBuilder embedBuilder = new EmbedBuilder();
+
+    Map<String, List<EventData>> sortedMapGroupByActors = new HashMap<>();
+    events.stream().filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
+        .forEach(ed -> sortedMapGroupByActors.put(ed.getActorLogin(), new ArrayList<>()));
+
+    embedBuilder.addField("", "`Statistic:`", false);
+
+    events.stream()
+        .collect(Collectors.groupingBy(EventData::getType))
+        .entrySet().stream()
+        .sorted(Comparator
+            .comparingInt((Entry<Event, List<EventData>> entry)
+                -> entry.getValue().size()).reversed())
+        .forEach(entry -> {
+          entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
+
+          embedBuilder.addField("", PublishWeekStatsService.getTypeTitleBold(entry.getKey())
+              + PublishWeekStatsService.emojiGen(entry.getKey()) + ": "
+              + entry.getValue().size(), false);
+        });
+    embedBuilder.addField("", "`Activity:`", false);
+
+    sortedMapGroupByActors.entrySet().stream()
+        .sorted(Comparator
+            .comparingInt((Entry<String, List<EventData>> entry)
+                -> entry.getValue().size()).reversed())
+        .forEach(name -> {
+          StringBuilder authorsActivMessage = new StringBuilder();
+          name.getValue()
+              .forEach(eventData -> {
+                authorsActivMessage.append(PublishWeekStatsService.emojiGen(eventData.getType()));
+              });
+          embedBuilder.addField("", name.getKey() + ": "
+              + authorsActivMessage, false);
+        });
+    return embedBuilder.build();
+  }
+
+  @Override
+  public MessageEmbed nextTaskMessage(List<String> tasksList, int numberTask) {
+    return new EmbedBuilder()
+        .addField("", NEXT_TASK + tasksList.get(numberTask) + ") :link:", false)
         .build();
   }
 

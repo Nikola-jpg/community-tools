@@ -85,9 +85,8 @@ public class LeaderBoardService {
             .collect(Collectors.toMap(user -> user.getId(), user -> user.getRealName()));
     for (User user: list) {
       String slackName = map.get(user.getUserID());
-      user.setSlackLogin(slackName);
+      user.setPlatformName(slackName);
     }
     return list;
   }
-
 }

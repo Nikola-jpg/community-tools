@@ -1,5 +1,6 @@
 package com.community.tools.service;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface UserService<E> {
@@ -11,5 +12,7 @@ public interface UserService<E> {
   String getIdByUsername(String username);
 
   Set<E> getAllUsers();
+
+  Map<String, String> getIdWithName();
 
 }

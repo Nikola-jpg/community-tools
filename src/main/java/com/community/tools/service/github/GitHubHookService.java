@@ -4,6 +4,7 @@ import com.community.tools.service.MessageService;
 import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
+import com.community.tools.service.TaskStatusService;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.util.statemachine.Event;
 import com.github.seratch.jslack.api.methods.SlackApiException;
@@ -27,8 +28,7 @@ public class GitHubHookService {
   private String opened;
   @Value("${generalInformationChannel}")
   private String channel;
-  @Autowired
-  private MessageService messageService;
+
   @Autowired
   private MessagesToPlatform messagesToPlatform;
   @Autowired
@@ -39,6 +39,10 @@ public class GitHubHookService {
   private KarmaService karmaService;
   @Autowired
   private PointsTaskService pointsTaskService;
+  @Autowired
+  private MessageService messageService;
+  @Autowired
+  private TaskStatusService taskStatusService;
 
   /**
    * Methid receive data from Github and check it.
@@ -52,6 +56,7 @@ public class GitHubHookService {
     addMentorIfEventIsReview(json);
     addPointIfPullLabeledDone(json);
     checkReactionToChangeKarma(json);
+    taskStatusService.updateTasksStatus(json);
   }
 
 
@@ -68,8 +73,8 @@ public class GitHubHookService {
         }
       } else {
         messageService.sendMessageToConversation(channel,
-            "User " + user
-                + " created a pull request \n url: " + url);
+                  "User " + user
+                          + " created a pull request \n url: " + url);
       }
     }
   }
@@ -78,7 +83,7 @@ public class GitHubHookService {
     if (json.get("action").toString().equals(labeledStr)) {
       List<Object> list = json.getJSONObject("pull_request").getJSONArray("labels").toList();
       return list.stream().map(o -> (HashMap) o)
-          .anyMatch(e -> e.get("name").equals("ready for review"));
+              .anyMatch(e -> e.get("name").equals("ready for review"));
     }
     return false;
   }
@@ -99,13 +104,14 @@ public class GitHubHookService {
         creator = json.getJSONObject("issue").getJSONObject("user").getString("login");
       }
 
+
       addMentorService.addMentor(mentor, creator);
     }
   }
 
   private void addPointIfPullLabeledDone(JSONObject json) {
     if (json.get("action").toString().equals(labeledStr)
-        && json.getJSONObject("label").getString("name").equals("done")) {
+            && json.getJSONObject("label").getString("name").equals("done")) {
       List<Object> list = json.getJSONObject("pull_request").getJSONArray("labels").toList();
       String sender = json.getJSONObject("sender").getString("login");
       String creator = json.getJSONObject("pull_request").getJSONObject("user").getString("login");
@@ -120,12 +126,12 @@ public class GitHubHookService {
     if (json.get("action").equals("created") && hasIssueAndComment(json)) {
       traineeReviewer = json.getJSONObject("comment").getJSONObject("user").getString("login");
       checkCommentApproved = json.getJSONObject("comment")
-          .getString("body").equalsIgnoreCase("approved");
+              .getString("body").equalsIgnoreCase("approved");
     } else if (json.get("action").equals("submitted")) {
       traineeReviewer = json.getJSONObject("review").getJSONObject("user").getString("login");
       if (json.getJSONObject("review").getString("body") != null) {
         checkCommentApproved = json.getJSONObject("review")
-            .getString("body").equalsIgnoreCase("approved");
+                .getString("body").equalsIgnoreCase("approved");
       }
     }
     if (checkCommentApproved) {
@@ -135,7 +141,7 @@ public class GitHubHookService {
 
   private void checkReactionToChangeKarma(JSONObject json) {
     if (json.get("action").equals(labeledStr)
-        && json.getJSONObject("label").getString("name").equals("done")) {
+            && json.getJSONObject("label").getString("name").equals("done")) {
       int numberOfPullRequest = json.getInt("number");
       karmaService.changeKarmaBasedOnReaction(numberOfPullRequest);
     }
