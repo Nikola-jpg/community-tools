@@ -106,9 +106,9 @@ public class LeaderBoardService {
   public  List<User> getActiveUsersFromPeriod(int days)  {
     Calendar calendar = Calendar.getInstance();
     calendar.add(Calendar.DATE,-days);
+    Date date = calendar.getTime();
     List<User> list = addSlackNameToUser();
-    Date startDate = calendar.getTime();
-    Set<String> userNames = gitHubService.getActiveUsersFromGit(startDate);
+    Set<String> userNames = gitHubService.getActiveUsersFromGit(date);
     List<User> userList = list.stream()
             .filter(user -> userNames
                     .contains(user.getGitName())).collect(Collectors.toList());

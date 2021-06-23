@@ -17,9 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import lombok.RequiredArgsConstructor;
-import org.kohsuke.github.*;
+import org.kohsuke.github.GHIssueState;
+import org.kohsuke.github.GHPullRequest;
+import org.kohsuke.github.GHPullRequestCommitDetail;
+import org.kohsuke.github.GHPullRequestReviewComment;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GHUser;
+import org.kohsuke.github.PagedIterable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -127,22 +132,23 @@ public class GitHubService {
   }
 
   /**
-   * Get all GitHub Collaborators.
+   * Get active GitHub users.
+   * @param date date
    * @return Set of GH Users
    */
-  public Set<String> getActiveUsersFromGit(Date startDate)  {
+  public Set<String> getActiveUsersFromGit(Date date)  {
     Set<String> names = new HashSet<>();
     try {
       GHRepository repository = service.getGitHubRepository();
       List<GHPullRequest> pullRequests = repository.getPullRequests(GHIssueState.ALL);
 
       for (GHPullRequest pr : pullRequests) {
-        if (pr.getCreatedAt().after(startDate)) {
+        if (pr.getCreatedAt().after(date)) {
           names.add(pr.getUser().getLogin());
         }
       }
-    } catch (IOException e) {
-      new RuntimeException(e);
+    } catch (IOException ex) {
+      new RuntimeException(ex);
     }
     return names;
   }
