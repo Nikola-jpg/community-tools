@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
 import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHPullRequest;
@@ -36,6 +37,7 @@ public class GitHubService {
 
   /**
    * Get GitHub pull requests according to state.
+   *
    * @param statePullRequest state of pull. T - open, F - closed
    * @return Map of GH login trainee as a key, title of pull as value
    */
@@ -63,8 +65,9 @@ public class GitHubService {
 
   /**
    * Get all events by the date interval.
+   *
    * @param startDate startDate
-   * @param endDate endDate
+   * @param endDate   endDate
    * @return list of EventData by the date interval
    */
   public List<EventData> getEvents(Date startDate, Date endDate) {
@@ -91,7 +94,7 @@ public class GitHubService {
           Date commentCreatedAt = comment.getCreatedAt();
           String loginComment = comment.getUser().getLogin();
           boolean periodComment =
-              commentCreatedAt.after(startDate) && commentCreatedAt.before(endDate);
+                  commentCreatedAt.after(startDate) && commentCreatedAt.before(endDate);
           if (periodComment) {
             listEvents.add(new EventData(commentCreatedAt, loginComment, COMMENT));
           }
@@ -120,6 +123,7 @@ public class GitHubService {
 
   /**
    * Get all GitHub Collaborators.
+   *
    * @return Set of GH Users
    */
   public Set<GHUser> getGitHubAllUsers() {
@@ -133,10 +137,11 @@ public class GitHubService {
 
   /**
    * Get active GitHub users.
+   *
    * @param date date
    * @return Set of GH Users
    */
-  public Set<String> getActiveUsersFromGit(Date date)  {
+  public Set<String> getActiveUsersFromGit(Date date) {
     Set<String> names = new HashSet<>();
     try {
       GHRepository repository = service.getGitHubRepository();
@@ -145,6 +150,13 @@ public class GitHubService {
       for (GHPullRequest pr : pullRequests) {
         if (pr.getCreatedAt().after(date)) {
           names.add(pr.getUser().getLogin());
+        }
+        PagedIterable<GHPullRequestCommitDetail> commitDetails = pr.listCommits();
+
+        for (GHPullRequestCommitDetail commit : commitDetails) {
+          if (commit.getCommit().getAuthor().getDate().after(date)) {
+            names.add(commit.getCommit().getAuthor().getName());
+          }
         }
       }
     } catch (IOException ex) {
