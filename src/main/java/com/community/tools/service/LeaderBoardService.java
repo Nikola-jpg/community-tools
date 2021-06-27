@@ -9,6 +9,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -20,6 +22,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JEditorPane;
 
 import lombok.SneakyThrows;
+import org.kohsuke.github.GHRepositoryTraffic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -104,9 +107,8 @@ public class LeaderBoardService {
    * @return List of Users.
    */
   public  List<User> getActiveUsersFromPeriod(int days)  {
-    Calendar calendar = Calendar.getInstance();
-    calendar.add(Calendar.DATE,-days);
-    Date date = calendar.getTime();
+    LocalDate tempDate = LocalDate.now().minusDays(days);
+    Date date = Date.from(tempDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     List<User> list = addSlackNameToUser();
     Set<String> userNames = gitHubService.getActiveUsersFromGit(date);
     List<User> userList = list.stream()

@@ -136,10 +136,10 @@ public class GitHubService {
   }
 
   /**
-   * Get active GitHub users.
+   * Get active GitHub user names
    *
    * @param date date
-   * @return Set of GH Users
+   * @return Set of GH User names
    */
   public Set<String> getActiveUsersFromGit(Date date) {
     Set<String> names = new HashSet<>();
@@ -150,13 +150,6 @@ public class GitHubService {
       for (GHPullRequest pr : pullRequests) {
         if (pr.getCreatedAt().after(date)) {
           names.add(pr.getUser().getLogin());
-        }
-        PagedIterable<GHPullRequestCommitDetail> commitDetails = pr.listCommits();
-
-        for (GHPullRequestCommitDetail commit : commitDetails) {
-          if (commit.getCommit().getAuthor().getDate().after(date)) {
-            names.add(commit.getCommit().getAuthor().getName());
-          }
         }
       }
     } catch (IOException ex) {
