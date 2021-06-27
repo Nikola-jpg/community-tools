@@ -136,7 +136,7 @@ public class GitHubService {
   }
 
   /**
-   * Get active GitHub user names
+   * Get active GitHub user names.
    *
    * @param date date
    * @return Set of GH User names
