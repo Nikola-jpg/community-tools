@@ -35,6 +35,9 @@ public class PublishWeekStatsService {
   @Autowired
   private MessageService messageService;
 
+  @Autowired
+  private MessagesToPlatform messagesToPlatform;
+
   /**
    * Publish statistics of Events for last week. Statistic sends every Monday.
    *
@@ -55,7 +58,7 @@ public class PublishWeekStatsService {
       System.out.println(events);
     } else {
       messageService.sendBlockMessageToConversation(channel,
-          messageService.statisticMessage(events));
+          messagesToPlatform.statisticMessage(events));
     }
   }
 
@@ -70,7 +73,21 @@ public class PublishWeekStatsService {
     String date = LocalDate.now().toString();
     String img = url + "img/" + date;
 
-    messageService.sendBlockMessageToConversation(channel, messageService.ratingMessage(url, img));
+    messageService.sendBlockMessageToConversation(channel,
+        messagesToPlatform.infoLinkMessage(Messages.RATING_MESSAGE, url, img));
+  }
+
+  /**
+   * Publish message with link to trainee`s tasks status and image (first 5 record of rating).
+   */
+  @Scheduled(cron = "0 20 0 * * ?")
+  public void publishTasksStatus() {
+    String url = urlServer + "tasksstatus";
+    String date = LocalDate.now().toString();
+    String img = url + "img/" + date;
+
+    messageService.sendBlockMessageToConversation(channel,
+        messagesToPlatform.infoLinkMessage(Messages.TASKS_STATUS_MESSAGE, url, img));
   }
 
   /**

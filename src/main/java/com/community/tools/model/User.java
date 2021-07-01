@@ -1,7 +1,9 @@
 package com.community.tools.model;
 
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -23,7 +25,12 @@ public class User {
   private String thirdAnswerAboutRules;
 
   @Transient
-  private String slackLogin;
+  private String platformName;
+
+  private Integer completedTasks;
+
+  @OneToMany(mappedBy = "user")
+  private List<TaskStatus> taskStatuses;
 
   /**
    * This method summ karma and pointsBy task. If fields null, return 0.
@@ -32,4 +39,5 @@ public class User {
   public Integer getTotalPoints() {
     return this.karma + this.pointByTask;
   }
+
 }

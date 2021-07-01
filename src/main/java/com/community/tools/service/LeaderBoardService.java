@@ -11,7 +11,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +21,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JEditorPane;
 
 import lombok.SneakyThrows;
-import org.kohsuke.github.GHRepositoryTraffic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -95,7 +93,7 @@ public class LeaderBoardService {
             .collect(Collectors.toMap(user -> user.getId(), user -> user.getRealName()));
     for (User user: list) {
       String slackName = map.get(user.getUserID());
-      user.setSlackLogin(slackName);
+      user.setPlatformName(slackName);
     }
     return list;
   }
@@ -116,5 +114,4 @@ public class LeaderBoardService {
                     .contains(user.getGitName())).collect(Collectors.toList());
     return userList;
   }
-
 }

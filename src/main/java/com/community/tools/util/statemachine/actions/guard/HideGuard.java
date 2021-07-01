@@ -8,23 +8,14 @@ import com.community.tools.util.statemachine.State;
 
 import java.io.IOException;
 
-import java.util.Map;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.annotation.WithStateMachine;
 import org.springframework.statemachine.guard.Guard;
 
 @WithStateMachine
 public class HideGuard implements Guard<State, Event> {
-
-  @Value("${checkNickName}")
-  private String checkNickName;
-  @Value("${failedNickName}")
-  private String failedNickName;
-  @Value("${addGitName}")
-  private String addGitName;
 
   @Autowired
   private GitHubService gitHubService;

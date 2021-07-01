@@ -1,22 +1,11 @@
 package com.community.tools.service.discord;
 
-import com.community.tools.model.Event;
-import com.community.tools.model.EventData;
 import com.community.tools.service.MessageService;
-import com.community.tools.service.PublishWeekStatsService;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -51,26 +40,26 @@ public class DiscordService implements MessageService<MessageEmbed> {
   /**
    * Send block message with messageText to username.
    *
-   * @param username    Discord login
-   * @param message object of MessageEmbed
+   * @param username Discord login
+   * @param message  object of MessageEmbed
    */
   @Override
-  public <T> void sendBlocksMessage(String username, T message) {
+  public void sendBlocksMessage(String username, MessageEmbed message) {
     jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
-      channel.sendMessage((MessageEmbed) message).queue();
+      channel.sendMessage(message).queue();
     });
   }
 
   /**
    * Send attachment message with messageText to username.
    *
-   * @param username    Discord login
-   * @param message object of MessageEmbed
+   * @param username Discord login
+   * @param message  object of MessageEmbed
    */
   @Override
-  public <T> void sendAttachmentsMessage(String username, T message) {
+  public void sendAttachmentsMessage(String username, MessageEmbed message) {
     jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
-      channel.sendMessage((MessageEmbed) message).queue();
+      channel.sendMessage(message).queue();
     });
   }
 
@@ -83,77 +72,19 @@ public class DiscordService implements MessageService<MessageEmbed> {
   @Override
   public void sendMessageToConversation(String channelName, String messageText) {
     jda.getTextChannelById(getIdByChannelName(channelName))
-          .sendMessage(messageText).queue();
+        .sendMessage(messageText).queue();
   }
 
   /**
    * Send attachment message with blocks of Text to the channel.
    *
    * @param channelName Name of channel
-   * @param message object of MessageEmbed
+   * @param message     object of MessageEmbed
    */
   @Override
-  public <T> void sendBlockMessageToConversation(String channelName, T message) {
+  public void sendBlockMessageToConversation(String channelName, MessageEmbed message) {
     jda.getTextChannelById(getIdByChannelName(channelName))
-        .sendMessage((MessageEmbed) message).queue();
-  }
-
-  @Override
-  public MessageEmbed nextTaskMessage(List<String> tasksList, int numberTask) {
-    return new EmbedBuilder()
-        .addField("", MessagesToDiscord.NEXT_TASK + tasksList.get(numberTask) + ") :link:", false)
-        .build();
-  }
-
-  @Override
-  public MessageEmbed ratingMessage(String url, String img) {
-    return  new EmbedBuilder()
-        .setTitle(":point_right: Рейтинг этой недели :point_left:", url)
-        .setImage(img)
-
-        .build();
-  }
-
-  @Override
-  public MessageEmbed statisticMessage(List<EventData> events) {
-
-    EmbedBuilder embedBuilder = new EmbedBuilder();
-
-    Map<String, List<EventData>> sortedMapGroupByActors = new HashMap<>();
-    events.stream().filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
-        .forEach(ed -> sortedMapGroupByActors.put(ed.getActorLogin(), new ArrayList<>()));
-
-    embedBuilder.addField("", "`Statistic:`", false);
-
-    events.stream()
-        .collect(Collectors.groupingBy(EventData::getType))
-        .entrySet().stream()
-        .sorted(Comparator
-            .comparingInt((Entry<Event, List<EventData>> entry)
-                -> entry.getValue().size()).reversed())
-        .forEach(entry -> {
-          entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
-
-          embedBuilder.addField("", PublishWeekStatsService.getTypeTitleBold(entry.getKey())
-              + PublishWeekStatsService.emojiGen(entry.getKey()) + ": "
-              + entry.getValue().size(), false);
-        });
-    embedBuilder.addField("", "`Activity:`", false);
-
-    sortedMapGroupByActors.entrySet().stream()
-        .sorted(Comparator
-            .comparingInt((Entry<String, List<EventData>> entry)
-                -> entry.getValue().size()).reversed())
-        .forEach(name -> {
-          StringBuilder authorsActivMessage = new StringBuilder();
-          name.getValue()
-              .forEach(eventData -> {
-                authorsActivMessage.append(PublishWeekStatsService.emojiGen(eventData.getType()));
-              });
-          embedBuilder.addField("", name.getKey() + ": "
-              + authorsActivMessage,false);
-        });
-    return embedBuilder.build();
+        .sendMessage(message).queue();
   }
 
   /**
@@ -200,7 +131,7 @@ public class DiscordService implements MessageService<MessageEmbed> {
    */
   @Override
   public String getIdByUser(String id) {
-    User user =  jda.getUserById(id);
+    User user = jda.getUserById(id);
     return user.getName();
 
   }
@@ -227,5 +158,16 @@ public class DiscordService implements MessageService<MessageEmbed> {
     Set<User> users = jda.getUsers().stream().collect(Collectors.toSet());
 
     return users;
+  }
+
+  /**
+   * Get id with real name.
+   * @return map key id, value real name
+   */
+  @Override
+  public Map<String, String> getIdWithName() {
+    return getAllUsers().stream()
+        .filter(u -> u.getName() != null)
+        .collect(Collectors.toMap(user -> user.getId(), user -> user.getName()));
   }
 }
