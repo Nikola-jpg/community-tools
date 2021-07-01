@@ -153,7 +153,7 @@ public class GitHubService {
         }
       }
     } catch (IOException ex) {
-      new RuntimeException(ex);
+      throw new RuntimeException(ex);
     }
     return names;
   }
