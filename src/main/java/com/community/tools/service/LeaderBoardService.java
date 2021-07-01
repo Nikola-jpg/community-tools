@@ -1,13 +1,19 @@
 package com.community.tools.service;
 
+import com.community.tools.model.EventData;
 import com.community.tools.model.User;
+import com.community.tools.service.github.GitHubService;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +22,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JEditorPane;
 
 import lombok.SneakyThrows;
+import org.kohsuke.github.GHRepositoryTraffic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -32,6 +39,9 @@ public class LeaderBoardService {
 
   @Autowired
   private MessageService messageService;
+
+  @Autowired
+  private GitHubService gitHubService;
 
 
   /**
@@ -63,9 +73,9 @@ public class LeaderBoardService {
    * This method return html-content with table, which contains first 5 trainees of leaderboard.
    * @return HtmlContent with leaderboard image
    */
-  public String getLeaderboardTemplate() {
+  public String getLeaderboardTemplate()  {
     final Context ctx = new Context();
-    List<User> list = addSlackNameToUser();
+    List<User> list = getActiveUsersFromPeriod(180);
     list.sort(Comparator.comparing(User::getTotalPoints).reversed());
     List<User> listFirst = list.stream().limit(5).collect(Collectors.toList());
     ctx.setVariable("entities", listFirst);
@@ -88,6 +98,23 @@ public class LeaderBoardService {
       user.setSlackLogin(slackName);
     }
     return list;
+  }
+
+  /**
+   * This method get active users from period in days
+   * and add their to the User model.
+   * @param days Period in days.
+   * @return List of Users.
+   */
+  public  List<User> getActiveUsersFromPeriod(int days)  {
+    LocalDate tempDate = LocalDate.now().minusDays(days);
+    Date date = Date.from(tempDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    List<User> list = addSlackNameToUser();
+    Set<String> userNames = gitHubService.getActiveUsersFromGit(date);
+    List<User> userList = list.stream()
+            .filter(user -> userNames
+                    .contains(user.getGitName())).collect(Collectors.toList());
+    return userList;
   }
 
 }

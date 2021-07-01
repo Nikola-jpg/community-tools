@@ -40,9 +40,13 @@ public class LeaderBoardController {
    */
   @GetMapping("/")
   public String getLeaderboard(Model model) {
-    List<User> list = leaderBoardService.addSlackNameToUser();
+    List<User> list = leaderBoardService.getActiveUsersFromPeriod(180);
     list.sort(Comparator.comparing(User::getTotalPoints).reversed());
-    model.addAttribute("entities", list);
+    model.addAttribute("entities",list);
+
+    List<User> fullList = leaderBoardService.addSlackNameToUser();
+    fullList.sort(Comparator.comparing(User::getTotalPoints).reversed());
+    model.addAttribute("entitiesFull", fullList);
     return "leaderboard";
   }
 
