@@ -7,7 +7,7 @@ public interface MessageService<T> extends UserService {
 
   void sendPrivateMessage(String username, String messageText);
 
-  void sendBlocksMessage(String username, T message);
+  void sendBlocksMessage(String username, T message);;;;
 
   void sendAttachmentsMessage(String username, T message);
 
