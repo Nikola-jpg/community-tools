@@ -1,6 +1,7 @@
-package com.community.tools.service.discord;
+package com.community.tools.discord;
 
-import com.community.tools.service.TrackingService;
+import com.community.tools.dto.Message;
+import com.community.tools.service.EventListener;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
@@ -8,27 +9,21 @@ import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@Profile("discord")
 public class DiscordEventListener extends ListenerAdapter {
 
   @Autowired
-  private TrackingService trackingService;
-
-  @Value("${testModeSwitcher}")
-  private Boolean testModeSwitcher;
+  private EventListener listener;
 
   @Override
   public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
-    try {
-      String userId = event.getUser().getId();
-      trackingService.resetUser(userId);
-    } catch (Exception exception) {
-      throw new RuntimeException(exception);
-    }
+    String userId = event.getUser().getId();
+    listener.memberJoin(new Message(userId, ""));
   }
 
   @Override
@@ -36,17 +31,9 @@ public class DiscordEventListener extends ListenerAdapter {
     if (!event.getAuthor().isBot()) {
       String messageFromUser = event.getMessage().getContentRaw();
       String userId = event.getAuthor().getId();
-      try {
-        if (messageFromUser.equalsIgnoreCase("reset")
-            && testModeSwitcher) {
-          trackingService.resetUser(userId);
-        } else {
-          trackingService.doAction(messageFromUser, userId);
-        }
-      } catch (Exception exception) {
-        throw new RuntimeException("Impossible to answer request with id = "
-            + event.getAuthor().getId(), exception);
-      }
+
+      Message message = new Message(userId, messageFromUser);
+      listener.messageReceived(message);
     }
   }
 
