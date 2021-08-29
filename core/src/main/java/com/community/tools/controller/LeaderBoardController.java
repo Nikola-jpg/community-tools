@@ -44,7 +44,7 @@ public class LeaderBoardController {
     list.sort(Comparator.comparing(User::getTotalPoints).reversed());
     model.addAttribute("entities",list);
 
-    List<User> fullList = leaderBoardService.addSlackNameToUser();
+    List<User> fullList = leaderBoardService.addNameToUser();
     fullList.sort(Comparator.comparing(User::getTotalPoints).reversed());
     model.addAttribute("entitiesFull", fullList);
     return "leaderboard";
