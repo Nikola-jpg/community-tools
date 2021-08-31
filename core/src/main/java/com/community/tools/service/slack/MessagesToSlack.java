@@ -1,10 +1,10 @@
 package com.community.tools.service.slack;
 
-import com.community.tools.service.MessagesToPlatform;
-import com.community.tools.service.PublishWeekStatsService;
 import com.community.tools.model.Event;
 import com.community.tools.model.EventData;
 import com.community.tools.model.Messages;
+import com.community.tools.service.MessagesToPlatform;
+import com.community.tools.service.PublishWeekStatsService;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;

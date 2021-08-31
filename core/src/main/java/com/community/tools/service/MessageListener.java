@@ -31,7 +31,7 @@ public class MessageListener implements EventListener {
 
     try {
       if (messageFromUser.equalsIgnoreCase("reset")
-        && testModeSwitcher) {
+          && testModeSwitcher) {
         trackingService.resetUser(userId);
       } else {
         trackingService.doAction(messageFromUser, userId);

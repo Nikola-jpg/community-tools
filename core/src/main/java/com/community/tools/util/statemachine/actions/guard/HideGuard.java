@@ -1,10 +1,10 @@
 package com.community.tools.util.statemachine.actions.guard;
 
+import com.community.tools.model.Messages;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
-import com.community.tools.model.Messages;
 
 import java.io.IOException;
 

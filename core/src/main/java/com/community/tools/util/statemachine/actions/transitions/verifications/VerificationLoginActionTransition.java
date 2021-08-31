@@ -1,12 +1,12 @@
 package com.community.tools.util.statemachine.actions.transitions.verifications;
 
+import com.community.tools.model.Messages;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
-import com.community.tools.model.Messages;
 import java.io.IOException;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;

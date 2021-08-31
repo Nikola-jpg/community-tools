@@ -2,8 +2,8 @@ package com.community.tools.controller;
 
 import static com.community.tools.util.GetServerAddress.getAddress;
 
-import com.community.tools.service.LeaderBoardService;
 import com.community.tools.model.User;
+import com.community.tools.service.LeaderBoardService;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 
 import java.io.IOException;
@@ -35,6 +35,7 @@ public class LeaderBoardController {
 
   /**
    * This method return webpage with table of trainee's rating.
+   *
    * @param model Model
    * @return webpage with template "leaderboard"
    */
@@ -42,7 +43,7 @@ public class LeaderBoardController {
   public String getLeaderboard(Model model) {
     List<User> list = leaderBoardService.getActiveUsersFromPeriod(180);
     list.sort(Comparator.comparing(User::getTotalPoints).reversed());
-    model.addAttribute("entities",list);
+    model.addAttribute("entities", list);
 
     List<User> fullList = leaderBoardService.addSlackNameToUser();
     fullList.sort(Comparator.comparing(User::getTotalPoints).reversed());
@@ -52,9 +53,10 @@ public class LeaderBoardController {
 
   /**
    * This method return image with table, which contains first 5 trainees of leaderboard.
+   *
    * @param response HttpServletResponse
    * @throws EntityNotFoundException EntityNotFoundException
-   * @throws IOException IOException
+   * @throws IOException             IOException
    */
   @RequestMapping(value = "/img/{date}", method = RequestMethod.GET)
   public void getImage(HttpServletResponse response) throws EntityNotFoundException, IOException {
