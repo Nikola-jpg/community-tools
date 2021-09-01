@@ -18,11 +18,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.community.tools.discord.DiscordConfig;
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
-import com.community.tools.service.discord.DiscordConfig;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.EstimatePayload;
@@ -31,11 +31,9 @@ import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
-
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
-
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +53,9 @@ import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+
+
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

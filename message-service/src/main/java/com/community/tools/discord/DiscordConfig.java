@@ -1,6 +1,5 @@
-package com.community.tools.service.discord;
+package com.community.tools.discord;
 
-import com.community.tools.discord.DiscordEventListener;
 import javax.security.auth.login.LoginException;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;

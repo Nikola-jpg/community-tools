@@ -1,5 +1,6 @@
 package com.community.tools.service;
 
+import com.community.tools.dto.UserDto;
 import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
@@ -81,15 +82,15 @@ public class LeaderBoardService {
   }
 
   /**
-   * This method load slack users and add slackName to the User model.
+   * This method load users and add Name to the User model.
    * @return List of Users.
    */
-  public List<User> addSlackNameToUser() {
+  public List<User> addNameToUser() {
     List<User> list = stateMachineRepository.findAll();
-    Set<com.github.seratch.jslack.api.model.User> slackUsers = messageService.getAllUsers();
+    Set<UserDto> slackUsers = messageService.getAllUsers();
     Map<String, String> map = slackUsers.stream()
-            .filter(u -> u.getRealName() != null)
-            .collect(Collectors.toMap(user -> user.getId(), user -> user.getRealName()));
+            .filter(u -> u.getName() != null)
+            .collect(Collectors.toMap(UserDto::getId, UserDto::getName));
     for (User user: list) {
       String slackName = map.get(user.getUserID());
       user.setPlatformName(slackName);
@@ -106,7 +107,7 @@ public class LeaderBoardService {
   public  List<User> getActiveUsersFromPeriod(int days)  {
     LocalDate tempDate = LocalDate.now().minusDays(days);
     Date date = Date.from(tempDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-    List<User> list = addSlackNameToUser();
+    List<User> list = addNameToUser();
     Set<String> userNames = gitHubService.getActiveUsersFromGit(date);
     List<User> userList = list.stream()
             .filter(user -> userNames
