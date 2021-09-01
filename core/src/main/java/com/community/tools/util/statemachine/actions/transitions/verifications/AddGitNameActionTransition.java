@@ -1,5 +1,6 @@
 package com.community.tools.util.statemachine.actions.transitions.verifications;
 
+import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.github.GitHubConnectService;
@@ -9,7 +10,6 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
-import com.community.tools.model.User;
 import java.io.IOException;
 import lombok.SneakyThrows;
 import org.kohsuke.github.GHUser;
@@ -45,11 +45,11 @@ public class AddGitNameActionTransition implements Transition {
   public void configure(
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
     transitions
-        .withExternal()
-        .source(State.CHECK_LOGIN)
-        .target(State.GETTING_PULL_REQUEST)
-        .event(Event.ADD_GIT_NAME_AND_FIRST_TASK)
-        .action(this, errorAction);
+      .withExternal()
+      .source(State.CHECK_LOGIN)
+      .target(State.GETTING_PULL_REQUEST)
+      .event(Event.ADD_GIT_NAME_AND_FIRST_TASK)
+      .action(this, errorAction);
   }
 
   @SneakyThrows
@@ -70,15 +70,15 @@ public class AddGitNameActionTransition implements Transition {
     try {
       userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
       gitHubConnectService.getGitHubRepository().getTeams()
-          .stream().filter(e -> e.getName().equals("trainees")).findFirst()
-          .get().add(userGitLogin);
+        .stream().filter(e -> e.getName().equals("trainees")).findFirst()
+        .get().add(userGitLogin);
     } catch (IOException e) {
       messageService.sendBlocksMessage(messageService.getUserById(user),
           messagesToPlatform.errorWithAddingGitName);
     }
     messageService.sendMessageToConversation(channel,
         generalInformationAboutUserToChannel(user, userGitLogin)
-            + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
+        + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
     messageService.sendBlocksMessage(messageService.getUserById(user),
         messagesToPlatform.getFirstTask);
     stateContext.getExtendedState().getVariables().put("gitNick", nickname);
@@ -91,8 +91,8 @@ public class AddGitNameActionTransition implements Transition {
   private String sendUserAnswersToChannel(String firstAnswer, String secondAnswer,
       String thirdAnswer) {
     return "Answer on questions : \n"
-        + "1. " + firstAnswer + ";\n"
-        + "2. " + secondAnswer + ";\n"
-        + "3. " + thirdAnswer + ".";
+      + "1. " + firstAnswer + ";\n"
+      + "2. " + secondAnswer + ";\n"
+      + "3. " + thirdAnswer + ".";
   }
 }

@@ -17,7 +17,7 @@ import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.VerificationPayload;
-import com.community.tools.service.slack.SlackHandlerService;
+import com.community.tools.slack.SlackHandlerService;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.transitions.verifications.AddGitNameActionTransition;

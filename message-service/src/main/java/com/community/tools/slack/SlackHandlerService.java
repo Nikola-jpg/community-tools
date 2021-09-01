@@ -1,6 +1,7 @@
-package com.community.tools.service.slack;
+package com.community.tools.slack;
 
-import com.community.tools.service.TrackingService;
+import com.community.tools.dto.Message;
+import com.community.tools.service.EventListener;
 
 import com.github.seratch.jslack.api.model.event.MessageEvent;
 import com.github.seratch.jslack.app_backend.events.EventsDispatcher;
@@ -18,10 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
+@Profile("slack")
 public class SlackHandlerService {
 
   @Value("${idOfSlackBot}")
@@ -30,18 +33,13 @@ public class SlackHandlerService {
   private Boolean testModeSwitcher;
 
   @Autowired
-  private TrackingService trackingService;
+  private EventListener listener;
 
   private TeamJoinHandler teamJoinHandler = new TeamJoinHandler() {
     @Override
     public void handle(TeamJoinPayload teamJoinPayload) {
-
-      try {
-        String userId = teamJoinPayload.getEvent().getUser().getId();
-        trackingService.resetUser(userId);
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
+      String userId = teamJoinPayload.getEvent().getUser().getId();
+      listener.memberJoin(new Message(userId, ""));
     }
   };
 
@@ -52,16 +50,9 @@ public class SlackHandlerService {
       if (!messageEvent.getUser().equals(idOfSlackBot)) {
         String messageFromUser = messageEvent.getText();
         String userId = messageEvent.getUser();
-        try {
-          if (messageFromUser.equals("reset") && testModeSwitcher) {
-            trackingService.resetUser(userId);
-          } else {
-            trackingService.doAction(messageFromUser, userId);
-          }
-        } catch (Exception e) {
-          throw new RuntimeException("Impossible to answer request with id="
-              + teamJoinPayload.getEvent().getUser(), e);
-        }
+
+        Message message = new Message(userId, messageFromUser);
+        listener.messageReceived(message);
       }
     }
   };

@@ -1,4 +1,4 @@
-package com.community.tools.service.discord;
+package com.community.tools.discord;
 
 import javax.security.auth.login.LoginException;
 import lombok.RequiredArgsConstructor;
