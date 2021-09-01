@@ -1,10 +1,10 @@
 package com.community.tools.util.statemachine.actions.transitions.tasks;
 
+import com.community.tools.model.Messages;
 import com.community.tools.service.MessageService;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
-import com.community.tools.model.Messages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;

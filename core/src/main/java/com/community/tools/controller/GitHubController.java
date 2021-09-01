@@ -2,8 +2,8 @@ package com.community.tools.controller;
 
 import static org.springframework.http.ResponseEntity.ok;
 
-import com.community.tools.service.github.GitHubService;
 import com.community.tools.model.EventData;
+import com.community.tools.service.github.GitHubService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
