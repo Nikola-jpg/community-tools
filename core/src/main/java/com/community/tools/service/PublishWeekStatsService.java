@@ -90,6 +90,8 @@ public class PublishWeekStatsService {
         messagesToPlatform.infoLinkMessage(Messages.TASKS_STATUS_MESSAGE, url, img));
   }
 
+  //todo: remove static methods below
+
   /**
    * Get emoji by event type.
    * @param type event type

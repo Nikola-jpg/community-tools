@@ -6,7 +6,7 @@ import java.util.List;
 public interface MessageConstructor<T> {
 
   T createGetFirstTaskMessage(String availableNickMessage, String getFirstTaskMessage,
-    String linkFirstTaskMessage);
+      String linkFirstTaskMessage);
 
   T createAddGitNameMessage(String addGitNameMessage);
 
@@ -23,7 +23,7 @@ public interface MessageConstructor<T> {
   T createThirdQuestion(String thirdQuestion);
 
   T createMessageAboutRules(String firstRule, String secondRule, String thirdRule,
-    String fourthRule);
+      String fourthRule);
 
   T createErrorWithAddingGitNameMessage(String errorMessage);
 
