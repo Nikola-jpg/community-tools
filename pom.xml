@@ -107,7 +107,6 @@
         <version>1.101</version>
       </dependency>
 
-
       <!--JUnit-->
       <dependency>
         <groupId>org.junit.jupiter</groupId>
@@ -139,7 +138,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>RELEASE</version>
+        <version>42.2.8</version>
       </dependency>
 
       <!-- https://mvnrepository.com/artifact/org.springframework.statemachine/spring-statemachine-core -->
