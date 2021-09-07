@@ -189,17 +189,14 @@
         <scope>provided</scope>
       </dependency>
 
+      <dependency>
+        <groupId>com.github.michaelgantman</groupId>
+        <artifactId>MgntUtils</artifactId>
+        <version>1.5.1.0</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
-
-  <dependencies>
-    <dependency>
-      <groupId>com.github.michaelgantman</groupId>
-      <artifactId>MgntUtils</artifactId>
-      <version>1.5.1.0</version>
-    </dependency>
-  </dependencies>
-
 
   <build>
     <pluginManagement>

@@ -37,6 +37,10 @@
       <artifactId>lombok</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.github.michaelgantman</groupId>
+      <artifactId>MgntUtils</artifactId>
+    </dependency>
   </dependencies>
 
 </project>
