@@ -12,6 +12,8 @@ import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import java.io.IOException;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.annotation.WithStateMachine;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @WithStateMachine
 public class AddGitNameActionTransition implements Transition {
 
