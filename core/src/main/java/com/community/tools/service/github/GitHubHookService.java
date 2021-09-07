@@ -1,10 +1,6 @@
 package com.community.tools.service.github;
 
-import com.community.tools.service.MessageService;
-import com.community.tools.service.MessagesToPlatform;
-import com.community.tools.service.PointsTaskService;
-import com.community.tools.service.StateMachineService;
-import com.community.tools.service.TaskStatusService;
+import com.community.tools.service.*;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.util.statemachine.Event;
 import com.github.seratch.jslack.api.methods.SlackApiException;
@@ -30,7 +26,7 @@ public class GitHubHookService {
   private String channel;
 
   @Autowired
-  private MessagesToPlatform messagesToPlatform;
+  private MessageConstructor messagesToPlatform;
   @Autowired
   private AddMentorService addMentorService;
   @Autowired

@@ -1,7 +1,8 @@
 package com.community.tools.util.statemachine.actions.transitions.tasks;
 
+import com.community.tools.model.Messages;
+import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
-import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
@@ -15,18 +16,15 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 @WithStateMachine
 public class GetTheFirstTaskActionTransition implements Transition {
 
-  @Autowired
-  private MessageService messageService;
+  @Autowired private MessageService messageService;
 
-  @Autowired
-  private Action<State, Event> errorAction;
+  @Autowired private Action<State, Event> errorAction;
 
-  @Autowired
-  private MessagesToPlatform messagesToPlatform;
+  @Autowired private MessageConstructor messagesToPlatform;
 
   @Override
-  public void configure(
-      StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
+  public void configure(StateMachineTransitionConfigurer<State, Event> transitions)
+      throws Exception {
     transitions
         .withExternal()
         .source(State.ADDED_GIT)
@@ -37,10 +35,12 @@ public class GetTheFirstTaskActionTransition implements Transition {
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    SimplePayload payload = (SimplePayload) stateContext.getExtendedState().getVariables()
-        .get("dataPayload");
+    SimplePayload payload =
+        (SimplePayload) stateContext.getExtendedState().getVariables().get("dataPayload");
     String user = payload.getId();
-    messageService.sendBlocksMessage(messageService.getUserById(user),
-        messagesToPlatform.getFirstTask);
+    messageService.sendBlocksMessage(
+        messageService.getUserById(user),
+        messagesToPlatform.createGetFirstTaskMessage(
+            Messages.CONGRATS_AVAILABLE_NICK, Messages.GET_FIRST_TASK, Messages.LINK_FIRST_TASK));
   }
 }

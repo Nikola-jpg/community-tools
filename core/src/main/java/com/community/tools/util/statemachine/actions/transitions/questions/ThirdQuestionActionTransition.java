@@ -1,8 +1,9 @@
 package com.community.tools.util.statemachine.actions.transitions.questions;
 
+import com.community.tools.model.Messages;
 import com.community.tools.model.User;
+import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
-import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
@@ -27,7 +28,7 @@ public class ThirdQuestionActionTransition implements Transition {
   private StateMachineRepository stateMachineRepository;
 
   @Autowired
-  private MessagesToPlatform messagesToPlatform;
+  private MessageConstructor messagesToPlatform;
 
   @Override
   public void configure(
@@ -48,7 +49,8 @@ public class ThirdQuestionActionTransition implements Transition {
     User stateEntity = stateMachineRepository.findByUserID(id).get();
     stateEntity.setSecondAnswerAboutRules(payloadSecondAnswer.getAnswer());
     stateMachineRepository.save(stateEntity);
-    messageService.sendBlocksMessage(messageService.getUserById(id),
-        messagesToPlatform.thirdQuestion);
+    messageService.sendBlocksMessage(
+        messageService.getUserById(id),
+        messagesToPlatform.createThirdQuestion(Messages.THIRD_QUESTION));
   }
 }

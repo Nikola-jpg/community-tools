@@ -9,6 +9,7 @@ public class UserDto {
   private String id;
   private String name;
   private String displayName;
+  private com.github.seratch.jslack.api.model.User.Profile profile;
 
   /**
    * hello.
@@ -35,6 +36,7 @@ public class UserDto {
     user.setId(anotherUser.getId());
     user.setName(anotherUser.getRealName());
     user.setDisplayName(anotherUser.getProfile().getDisplayName());
+    user.setProfile(anotherUser.getProfile());
 
     return user;
   }

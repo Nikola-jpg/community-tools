@@ -19,26 +19,21 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TrackingService {
 
-  @Autowired
-  private MessageService messageService;
+  @Autowired private MessageService messageService;
 
-  @Autowired
-  private StateMachineService stateMachineService;
+  @Autowired private StateMachineService stateMachineService;
 
-  @Autowired
-  private StateMachineRepository stateMachineRepository;
+  @Autowired private StateMachineRepository stateMachineRepository;
 
-  @Autowired
-  private EstimateTaskService estimateTaskService;
+  @Autowired private EstimateTaskService estimateTaskService;
 
-  @Autowired
-  private MessagesToPlatform messagesToPlatform;
+  @Autowired private MessageConstructor messagesToPlatform;
 
   /**
    * Method to start the event by state.
    *
    * @param messageFromUser message from user
-   * @param userId          user id
+   * @param userId user id
    * @throws Exception Exception
    */
   public void doAction(String messageFromUser, String userId) throws Exception {
@@ -83,8 +78,8 @@ public class TrackingService {
         } else {
           message = Messages.NOT_THAT_MESSAGE;
         }
-        payload = (VerificationPayload) machine.getExtendedState().getVariables()
-            .get("dataPayload");
+        payload =
+            (VerificationPayload) machine.getExtendedState().getVariables().get("dataPayload");
         break;
       case ESTIMATE_THE_TASK:
         int value = Integer.parseInt(messageFromUser);
@@ -129,9 +124,13 @@ public class TrackingService {
     stateMachineRepository.save(stateEntity);
     stateMachineService.persistMachineForNewUser(userId);
 
-    messageService.sendPrivateMessage(userName,
-        Messages.WELCOME);
-    messageService
-        .sendBlocksMessage(userName, messagesToPlatform.messageAboutRules);
+    messageService.sendPrivateMessage(userName, Messages.WELCOME);
+    messageService.sendBlocksMessage(
+        userName,
+        messagesToPlatform.createMessageAboutRules(
+            Messages.MESSAGE_ABOUT_RULES_1,
+            Messages.MESSAGE_ABOUT_RULES_2,
+            Messages.MESSAGE_ABOUT_RULES_3,
+            Messages.MESSAGE_ABOUT_RULES_4));
   }
 }
