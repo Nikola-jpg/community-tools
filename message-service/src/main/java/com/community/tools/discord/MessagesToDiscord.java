@@ -1,5 +1,7 @@
 package com.community.tools.discord;
-/** MessageToDiscrod. */
+/**
+ * MessageToDiscrod.
+ */
 
 import com.community.tools.dto.EventDataDto;
 import com.community.tools.service.MessageConstructor;
@@ -36,10 +38,10 @@ public class MessagesToDiscord implements MessageConstructor<MessageEmbed> {
   @Override
   public MessageEmbed createGetFirstTaskMessage(
       String availableNickMessage, String getFirstTaskMessage, String linkFirstTaskMessage) {
-      EmbedBuilder builder = new EmbedBuilder();
-        builder.addField("", availableNickMessage, false);
-        builder.addField("", getFirstTaskMessage + " [TASK](" + linkFirstTaskMessage + ") :link",
-                false);
+    EmbedBuilder builder = new EmbedBuilder();
+    builder.addField("", availableNickMessage, false);
+    builder.addField("", getFirstTaskMessage + " [TASK](" + linkFirstTaskMessage + ") :link",
+        false);
 
     return builder.build();
   }
@@ -83,28 +85,30 @@ public class MessagesToDiscord implements MessageConstructor<MessageEmbed> {
   public MessageEmbed createMessageAboutRules(
       String firstRule, String secondRule, String thirdRule, String fourthRule) {
     return new EmbedBuilder()
-        .addField("", firstRule, false)
-        .addField("", "[Rules](" + secondRule + ") :link;", false)
-        .addField("", thirdRule, false)
-        .addField("", fourthRule, false)
-        .build();
+      .addField("", firstRule, false)
+      .addField("", "[Rules](" + secondRule + ") :link;", false)
+      .addField("", thirdRule, false)
+      .addField("", fourthRule, false)
+      .build();
   }
 
   @Override
   public MessageEmbed createErrorWithAddingGitNameMessage(String errorMessage) {
     return new EmbedBuilder()
-        .addField("", errorMessage, false)
-        .addField(
-            "", "[*Liliya Stepanovna*](https://discord.com/channels/@me/842774422792437781)", false)
-        .setThumbnail(
-            "https://cdn-0.emojis.wiki/emoji-pics/facebook/woman-technologist-facebook.png")
-        .build();
+      .addField("", errorMessage, false)
+      .addField(
+        "", "[*Liliya Stepanovna*](https://discord.com/channels/@me/842774422792437781)", false)
+      .setThumbnail(
+        "https://cdn-0.emojis.wiki/emoji-pics/facebook/woman-technologist-facebook.png")
+      .build();
   }
 
-  /**javadoc.
-   * @param header - header.
+  /**
+   * javadoc.
+   *
+   * @param header            - header.
    * @param estimateQuestions - arrayOfQuestion.
-   * @param footer - footer.
+   * @param footer            - footer.
    * @return - builder.
    */
   public MessageEmbed createEstimateTheTaskMessage(
@@ -130,8 +134,8 @@ public class MessagesToDiscord implements MessageConstructor<MessageEmbed> {
   @Override
   public MessageEmbed failedBuildMessage(String url, String task) {
     return new EmbedBuilder()
-        .addField("", "Oops, your build at the task [" + task + "](" + url + ") is down!", false)
-        .build();
+      .addField("", "Oops, your build at the task [" + task + "](" + url + ") is down!", false)
+      .build();
   }
 
   @Override
@@ -145,59 +149,59 @@ public class MessagesToDiscord implements MessageConstructor<MessageEmbed> {
 
     Map<String, List<EventDataDto>> sortedMapGroupByActors = new HashMap<>();
     events.stream()
-        .filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
-        .forEach(ed -> sortedMapGroupByActors.put(ed.getActorLogin(), new ArrayList<>()));
+      .filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
+      .forEach(ed -> sortedMapGroupByActors.put(ed.getActorLogin(), new ArrayList<>()));
     embedBuilder.addField("", "`Statistic:`", false);
 
     events.stream().collect(Collectors.groupingBy(EventDataDto::getType)).entrySet().stream()
         .sorted(
-            Comparator.comparingInt((Entry<Map<String, String>, List<EventDataDto>> entry) ->
-                            entry.getValue()
-                            .size())
-                    .reversed())
+        Comparator.comparingInt((Entry<Map<String, String>, List<EventDataDto>> entry) ->
+          entry.getValue()
+            .size())
+          .reversed())
         .forEach(
-            entry -> {
-              entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
-              embedBuilder.addField(
-                  "",
-                  MessageUtils.getTypeTitleBold(
-                          entry.getKey().keySet().stream().findFirst().toString())
-                      + MessageUtils.emojiGen(
-                          entry.getKey().keySet().stream().findFirst().toString())
-                      + ": "
-                      + entry.getValue().size(),
-                  false);
-            });
+          entry -> {
+            entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
+            embedBuilder.addField(
+                "",
+                MessageUtils.getTypeTitleBold(
+                entry.getKey().keySet().stream().findFirst().toString())
+                + MessageUtils.emojiGen(
+                entry.getKey().keySet().stream().findFirst().toString())
+                + ": "
+                + entry.getValue().size(),
+                false);
+          });
     embedBuilder.addField("", "`Activity:`", false);
 
     sortedMapGroupByActors.entrySet().stream()
         .sorted(
-            Comparator.comparingInt((Entry<String, List<EventDataDto>> entry) ->
-                            entry.getValue().size())
-                    .reversed())
+        Comparator.comparingInt((Entry<String, List<EventDataDto>> entry) ->
+          entry.getValue().size())
+          .reversed())
         .forEach(
-            name -> {
-              StringBuilder authorsActiveMessage = new StringBuilder();
-              name.getValue()
-                  .forEach(
-                      eventData -> {
-                        authorsActiveMessage.append(
-                            MessageUtils.emojiGen(
-                                eventData.getType().keySet().stream().findFirst().toString()));
-                      });
-              embedBuilder.addField("", name.getKey() + ": " + authorsActiveMessage, false);
-            });
+          name -> {
+            StringBuilder authorsActiveMessage = new StringBuilder();
+            name.getValue()
+                .forEach(
+                  eventData -> {
+                    authorsActiveMessage.append(
+                        MessageUtils.emojiGen(
+                        eventData.getType().keySet().stream().findFirst().toString()));
+                  });
+            embedBuilder.addField("", name.getKey() + ": " + authorsActiveMessage, false);
+          });
     return embedBuilder.build();
   }
 
   @Override
   public MessageEmbed nextTaskMessage(List<String> tasksList, int numberTask) {
     return new EmbedBuilder()
-        .addField("", NEXT_TASK + tasksList.get(numberTask) + ") :link:", false)
-        .build();
+      .addField("", NEXT_TASK + tasksList.get(numberTask) + ") :link:", false)
+      .build();
   }
 
   public static final String NEXT_TASK =
       "Here is your next [TASK]("
-          + "https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
+      + "https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/";
 }

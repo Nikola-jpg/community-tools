@@ -43,10 +43,10 @@ public class SlackService implements MessageService<String> {
   public void sendPrivateMessage(String username, String messageText) {
     Slack slack = Slack.getInstance();
     try {
-          slack
-              .methods(token)
-              .chatPostMessage(
-                  req -> req.channel(getIdByUsername(username)).asUser(true).text(messageText));
+      slack
+          .methods(token)
+          .chatPostMessage(
+            req -> req.channel(getIdByUsername(username)).asUser(true).text(messageText));
     } catch (IOException | SlackApiException exception) {
       throw new RuntimeException(exception);
     }
@@ -64,11 +64,10 @@ public class SlackService implements MessageService<String> {
   public void sendBlocksMessage(String username, String message) {
     Slack slack = Slack.getInstance();
     try {
-          slack
-              .methods(token)
-              .chatPostMessage(
-                  req ->
-                      req.channel(getIdByUsername(username)).asUser(true).blocksAsString(message));
+      slack
+          .methods(token)
+          .chatPostMessage(req ->
+            req.channel(getIdByUsername(username)).asUser(true).blocksAsString(message));
     } catch (IOException | SlackApiException exception) {
       throw new RuntimeException(exception);
     }
