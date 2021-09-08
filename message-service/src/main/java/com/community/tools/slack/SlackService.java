@@ -11,7 +11,6 @@ import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.webhook.Payload;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,7 +43,6 @@ public class SlackService implements MessageService<String> {
   public void sendPrivateMessage(String username, String messageText) {
     Slack slack = Slack.getInstance();
     try {
-      ChatPostMessageResponse postResponse =
           slack
               .methods(token)
               .chatPostMessage(
@@ -66,7 +64,6 @@ public class SlackService implements MessageService<String> {
   public void sendBlocksMessage(String username, String message) {
     Slack slack = Slack.getInstance();
     try {
-      ChatPostMessageResponse postResponse =
           slack
               .methods(token)
               .chatPostMessage(

@@ -37,7 +37,7 @@ public class PointsTaskService {
   private MessageService messageService;
 
   @Autowired
-  private MessagesToPlatform messagesToPlatform;
+  private MessageConstructor messagesToPlatform;
 
   /**
    * This method adds points to the trainee, when mentor labeled pull as "done".
@@ -82,7 +82,7 @@ public class PointsTaskService {
    */
   public void sendAbilityReviewMess(String id) {
     messageService.sendBlocksMessage(messageService.getUserById(id),
-        messagesToPlatform.abilityReviewMessage);
+        messagesToPlatform.createAbilityReviewMessage(Messages.ABILITY_REVIEW_MESSAGE));
   }
 
   /**

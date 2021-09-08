@@ -1,7 +1,7 @@
 package com.community.tools.util.statemachine.actions.transitions.tasks;
 
+import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
-import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
@@ -21,7 +21,7 @@ public class GetTheNewTaskActionTransition implements Transition {
   private MessageService messageService;
 
   @Autowired
-  private MessagesToPlatform messagesToPlatform;
+  private MessageConstructor messagesToPlatform;
 
   @Value("${tasksForUsers}")
   private String[] tasksForUsers;
