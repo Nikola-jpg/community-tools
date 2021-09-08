@@ -27,17 +27,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ActiveProfiles("slack")
 class PublishWeekStatsServiceTest {
 
-  @InjectMocks
-  private PublishWeekStatsService publishWeekStatsService;
+  @InjectMocks private PublishWeekStatsService publishWeekStatsService;
 
-  @Mock
-  private GitHubService ghEventService;
+  @Mock private GitHubService ghEventService;
 
-  @Mock
-  private MessageService messageService;
+  @Mock private MessageService messageService;
 
-  @Mock
-  private MessagesToPlatform messagesToPlatform;
+  @Mock private MessageConstructor messagesToPlatform;
 
   @BeforeAll
   public void initMocks() {
@@ -47,7 +43,8 @@ class PublishWeekStatsServiceTest {
 
   @Test
   void exportStatTest() {
-    String message = "[{\"type\": \"header\",\t\"text\": "
+    String message =
+        "[{\"type\": \"header\",\t\"text\": "
             + "{\"type\": \"plain_text\",\"text\": \"Statistic:\"}},"
             + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"\n"
             + "*Comment*:loudspeaker::  3\n"
@@ -58,27 +55,29 @@ class PublishWeekStatsServiceTest {
             + "\"elements\": [{\"type\": \"mrkdwn\",\t\"text\": \"*roman*: "
             + ":loudspeaker::loudspeaker::loudspeaker::mailbox_with_mail:"
             + ":mailbox_with_mail::moneybag:\"}]}]";
-    List<EventData> events = Arrays.asList(
-        new EventData(new Date(), "roman", Event.PULL_REQUEST_CLOSED),
-        new EventData(new Date(), "roman", Event.PULL_REQUEST_CREATED),
-        new EventData(new Date(), "roman", Event.PULL_REQUEST_CREATED),
-        new EventData(new Date(), "roman", Event.COMMENT),
-        new EventData(new Date(), "roman", Event.COMMENT),
-        new EventData(new Date(), "roman", Event.COMMENT));
+    List<EventData> events =
+        Arrays.asList(
+            new EventData(new Date(), "roman", Event.PULL_REQUEST_CLOSED),
+            new EventData(new Date(), "roman", Event.PULL_REQUEST_CREATED),
+            new EventData(new Date(), "roman", Event.PULL_REQUEST_CREATED),
+            new EventData(new Date(), "roman", Event.COMMENT),
+            new EventData(new Date(), "roman", Event.COMMENT),
+            new EventData(new Date(), "roman", Event.COMMENT));
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
     Mockito.when(messagesToPlatform.statisticMessage(any())).thenReturn(message);
 
-    assertDoesNotThrow(() -> {
-      publishWeekStatsService.exportStat();
-      Mockito.verify(messageService).sendBlockMessageToConversation(any(), eq(message));
-    });
+    assertDoesNotThrow(
+        () -> {
+          publishWeekStatsService.exportStat();
+          Mockito.verify(messageService).sendBlockMessageToConversation(any(), eq(message));
+        });
   }
-
 
   @Test
   void exportStatTestTwoAuthors() {
-    String message = "[{\"type\": \"header\",\t\"text\": "
+    String message =
+        "[{\"type\": \"header\",\t\"text\": "
             + "{\"type\": \"plain_text\",\"text\": \"Statistic:\"}},"
             + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"\n"
             + "*Comment*:loudspeaker::  4\n"
@@ -95,32 +94,33 @@ class PublishWeekStatsServiceTest {
             + " :loudspeaker::mailbox_with_mail::rolled_up_newspaper:"
             + ":rolled_up_newspaper:\"}]}]";
 
-
-    List<EventData> events = Arrays.asList(
-        new EventData(new Date(), "roman", Event.PULL_REQUEST_CLOSED),
-        new EventData(new Date(), "roman", Event.PULL_REQUEST_CREATED),
-        new EventData(new Date(), "roman", Event.PULL_REQUEST_CREATED),
-        new EventData(new Date(), "roman", Event.COMMENT),
-        new EventData(new Date(), "roman", Event.COMMENT),
-        new EventData(new Date(), "roman", Event.COMMENT),
-        new EventData(new Date(), "Ilona", Event.COMMIT),
-        new EventData(new Date(), "Ilona", Event.COMMIT),
-        new EventData(new Date(), "Ilona", Event.PULL_REQUEST_CREATED),
-        new EventData(new Date(), "Ilona", Event.COMMENT)
-    );
+    List<EventData> events =
+        Arrays.asList(
+            new EventData(new Date(), "roman", Event.PULL_REQUEST_CLOSED),
+            new EventData(new Date(), "roman", Event.PULL_REQUEST_CREATED),
+            new EventData(new Date(), "roman", Event.PULL_REQUEST_CREATED),
+            new EventData(new Date(), "roman", Event.COMMENT),
+            new EventData(new Date(), "roman", Event.COMMENT),
+            new EventData(new Date(), "roman", Event.COMMENT),
+            new EventData(new Date(), "Ilona", Event.COMMIT),
+            new EventData(new Date(), "Ilona", Event.COMMIT),
+            new EventData(new Date(), "Ilona", Event.PULL_REQUEST_CREATED),
+            new EventData(new Date(), "Ilona", Event.COMMENT));
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
     Mockito.when(messagesToPlatform.statisticMessage(any())).thenReturn(message);
 
-    assertDoesNotThrow(() -> {
-      publishWeekStatsService.exportStat();
-      Mockito.verify(messageService).sendBlockMessageToConversation(anyString(), eq(message));
-    });
+    assertDoesNotThrow(
+        () -> {
+          publishWeekStatsService.exportStat();
+          Mockito.verify(messageService).sendBlockMessageToConversation(anyString(), eq(message));
+        });
   }
 
   @Test
   void exportStatTestTwoAuthorsNewVersion() {
-    String message = "[{\"type\": \"header\",\t\"text\": "
+    String message =
+        "[{\"type\": \"header\",\t\"text\": "
             + "{\"type\": \"plain_text\",\"text\": \"Statistic:\"}},"
             + "{\"type\": \"context\",\"elements\": [{\"type\": \"mrkdwn\", \"text\": \"\n"
             + "*Comment*:loudspeaker::  5\n"
@@ -139,7 +139,8 @@ class PublishWeekStatsServiceTest {
             + " :loudspeaker::loudspeaker::rolled_up_newspaper:"
             + ":rolled_up_newspaper::mailbox_with_mail:\"}]}]";
 
-    List<EventData> events = Arrays.asList(
+    List<EventData> events =
+        Arrays.asList(
             new EventData(new Date(), "aleksandr-zatsarnui", Event.PULL_REQUEST_CLOSED),
             new EventData(new Date(), "aleksandr-zatsarnui", Event.PULL_REQUEST_CREATED),
             new EventData(new Date(), "aleksandr-zatsarnui", Event.PULL_REQUEST_CREATED),
@@ -152,18 +153,15 @@ class PublishWeekStatsServiceTest {
             new EventData(new Date(), "NikitaBatalskiy", Event.COMMIT),
             new EventData(new Date(), "NikitaBatalskiy", Event.PULL_REQUEST_CREATED),
             new EventData(new Date(), "NikitaBatalskiy", Event.COMMENT),
-            new EventData(new Date(), "NikitaBatalskiy", Event.COMMENT)
-    );
+            new EventData(new Date(), "NikitaBatalskiy", Event.COMMENT));
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
     Mockito.when(messagesToPlatform.statisticMessage(any())).thenReturn(message);
 
-    assertDoesNotThrow(() -> {
-      publishWeekStatsService.exportStat();
-      Mockito.verify(messageService).sendBlockMessageToConversation(anyString(), eq(message));
-    });
+    assertDoesNotThrow(
+        () -> {
+          publishWeekStatsService.exportStat();
+          Mockito.verify(messageService).sendBlockMessageToConversation(anyString(), eq(message));
+        });
   }
-
-
-
 }

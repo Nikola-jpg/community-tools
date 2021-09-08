@@ -1,6 +1,6 @@
 package com.community.tools.service;
 
-import com.community.tools.model.Event;
+import com.community.tools.dto.EventDataTransformer;
 import com.community.tools.model.EventData;
 import com.community.tools.model.Messages;
 import com.community.tools.service.github.GitHubService;
@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,7 +37,7 @@ public class PublishWeekStatsService {
   private MessageService messageService;
 
   @Autowired
-  private MessagesToPlatform messagesToPlatform;
+  private MessageConstructor messagesToPlatform;
 
   /**
    * Publish statistics of Events for last week. Statistic sends every Monday.
@@ -58,7 +59,7 @@ public class PublishWeekStatsService {
       System.out.println(events);
     } else {
       messageService.sendBlockMessageToConversation(channel,
-          messagesToPlatform.statisticMessage(events));
+          messagesToPlatform.statisticMessage(events.stream().map(EventDataTransformer::convertToDto).collect(Collectors.toList())));
     }
   }
 
@@ -88,32 +89,5 @@ public class PublishWeekStatsService {
 
     messageService.sendBlockMessageToConversation(channel,
         messagesToPlatform.infoLinkMessage(Messages.TASKS_STATUS_MESSAGE, url, img));
-  }
-
-  //todo: remove static methods below
-
-  /**
-   * Get emoji by event type.
-   * @param type event type
-   * @return emoji
-   */
-  public static String emojiGen(Event type) {
-    switch (type) {
-      case COMMENT:
-        return ":loudspeaker:";
-      case COMMIT:
-        return ":rolled_up_newspaper:";
-      case PULL_REQUEST_CLOSED:
-        return ":moneybag:";
-      case PULL_REQUEST_CREATED:
-        return ":mailbox_with_mail:";
-      default:
-        return "";
-    }
-  }
-
-  public static String getTypeTitleBold(Event type) {
-    String typeTitleBold = "*" + type.getTitle() + "*";
-    return typeTitleBold;
   }
 }

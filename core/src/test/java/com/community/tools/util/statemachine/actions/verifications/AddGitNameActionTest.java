@@ -1,18 +1,15 @@
 package com.community.tools.util.statemachine.actions.verifications;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.community.tools.model.User;
+import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
-import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.Payload;
@@ -22,9 +19,7 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.transitions.verifications.AddGitNameActionTransition;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
-
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -32,82 +27,78 @@ import java.util.Optional;
 import java.util.Set;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHTeam;
 import org.kohsuke.github.GHUser;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("slack")
 public class AddGitNameActionTest {
 
-  @InjectMocks
   private AddGitNameActionTransition addGitNameAction;
-  @Mock
+
   private StateMachineRepository repository;
-  @Mock
+
   private StateContext<State, Event> stateContext;
-  @Mock
+
   private GitHubConnectService gitHubConnectService;
-  @Mock
+
   private GitHubService gitHubService;
-  @Mock
+
   private MessageService messageService;
-  @Mock
-  private MessagesToPlatform messagesToPlatform;
-  @Mock
+
+  private MessageConstructor<String> messagesToPlatform;
+
   private SlackHandlerService slackHandlerService;
-  @Mock
+
   private StateMachine<State, Event> machine;
-  @Mock
+
   private ExtendedState extendedState;
-  @Mock
+
   private GHUser user;
-  @Mock
+
   private GHTeam team;
-  @Mock
+
   private GHRepository ghRepository;
 
   private final String getFirstTask = "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Hurray! Your nick is available. Nice to meet you :smile:\n\nThis is your first <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/checkstyle|TASK>. gl\"}}]";
-
   private final String errorWithAddingGitName = "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Something went wrong with adding to the team. Please, contact *<https://broscorp-community.slack.com/archives/D01QZ9U2GH5|Liliya Stepanovna>*\"}}]";
 
   /**
    * This method init fields in the AddGitNameAction.
-   *
-   * @throws Exception Exception
    */
   @BeforeAll
-  public void setUp() throws Exception {
+  public void setUp() {
     MockitoAnnotations.initMocks(this);
+  }
 
-    Field repoField = AddGitNameActionTransition.class.getDeclaredField("gitHubConnectService");
-    repoField.setAccessible(true);
-    repoField.set(addGitNameAction, gitHubConnectService);
+  @BeforeEach
+  public void refreshMocks() {
+    this.repository = Mockito.mock(StateMachineRepository.class);
+    this.stateContext = Mockito.mock(StateContext.class);
+    this.gitHubConnectService = Mockito.mock(GitHubConnectService.class);
+    this.gitHubService = Mockito.mock(GitHubService.class);
+    this.messageService = Mockito.mock(MessageService.class);
+    this.messagesToPlatform = Mockito.mock(MessageConstructor.class);
+    this.slackHandlerService = Mockito.mock(SlackHandlerService.class);
+    this.machine = Mockito.mock(StateMachine.class);
+    this.extendedState = Mockito.mock(ExtendedState.class);
+    this.user = Mockito.mock(GHUser.class);
+    this.team = Mockito.mock(GHTeam.class);
+    this.ghRepository = Mockito.mock(GHRepository.class);
 
-    Field repoService = AddGitNameActionTransition.class.getDeclaredField("gitHubService");
-    repoService.setAccessible(true);
-    repoService.set(addGitNameAction, gitHubService);
+    this.addGitNameAction = new AddGitNameActionTransition(null, "test_3",
+      repository, gitHubConnectService, gitHubService, messageService, messagesToPlatform);
 
-    Field messageService = AddGitNameActionTransition.class.getDeclaredField("messageService");
-    messageService.setAccessible(true);
-    messageService.set(addGitNameAction, this.messageService);
-
-    Field messagesToPlatform = AddGitNameActionTransition.class
-        .getDeclaredField("messagesToPlatform");
-    messagesToPlatform.setAccessible(true);
-    messagesToPlatform.set(addGitNameAction, this.messagesToPlatform);
-
-    ReflectionTestUtils.setField(addGitNameAction, "channel", "test_3");
   }
 
   @Test
@@ -122,8 +113,6 @@ public class AddGitNameActionTest {
 
     final User entity = new User();
 
-    messagesToPlatform.getFirstTask = getFirstTask;
-
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
     when(repository.findByUserID("U0191K2V20K")).thenReturn(Optional.of(entity));
@@ -133,19 +122,22 @@ public class AddGitNameActionTest {
     when(ghRepository.getTeams()).thenReturn(mockSet);
     when(team.getName()).thenReturn("trainees");
     doNothing().when(team).add(user);
-
+    when(messagesToPlatform.createErrorWithAddingGitNameMessage(errorWithAddingGitName))
+      .thenReturn(errorWithAddingGitName);
+    when(messagesToPlatform.createGetFirstTaskMessage(anyString(), anyString(), anyString()))
+      .thenReturn(getFirstTask);
     when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
+
     addGitNameAction.execute(stateContext);
 
-    verify(stateContext, times(4)).getExtendedState();
-    verify(gitHubService, times(2)).getUserByLoginInGitHub("likeRewca");
-    verify(gitHubConnectService, times(2)).getGitHubRepository();
-    verify(messageService, times(5)).getUserById("U0191K2V20K");
-
-    verify(messageService, times(2)).sendMessageToConversation(anyString(), anyString());
-    verify(messageService, times(2))
-        .sendBlocksMessage("Горб Юра",
-            getFirstTask);
+    verify(stateContext, times(2)).getExtendedState();
+    verify(gitHubService, times(1)).getUserByLoginInGitHub("likeRewca");
+    verify(gitHubConnectService, times(1)).getGitHubRepository();
+    verify(messageService, times(2)).getUserById("U0191K2V20K");
+    verify(messageService, times(1)).sendMessageToConversation(anyString(), anyString());
+    verify(messageService, times(1))
+      .sendBlocksMessage("Горб Юра",
+        getFirstTask);
   }
 
 
@@ -162,8 +154,10 @@ public class AddGitNameActionTest {
 
     final User entity = new User();
 
-    messagesToPlatform.getFirstTask = getFirstTask;
-    messagesToPlatform.errorWithAddingGitName = errorWithAddingGitName;
+    when(messagesToPlatform.createGetFirstTaskMessage(anyString(), anyString(), anyString()))
+      .thenReturn(getFirstTask);
+    when(messagesToPlatform.createErrorWithAddingGitNameMessage(anyString()))
+      .thenReturn(errorWithAddingGitName);
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
@@ -173,22 +167,22 @@ public class AddGitNameActionTest {
     when(ghRepository.getTeams()).thenReturn(mockSet);
     when(team.getName()).thenReturn("trainees");
     doThrow(IOException.class).when(team).add(user);
-
     when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
 
     addGitNameAction.execute(stateContext);
+
     verify(stateContext, times(2)).getExtendedState();
     verify(gitHubService, times(1)).getUserByLoginInGitHub("likeRewca");
     verify(gitHubConnectService, times(1)).getGitHubRepository();
     verify(messageService, times(3)).getUserById("U0191K2V20K");
     verify(messageService, times(1))
-        .sendBlocksMessage("Горб Юра",
-            errorWithAddingGitName);
+      .sendBlocksMessage("Горб Юра",
+        errorWithAddingGitName);
     verify(messageService, times(1)).sendMessageToConversation(anyString(), anyString());
 
     verify(messageService, times(1))
-        .sendBlocksMessage("Горб Юра",
-            getFirstTask);
+      .sendBlocksMessage("Горб Юра",
+        getFirstTask);
 
   }
 }
