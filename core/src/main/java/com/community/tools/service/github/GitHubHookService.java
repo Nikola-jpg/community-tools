@@ -1,7 +1,7 @@
 package com.community.tools.service.github;
 
+import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
-import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.TaskStatusService;
@@ -30,7 +30,7 @@ public class GitHubHookService {
   private String channel;
 
   @Autowired
-  private MessagesToPlatform messagesToPlatform;
+  private MessageConstructor messagesToPlatform;
   @Autowired
   private AddMentorService addMentorService;
   @Autowired

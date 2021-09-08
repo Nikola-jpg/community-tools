@@ -1,5 +1,6 @@
-package com.community.tools.service.discord;
+package com.community.tools.discord;
 
+import com.community.tools.dto.UserDto;
 import com.community.tools.service.MessageService;
 import java.util.Map;
 import java.util.Set;
@@ -21,46 +22,53 @@ import org.springframework.stereotype.Service;
 @Profile("discord")
 public class DiscordService implements MessageService<MessageEmbed> {
 
-  @Autowired
-  private JDA jda;
+  @Autowired private JDA jda;
 
   /**
    * Send private message with messageText to username.
    *
-   * @param username    Discord login
+   * @param username Discord login
    * @param messageText Text of message
    */
   @Override
   public void sendPrivateMessage(String username, String messageText) {
-    jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
-      channel.sendMessage(messageText).queue();
-    });
+    jda.getUserById(getIdByUsername(username))
+        .openPrivateChannel()
+        .queue(
+            (channel) -> {
+              channel.sendMessage(messageText).queue();
+            });
   }
 
   /**
    * Send block message with messageText to username.
-   *
    * @param username Discord login
-   * @param message  object of MessageEmbed
+   * @param message object of MessageEmbed
    */
   @Override
   public void sendBlocksMessage(String username, MessageEmbed message) {
-    jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
-      channel.sendMessage(message).queue();
-    });
+    jda.getUserById(getIdByUsername(username))
+        .openPrivateChannel()
+        .queue(
+            (channel) -> {
+              channel.sendMessage(message).queue();
+            });
   }
 
   /**
    * Send attachment message with messageText to username.
    *
    * @param username Discord login
-   * @param message  object of MessageEmbed
+   * @param message object of MessageEmbed
    */
   @Override
   public void sendAttachmentsMessage(String username, MessageEmbed message) {
-    jda.getUserById(getIdByUsername(username)).openPrivateChannel().queue((channel) -> {
-      channel.sendMessage(message).queue();
-    });
+    jda.getUserById(getIdByUsername(username))
+        .openPrivateChannel()
+        .queue(
+            (channel) -> {
+              channel.sendMessage(message).queue();
+            });
   }
 
   /**
@@ -71,20 +79,18 @@ public class DiscordService implements MessageService<MessageEmbed> {
    */
   @Override
   public void sendMessageToConversation(String channelName, String messageText) {
-    jda.getTextChannelById(getIdByChannelName(channelName))
-        .sendMessage(messageText).queue();
+    jda.getTextChannelById(getIdByChannelName(channelName)).sendMessage(messageText).queue();
   }
 
   /**
    * Send attachment message with blocks of Text to the channel.
    *
    * @param channelName Name of channel
-   * @param message     object of MessageEmbed
+   * @param message object of MessageEmbed
    */
   @Override
   public void sendBlockMessageToConversation(String channelName, MessageEmbed message) {
-    jda.getTextChannelById(getIdByChannelName(channelName))
-        .sendMessage(message).queue();
+    jda.getTextChannelById(getIdByChannelName(channelName)).sendMessage(message).queue();
   }
 
   /**
@@ -95,9 +101,11 @@ public class DiscordService implements MessageService<MessageEmbed> {
    */
   @Override
   public String getIdByChannelName(String channelName) {
-    TextChannel channel = jda.getTextChannels().stream()
-        .filter(textChannel -> textChannel.getName().equals(channelName))
-        .findFirst().get();
+    TextChannel channel =
+        jda.getTextChannels().stream()
+            .filter(textChannel -> textChannel.getName().equals(channelName))
+            .findFirst()
+            .get();
     String channelId = channel.getId();
     return channelId;
   }
@@ -133,7 +141,6 @@ public class DiscordService implements MessageService<MessageEmbed> {
   public String getIdByUser(String id) {
     User user = jda.getUserById(id);
     return user.getName();
-
   }
 
   /**
@@ -154,14 +161,15 @@ public class DiscordService implements MessageService<MessageEmbed> {
    * @return Set of users.
    */
   @Override
-  public Set<User> getAllUsers() {
-    Set<User> users = jda.getUsers().stream().collect(Collectors.toSet());
-
+  public Set<UserDto> getAllUsers() {
+    Set<UserDto> users =
+        jda.getUsers().stream().map(UserDto::fromDiscord).collect(Collectors.toSet());
     return users;
   }
 
   /**
    * Get id with real name.
+   *
    * @return map key id, value real name
    */
   @Override

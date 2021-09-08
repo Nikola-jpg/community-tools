@@ -1,7 +1,8 @@
 package com.community.tools.util.statemachine.actions.transitions.questions;
 
+import com.community.tools.model.Messages;
+import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
-import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
@@ -19,7 +20,7 @@ public class FirstQuestionActionTransition implements Transition {
   private MessageService messageService;
 
   @Autowired
-  private MessagesToPlatform messagesToPlatform;
+  private MessageConstructor messagesToPlatform;
 
   @Autowired
   private Action<State, Event> errorAction;
@@ -29,8 +30,9 @@ public class FirstQuestionActionTransition implements Transition {
     SimplePayload payload = (SimplePayload) stateContext.getExtendedState().getVariables()
         .get("dataPayload");
     String id = payload.getId();
-    messageService.sendBlocksMessage(messageService.getUserById(id),
-        messagesToPlatform.firstQuestion);
+    messageService.sendBlocksMessage(
+        messageService.getUserById(id),
+        messagesToPlatform.createFirstQuestion(Messages.FIRST_QUESTION));
   }
 
   @Override

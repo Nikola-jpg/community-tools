@@ -4,15 +4,15 @@ import static com.community.tools.util.statemachine.Event.GET_THE_FIRST_TASK;
 import static com.community.tools.util.statemachine.Event.QUESTION_FIRST;
 import static org.springframework.http.ResponseEntity.ok;
 
+import com.community.tools.dto.UserDto;
+import com.community.tools.model.Messages;
+import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
-import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
-import com.github.seratch.jslack.api.model.User;
-import com.github.seratch.jslack.api.model.User.Profile;
 import com.github.seratch.jslack.app_backend.interactive_messages.payload.BlockActionPayload;
 import com.github.seratch.jslack.common.json.GsonFactory;
 import com.google.gson.Gson;
@@ -48,7 +48,7 @@ public class GitSlackUsersController {
   private MessageService messageService;
 
   @Autowired
-  private MessagesToPlatform messagesToPlatform;
+  private MessageConstructor messagesToPlatform;
 
   /**
    * Endpoint /git. Method GET.
@@ -75,11 +75,11 @@ public class GitSlackUsersController {
   @ApiOperation(value = "Returns list of slack users that work with the bot")
   @GetMapping(value = "/slack", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getSlackAllUsers() {
-    Set<User> allSlackUsers = messageService.getAllUsers();
+    Set<UserDto> allSlackUsers = messageService.getAllUsers();
 
     List<String> listSlackUsersName = allSlackUsers.stream()
-        .map(User::getProfile)
-        .map(Profile::getDisplayName).collect(Collectors.toList());
+        .map(UserDto::getDisplayName)
+        .collect(Collectors.toList());
 
     return ok().body(listSlackUsersName);
   }
@@ -108,7 +108,8 @@ public class GitSlackUsersController {
     switch (action) {
       case "AGREE_LICENSE":
         stateMachineService.doAction(machine, new SimplePayload(userId), QUESTION_FIRST);
-        messageService.sendBlocksMessage(user, messagesToPlatform.notThatMessage);
+        messageService.sendBlocksMessage(
+            user, messagesToPlatform.createNotThatMessage(Messages.NOT_THAT_MESSAGE));
         break;
       case "theEnd":
         stateMachineService.doAction(machine, new SimplePayload(userId), GET_THE_FIRST_TASK);
@@ -116,7 +117,8 @@ public class GitSlackUsersController {
             .sendPrivateMessage(user, "that was the end, congrats");
         break;
       default:
-        messageService.sendBlocksMessage(user, messagesToPlatform.noOneCase);
+        messageService.sendBlocksMessage(
+                user, messagesToPlatform.createNoOneCaseMessage(Messages.NO_ONE_CASE));
     }
     return new ResponseEntity<>("Action: " + action,
         HttpStatus.OK);

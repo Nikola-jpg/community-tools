@@ -1,8 +1,9 @@
 package com.community.tools.util.statemachine.actions.transitions.information;
 
+import com.community.tools.model.Messages;
 import com.community.tools.model.User;
+import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
-import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
@@ -27,7 +28,7 @@ public class ConsentToInformationActionTransition implements Transition {
   private MessageService messageService;
 
   @Autowired
-  private MessagesToPlatform messagesToPlatform;
+  private MessageConstructor messagesToPlatform;
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
@@ -37,11 +38,11 @@ public class ConsentToInformationActionTransition implements Transition {
     User stateEntity = stateMachineRepository.findByUserID(id).get();
     stateEntity.setThirdAnswerAboutRules(payloadThirdAnswer.getAnswer());
     stateMachineRepository.save(stateEntity);
-    messageService
-        .sendBlocksMessage(messageService.getUserById(id),
-            messagesToPlatform.messageAboutSeveralInfoChannel);
+    messageService.sendBlocksMessage(
+        messageService.getUserById(id),
+        messagesToPlatform.createMessageAboutSeveralInfoChannel(Messages.INFO_CHANNEL_MESSAGES));
     messageService.sendBlocksMessage(messageService.getUserById(id),
-        messagesToPlatform.addGitName);
+        messagesToPlatform.createAddGitNameMessage(Messages.ADD_GIT_NAME));
   }
 
   @Override
