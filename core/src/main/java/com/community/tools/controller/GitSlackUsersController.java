@@ -117,7 +117,8 @@ public class GitSlackUsersController {
             .sendPrivateMessage(user, "that was the end, congrats");
         break;
       default:
-        messageService.sendBlocksMessage(user, messagesToPlatform.createNoOneCaseMessage(Messages.NO_ONE_CASE));
+        messageService.sendBlocksMessage(
+                user, messagesToPlatform.createNoOneCaseMessage(Messages.NO_ONE_CASE));
     }
     return new ResponseEntity<>("Action: " + action,
         HttpStatus.OK);

@@ -9,7 +9,7 @@ public class Messages {
   // messages for bot
   public static final String ANSWERED_NO_DURING_VERIFICATION =
       "Oops, sorry :neutral_face:"
-          + " Check your nickname correctly and try again, please :hugging_face:";
+              + " Check your nickname correctly and try again, please :hugging_face:";
   public static final String ASK_ABOUT_PROFILE = "Is it your profile? (*yes*/*no*)";
   public static final String CHECK_NICK_NAME = "Okay! Let me check your nick,";
   public static final String CONGRATS_AVAILABLE_NICK =
@@ -40,8 +40,9 @@ public class Messages {
           + " colleagues :sunglasses: \n You can leave comments on those tasks where you have"
           + " the marking label done (the task is accepted).\n\n If you think that it is necessary"
           + " to make changes, write a comment and install the label *changes request*."
-          + " When you and your colleague decide that the changes applied and the task is done,"
-          + " you should write a comment *approved*. \n\n If in your opinion everything is ok to write"
+          + " When you and your colleague decide that the changes applied and the task is done, "
+          + "you should write a comment *approved*. \n\n"
+              + "If in your opinion everything is ok to write"
           + " a comment approved. You can specify what was done well. :relaxed:  \n"
           + " For the quality reviews, you can get + into karma :smirk:";
   public static final String ZERO_POINTS_MESSAGE =
@@ -55,8 +56,8 @@ public class Messages {
   public static final String THIRD_QUESTION =
       "3. Your task labelled as 'changes requested'." + " What is your next step?";
   public static final String MESSAGE_ABOUT_RULES_1 =
-      "Before you start, be sure to familiarize"
-          + " yourself with the rules.  You can read the rules by clicking on this link.:point_down:";
+      "Before you start, be sure to familiarize "
+          + "yourself with the rules. You can read the rules by clicking on this link.:point_down:";
   public static final String MESSAGE_ABOUT_RULES_2 =
       "https://github.com/Broscorp-net/traineeship/blob/master/README.md";
   public static final String MESSAGE_ABOUT_RULES_3 =
@@ -140,6 +141,7 @@ public class Messages {
           .withKeyValueSeparator(":")
           .split(
               "checkstyle:1, primitives:2, boxing:2, valueref:3, "
-                  + "equals/hashcode:3, platform:3, bytecode:2, gc:4, exceptions:4, classpath:3, generics:5, "
+                  + "equals/hashcode:3, platform:3, bytecode:2, gc:4,"
+                      + " exceptions:4, classpath:3, generics:5, "
                   + "inner/classes:5, override/overload:4, strings:5, gamelife:10");
 }

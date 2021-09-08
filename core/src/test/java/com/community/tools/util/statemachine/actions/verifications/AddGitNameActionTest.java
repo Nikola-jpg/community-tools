@@ -1,4 +1,8 @@
 package com.community.tools.util.statemachine.actions.verifications;
+/**
+ * javadoc.
+ * AddGitNameTest.
+ */
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -81,6 +85,9 @@ public class AddGitNameActionTest {
     MockitoAnnotations.initMocks(this);
   }
 
+  /**
+   * refreshMocks.
+   */
   @BeforeEach
   public void refreshMocks() {
     this.repository = Mockito.mock(StateMachineRepository.class);
@@ -136,7 +143,7 @@ public class AddGitNameActionTest {
     verify(messageService, times(2)).getUserById("U0191K2V20K");
     verify(messageService, times(1)).sendMessageToConversation(anyString(), anyString());
     verify(messageService, times(1))
-      .sendBlocksMessage("Горб Юра",
+            .sendBlocksMessage("Горб Юра",
         getFirstTask);
   }
 
@@ -176,12 +183,12 @@ public class AddGitNameActionTest {
     verify(gitHubConnectService, times(1)).getGitHubRepository();
     verify(messageService, times(3)).getUserById("U0191K2V20K");
     verify(messageService, times(1))
-      .sendBlocksMessage("Горб Юра",
+            .sendBlocksMessage("Горб Юра",
         errorWithAddingGitName);
     verify(messageService, times(1)).sendMessageToConversation(anyString(), anyString());
 
     verify(messageService, times(1))
-      .sendBlocksMessage("Горб Юра",
+            .sendBlocksMessage("Горб Юра",
         getFirstTask);
 
   }

@@ -59,7 +59,9 @@ public class PublishWeekStatsService {
       System.out.println(events);
     } else {
       messageService.sendBlockMessageToConversation(channel,
-          messagesToPlatform.statisticMessage(events.stream().map(EventDataTransformer::convertToDto).collect(Collectors.toList())));
+          messagesToPlatform.statisticMessage(
+                  events.stream().map(EventDataTransformer::convertToDto)
+                          .collect(Collectors.toList())));
     }
   }
 
