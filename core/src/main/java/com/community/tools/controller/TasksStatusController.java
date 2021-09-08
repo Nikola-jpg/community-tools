@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
-@RequestMapping("/tasksstatus")
+@RequestMapping("/taskstatus")
 public class TasksStatusController {
 
   @Autowired
