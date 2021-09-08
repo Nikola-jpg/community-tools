@@ -42,7 +42,6 @@ public class DiscordService implements MessageService<MessageEmbed> {
 
   /**
    * Send block message with messageText to username.
-   *
    * @param username Discord login
    * @param message object of MessageEmbed
    */

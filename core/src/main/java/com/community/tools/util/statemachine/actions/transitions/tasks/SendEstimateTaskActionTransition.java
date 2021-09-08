@@ -1,7 +1,8 @@
 package com.community.tools.util.statemachine.actions.transitions.tasks;
 
+import com.community.tools.model.Messages;
+import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
-import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.util.statemachine.Event;
@@ -16,17 +17,13 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 @WithStateMachine
 public class SendEstimateTaskActionTransition implements Transition {
 
-  @Autowired
-  ErrorAction errorAction;
+  @Autowired ErrorAction errorAction;
 
-  @Autowired
-  MessageService messageService;
+  @Autowired MessageService messageService;
 
-  @Autowired
-  StateMachineService stateMachineService;
+  @Autowired StateMachineService stateMachineService;
 
-  @Autowired
-  MessagesToPlatform messagesToPlatform;
+  @Autowired MessageConstructor messagesToPlatform;
 
   @Override
   public void configure(StateMachineTransitionConfigurer<State, Event> transitions)
@@ -41,10 +38,12 @@ public class SendEstimateTaskActionTransition implements Transition {
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    SimplePayload payload = (SimplePayload) stateContext.getExtendedState()
-        .getVariables().get("dataPayload");
+    SimplePayload payload =
+        (SimplePayload) stateContext.getExtendedState().getVariables().get("dataPayload");
     String user = payload.getId();
-    messageService
-        .sendBlocksMessage(messageService.getUserById(user), messagesToPlatform.estimateTheTask);
+    messageService.sendBlocksMessage(
+        messageService.getUserById(user),
+        messagesToPlatform.createEstimateTheTaskMessage(
+            Messages.ESTIMATE_HEADER, Messages.ESTIMATE_QUESTIONS, Messages.ESTIMATE_FOOTER));
   }
 }

@@ -1,8 +1,9 @@
 package com.community.tools.util.statemachine.actions.transitions.verifications;
 
+import com.community.tools.model.Messages;
 import com.community.tools.model.User;
+import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
-import com.community.tools.service.MessagesToPlatform;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.VerificationPayload;
@@ -11,6 +12,8 @@ import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import java.io.IOException;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,43 +23,40 @@ import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.annotation.WithStateMachine;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @WithStateMachine
 public class AddGitNameActionTransition implements Transition {
 
-  @Autowired
-  private Action<State, Event> errorAction;
+  @Autowired private Action<State, Event> errorAction;
+
   @Value("${generalInformationChannel}")
   private String channel;
 
-  @Autowired
-  private StateMachineRepository stateMachineRepository;
-  @Autowired
-  private GitHubConnectService gitHubConnectService;
-  @Autowired
-  private GitHubService gitHubService;
+  @Autowired private StateMachineRepository stateMachineRepository;
+  @Autowired private GitHubConnectService gitHubConnectService;
+  @Autowired private GitHubService gitHubService;
 
-  @Autowired
-  private MessageService messageService;
+  @Autowired private MessageService messageService;
 
-  @Autowired
-  private MessagesToPlatform messagesToPlatform;
+  @Autowired private MessageConstructor messagesToPlatform;
 
   @Override
-  public void configure(
-      StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
+  public void configure(StateMachineTransitionConfigurer<State, Event> transitions)
+      throws Exception {
     transitions
-      .withExternal()
-      .source(State.CHECK_LOGIN)
-      .target(State.GETTING_PULL_REQUEST)
-      .event(Event.ADD_GIT_NAME_AND_FIRST_TASK)
-      .action(this, errorAction);
+        .withExternal()
+        .source(State.CHECK_LOGIN)
+        .target(State.GETTING_PULL_REQUEST)
+        .event(Event.ADD_GIT_NAME_AND_FIRST_TASK)
+        .action(this, errorAction);
   }
 
   @SneakyThrows
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    VerificationPayload payload = (VerificationPayload) stateContext.getExtendedState()
-        .getVariables().get("dataPayload");
+    VerificationPayload payload =
+        (VerificationPayload) stateContext.getExtendedState().getVariables().get("dataPayload");
     String user = payload.getId();
     String nickname = payload.getGitNick();
 
@@ -69,18 +69,26 @@ public class AddGitNameActionTransition implements Transition {
     GHUser userGitLogin = new GHUser();
     try {
       userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
-      gitHubConnectService.getGitHubRepository().getTeams()
-        .stream().filter(e -> e.getName().equals("trainees")).findFirst()
-        .get().add(userGitLogin);
+      gitHubConnectService.getGitHubRepository().getTeams().stream()
+          .filter(e -> e.getName().equals("trainees"))
+          .findFirst()
+          .get()
+          .add(userGitLogin);
     } catch (IOException e) {
-      messageService.sendBlocksMessage(messageService.getUserById(user),
-          messagesToPlatform.errorWithAddingGitName);
+      messageService.sendBlocksMessage(
+          messageService.getUserById(user),
+          messagesToPlatform.createErrorWithAddingGitNameMessage(
+              Messages.ERROR_WITH_ADDING_GIT_NAME));
     }
-    messageService.sendMessageToConversation(channel,
+    messageService.sendMessageToConversation(
+        channel,
         generalInformationAboutUserToChannel(user, userGitLogin)
-        + "\n" + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
-    messageService.sendBlocksMessage(messageService.getUserById(user),
-        messagesToPlatform.getFirstTask);
+            + "\n"
+            + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
+    messageService.sendBlocksMessage(
+        messageService.getUserById(user),
+        messagesToPlatform.createGetFirstTaskMessage(
+            Messages.CONGRATS_AVAILABLE_NICK, Messages.GET_FIRST_TASK, Messages.LINK_FIRST_TASK));
     stateContext.getExtendedState().getVariables().put("gitNick", nickname);
   }
 
@@ -88,11 +96,17 @@ public class AddGitNameActionTransition implements Transition {
     return messageService.getUserById(slackName) + " - " + user.getLogin();
   }
 
-  private String sendUserAnswersToChannel(String firstAnswer, String secondAnswer,
-      String thirdAnswer) {
+  private String sendUserAnswersToChannel(
+      String firstAnswer, String secondAnswer, String thirdAnswer) {
     return "Answer on questions : \n"
-      + "1. " + firstAnswer + ";\n"
-      + "2. " + secondAnswer + ";\n"
-      + "3. " + thirdAnswer + ".";
+        + "1. "
+        + firstAnswer
+        + ";\n"
+        + "2. "
+        + secondAnswer
+        + ";\n"
+        + "3. "
+        + thirdAnswer
+        + ".";
   }
 }
