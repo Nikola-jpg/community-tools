@@ -1,7 +1,4 @@
 package com.community.tools.discord;
-/**
- * MessageToDiscrod.
- */
 
 import com.community.tools.dto.EventDataDto;
 import com.community.tools.service.MessageConstructor;
@@ -103,14 +100,7 @@ public class MessagesToDiscord implements MessageConstructor<MessageEmbed> {
       .build();
   }
 
-  /**
-   * javadoc.
-   *
-   * @param header            - header.
-   * @param estimateQuestions - arrayOfQuestion.
-   * @param footer            - footer.
-   * @return - builder.
-   */
+  @Override
   public MessageEmbed createEstimateTheTaskMessage(
       String header, String[] estimateQuestions, String footer) {
     EmbedBuilder builder = new EmbedBuilder();

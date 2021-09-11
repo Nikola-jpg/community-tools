@@ -3,7 +3,6 @@ package com.community.tools.dto;
 import lombok.Data;
 import net.dv8tion.jda.api.entities.User;
 
-/** javadoc. */
 @Data
 public class UserDto {
   private String id;
@@ -12,31 +11,33 @@ public class UserDto {
   private com.github.seratch.jslack.api.model.User.Profile profile;
 
   /**
-   * hello.
-   * @param anotherUser - discordUser.
-   * @return
+   * Convert an DiscordUser object into an UserDto object.
+   *
+   * @param discordUser - DiscordUser object.
+   * @return a new UserDto object.
    */
-  public static UserDto fromDiscord(User anotherUser) {
+  public static UserDto fromDiscord(User discordUser) {
     UserDto user = new UserDto();
 
-    user.setId(anotherUser.getId());
-    user.setName(anotherUser.getName());
+    user.setId(discordUser.getId());
+    user.setName(discordUser.getName());
 
     return user;
   }
 
   /**
-   * hello.
-   * @param anotherUser - slackUser.
-   * @return
+   * Convert an SlackUser object into an UserDto object.
+   *
+   * @param slackUser - SlackUser object.
+   * @return a new UserDto object.
    */
-  public static UserDto fromSlack(com.github.seratch.jslack.api.model.User anotherUser) {
+  public static UserDto fromSlack(com.github.seratch.jslack.api.model.User slackUser) {
     UserDto user = new UserDto();
 
-    user.setId(anotherUser.getId());
-    user.setName(anotherUser.getRealName());
-    user.setDisplayName(anotherUser.getProfile().getDisplayName());
-    user.setProfile(anotherUser.getProfile());
+    user.setId(slackUser.getId());
+    user.setName(slackUser.getRealName());
+    user.setDisplayName(slackUser.getProfile().getDisplayName());
+    user.setProfile(slackUser.getProfile());
 
     return user;
   }

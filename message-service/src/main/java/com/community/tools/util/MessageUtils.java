@@ -4,6 +4,7 @@ public class MessageUtils {
 
   /**
    * Get emoji by event type.
+   *
    * @param type event type name.
    * @return emoji string.
    */
