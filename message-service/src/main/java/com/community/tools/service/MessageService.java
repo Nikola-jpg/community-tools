@@ -1,6 +1,10 @@
 package com.community.tools.service;
 
-public interface MessageService<T> extends UserService {
+import com.community.tools.dto.UserDto;
+import java.util.Map;
+import java.util.Set;
+
+public interface MessageService<T> {
 
   void sendPrivateMessage(String username, String messageText);
 
@@ -12,8 +16,18 @@ public interface MessageService<T> extends UserService {
 
   void sendBlockMessageToConversation(String channelName, T message);
 
+  void sendAnnouncement(String message);
+
   String getIdByChannelName(String channelName);
 
-  void sendAnnouncement(String message);
+  String getUserById(String id);
+
+  String getIdByUser(String id);
+
+  String getIdByUsername(String username);
+
+  Set<UserDto> getAllUsers();
+
+  Map<String, String> getIdWithName();
 
 }
