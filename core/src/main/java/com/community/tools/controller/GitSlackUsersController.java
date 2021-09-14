@@ -4,8 +4,8 @@ import static com.community.tools.util.statemachine.Event.GET_THE_FIRST_TASK;
 import static com.community.tools.util.statemachine.Event.QUESTION_FIRST;
 import static org.springframework.http.ResponseEntity.ok;
 
-import com.community.tools.dto.UserDto;
 import com.community.tools.model.Messages;
+import com.community.tools.model.ServiceUser;
 import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
@@ -48,7 +48,7 @@ public class GitSlackUsersController {
   private MessageService messageService;
 
   @Autowired
-  private MessageConstructor messagesToPlatform;
+  private MessageConstructor messageConstructor;
 
   /**
    * Endpoint /git. Method GET.
@@ -75,10 +75,10 @@ public class GitSlackUsersController {
   @ApiOperation(value = "Returns list of slack users that work with the bot")
   @GetMapping(value = "/slack", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<String>> getSlackAllUsers() {
-    Set<UserDto> allSlackUsers = messageService.getAllUsers();
+    Set<ServiceUser> allSlackUsers = messageService.getAllUsers();
 
     List<String> listSlackUsersName = allSlackUsers.stream()
-        .map(UserDto::getDisplayName)
+        .map(ServiceUser::getName)
         .collect(Collectors.toList());
 
     return ok().body(listSlackUsersName);
@@ -109,7 +109,7 @@ public class GitSlackUsersController {
       case "AGREE_LICENSE":
         stateMachineService.doAction(machine, new SimplePayload(userId), QUESTION_FIRST);
         messageService.sendBlocksMessage(
-            user, messagesToPlatform.createNotThatMessage(Messages.NOT_THAT_MESSAGE));
+            user, messageConstructor.createNotThatMessage(Messages.NOT_THAT_MESSAGE));
         break;
       case "theEnd":
         stateMachineService.doAction(machine, new SimplePayload(userId), GET_THE_FIRST_TASK);
@@ -118,7 +118,7 @@ public class GitSlackUsersController {
         break;
       default:
         messageService.sendBlocksMessage(
-                user, messagesToPlatform.createNoOneCaseMessage(Messages.NO_ONE_CASE));
+                user, messageConstructor.createNoOneCaseMessage(Messages.NO_ONE_CASE));
     }
     return new ResponseEntity<>("Action: " + action,
         HttpStatus.OK);

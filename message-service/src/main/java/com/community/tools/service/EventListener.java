@@ -1,6 +1,6 @@
 package com.community.tools.service;
 
-import com.community.tools.dto.Message;
+import com.community.tools.model.Message;
 
 public interface EventListener {
 

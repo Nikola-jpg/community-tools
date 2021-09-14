@@ -1,6 +1,5 @@
 package com.community.tools.service;
 
-import com.community.tools.dto.EventDataTransformer;
 import com.community.tools.model.EventData;
 import com.community.tools.model.Messages;
 import com.community.tools.service.github.GitHubService;
@@ -11,7 +10,6 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,7 +35,7 @@ public class PublishWeekStatsService {
   private MessageService messageService;
 
   @Autowired
-  private MessageConstructor messagesToPlatform;
+  private MessageConstructor messageConstructor;
 
   /**
    * Publish statistics of Events for last week. Statistic sends every Monday.
@@ -59,9 +57,8 @@ public class PublishWeekStatsService {
       System.out.println(events);
     } else {
       messageService.sendBlockMessageToConversation(channel,
-          messagesToPlatform.statisticMessage(
-                  events.stream().map(EventDataTransformer::convertToDto)
-                          .collect(Collectors.toList())));
+          messageConstructor.statisticMessage(
+                  events));
     }
   }
 
@@ -77,7 +74,7 @@ public class PublishWeekStatsService {
     String img = url + "img/" + date;
 
     messageService.sendBlockMessageToConversation(channel,
-        messagesToPlatform.infoLinkMessage(Messages.RATING_MESSAGE, url, img));
+        messageConstructor.infoLinkMessage(Messages.RATING_MESSAGE, url, img));
   }
 
   /**
@@ -90,6 +87,6 @@ public class PublishWeekStatsService {
     String img = url + "img/" + date;
 
     messageService.sendBlockMessageToConversation(channel,
-        messagesToPlatform.infoLinkMessage(Messages.TASKS_STATUS_MESSAGE, url, img));
+        messageConstructor.infoLinkMessage(Messages.TASKS_STATUS_MESSAGE, url, img));
   }
 }

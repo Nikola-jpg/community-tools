@@ -39,7 +39,7 @@ public class AddGitNameActionTransition implements Transition {
 
   @Autowired private MessageService messageService;
 
-  @Autowired private MessageConstructor messagesToPlatform;
+  @Autowired private MessageConstructor messageConstructor;
 
   @Override
   public void configure(StateMachineTransitionConfigurer<State, Event> transitions)
@@ -77,7 +77,7 @@ public class AddGitNameActionTransition implements Transition {
     } catch (IOException e) {
       messageService.sendBlocksMessage(
           messageService.getUserById(user),
-          messagesToPlatform.createErrorWithAddingGitNameMessage(
+          messageConstructor.createErrorWithAddingGitNameMessage(
               Messages.ERROR_WITH_ADDING_GIT_NAME));
     }
     messageService.sendMessageToConversation(
@@ -87,7 +87,7 @@ public class AddGitNameActionTransition implements Transition {
             + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
     messageService.sendBlocksMessage(
         messageService.getUserById(user),
-        messagesToPlatform.createGetFirstTaskMessage(
+        messageConstructor.createGetFirstTaskMessage(
             Messages.CONGRATS_AVAILABLE_NICK, Messages.GET_FIRST_TASK, Messages.LINK_FIRST_TASK));
     stateContext.getExtendedState().getVariables().put("gitNick", nickname);
   }

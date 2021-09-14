@@ -28,7 +28,7 @@ public class ConsentToInformationActionTransition implements Transition {
   private MessageService messageService;
 
   @Autowired
-  private MessageConstructor messagesToPlatform;
+  private MessageConstructor messageConstructor;
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
@@ -40,9 +40,9 @@ public class ConsentToInformationActionTransition implements Transition {
     stateMachineRepository.save(stateEntity);
     messageService.sendBlocksMessage(
         messageService.getUserById(id),
-        messagesToPlatform.createMessageAboutSeveralInfoChannel(Messages.INFO_CHANNEL_MESSAGES));
+        messageConstructor.createMessageAboutSeveralInfoChannel(Messages.INFO_CHANNEL_MESSAGES));
     messageService.sendBlocksMessage(messageService.getUserById(id),
-        messagesToPlatform.createAddGitNameMessage(Messages.ADD_GIT_NAME));
+        messageConstructor.createAddGitNameMessage(Messages.ADD_GIT_NAME));
   }
 
   @Override

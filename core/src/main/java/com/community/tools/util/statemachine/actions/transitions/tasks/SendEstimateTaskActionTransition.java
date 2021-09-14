@@ -23,7 +23,7 @@ public class SendEstimateTaskActionTransition implements Transition {
 
   @Autowired StateMachineService stateMachineService;
 
-  @Autowired MessageConstructor messagesToPlatform;
+  @Autowired MessageConstructor messageConstructor;
 
   @Override
   public void configure(StateMachineTransitionConfigurer<State, Event> transitions)
@@ -43,7 +43,7 @@ public class SendEstimateTaskActionTransition implements Transition {
     String user = payload.getId();
     messageService.sendBlocksMessage(
         messageService.getUserById(user),
-        messagesToPlatform.createEstimateTheTaskMessage(
+        messageConstructor.createEstimateTheTaskMessage(
             Messages.ESTIMATE_HEADER, Messages.ESTIMATE_QUESTIONS, Messages.ESTIMATE_FOOTER));
   }
 }

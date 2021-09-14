@@ -20,7 +20,7 @@ public class GetTheFirstTaskActionTransition implements Transition {
 
   @Autowired private Action<State, Event> errorAction;
 
-  @Autowired private MessageConstructor messagesToPlatform;
+  @Autowired private MessageConstructor messageConstructor;
 
   @Override
   public void configure(StateMachineTransitionConfigurer<State, Event> transitions)
@@ -40,7 +40,7 @@ public class GetTheFirstTaskActionTransition implements Transition {
     String user = payload.getId();
     messageService.sendBlocksMessage(
         messageService.getUserById(user),
-        messagesToPlatform.createGetFirstTaskMessage(
+        messageConstructor.createGetFirstTaskMessage(
             Messages.CONGRATS_AVAILABLE_NICK, Messages.GET_FIRST_TASK, Messages.LINK_FIRST_TASK));
   }
 }

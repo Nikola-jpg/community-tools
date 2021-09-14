@@ -27,7 +27,7 @@ public class TrackingService {
 
   @Autowired private EstimateTaskService estimateTaskService;
 
-  @Autowired private MessageConstructor messagesToPlatform;
+  @Autowired private MessageConstructor messageConstructor;
 
   /**
    * Method to start the event by state.
@@ -127,7 +127,7 @@ public class TrackingService {
     messageService.sendPrivateMessage(userName, Messages.WELCOME);
     messageService.sendBlocksMessage(
         userName,
-        messagesToPlatform.createMessageAboutRules(
+        messageConstructor.createMessageAboutRules(
             Messages.MESSAGE_ABOUT_RULES_1,
             Messages.MESSAGE_ABOUT_RULES_2,
             Messages.MESSAGE_ABOUT_RULES_3,

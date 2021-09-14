@@ -1,14 +1,13 @@
-package com.community.tools.dto;
+package com.community.tools.model;
 
 import lombok.Data;
 import net.dv8tion.jda.api.entities.User;
 
 @Data
-public class UserDto {
+public class ServiceUser {
   private String id;
   private String name;
-  private String displayName;
-  private com.github.seratch.jslack.api.model.User.Profile profile;
+
 
   /**
    * Convert an DiscordUser object into an UserDto object.
@@ -16,8 +15,8 @@ public class UserDto {
    * @param discordUser - DiscordUser object.
    * @return a new UserDto object.
    */
-  public static UserDto fromDiscord(User discordUser) {
-    UserDto user = new UserDto();
+  public static ServiceUser fromDiscord(User discordUser) {
+    ServiceUser user = new ServiceUser();
 
     user.setId(discordUser.getId());
     user.setName(discordUser.getName());
@@ -27,17 +26,14 @@ public class UserDto {
 
   /**
    * Convert an SlackUser object into an UserDto object.
-   *
    * @param slackUser - SlackUser object.
    * @return a new UserDto object.
    */
-  public static UserDto fromSlack(com.github.seratch.jslack.api.model.User slackUser) {
-    UserDto user = new UserDto();
+  public static ServiceUser fromSlack(com.github.seratch.jslack.api.model.User slackUser) {
+    ServiceUser user = new ServiceUser();
 
     user.setId(slackUser.getId());
     user.setName(slackUser.getRealName());
-    user.setDisplayName(slackUser.getProfile().getDisplayName());
-    user.setProfile(slackUser.getProfile());
 
     return user;
   }

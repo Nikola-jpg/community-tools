@@ -20,7 +20,7 @@ public class FirstQuestionActionTransition implements Transition {
   private MessageService messageService;
 
   @Autowired
-  private MessageConstructor messagesToPlatform;
+  private MessageConstructor messageConstructor;
 
   @Autowired
   private Action<State, Event> errorAction;
@@ -32,7 +32,7 @@ public class FirstQuestionActionTransition implements Transition {
     String id = payload.getId();
     messageService.sendBlocksMessage(
         messageService.getUserById(id),
-        messagesToPlatform.createFirstQuestion(Messages.FIRST_QUESTION));
+        messageConstructor.createFirstQuestion(Messages.FIRST_QUESTION));
   }
 
   @Override

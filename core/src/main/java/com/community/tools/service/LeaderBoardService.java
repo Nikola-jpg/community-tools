@@ -1,6 +1,6 @@
 package com.community.tools.service;
 
-import com.community.tools.dto.UserDto;
+import com.community.tools.model.ServiceUser;
 import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
@@ -87,10 +87,10 @@ public class LeaderBoardService {
    */
   public List<User> addNameToUser() {
     List<User> list = stateMachineRepository.findAll();
-    Set<UserDto> slackUsers = messageService.getAllUsers();
+    Set<ServiceUser> slackUsers = messageService.getAllUsers();
     Map<String, String> map = slackUsers.stream()
             .filter(u -> u.getName() != null)
-            .collect(Collectors.toMap(UserDto::getId, UserDto::getName));
+            .collect(Collectors.toMap(ServiceUser::getId, ServiceUser::getName));
     for (User user: list) {
       String slackName = map.get(user.getUserID());
       user.setPlatformName(slackName);

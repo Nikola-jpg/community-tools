@@ -60,7 +60,7 @@ public class AddGitNameActionTest {
 
   private MessageService messageService;
 
-  private MessageConstructor<String> messagesToPlatform;
+  private MessageConstructor messageConstructor;
 
   private SlackHandlerService slackHandlerService;
 
@@ -95,7 +95,7 @@ public class AddGitNameActionTest {
     this.gitHubConnectService = Mockito.mock(GitHubConnectService.class);
     this.gitHubService = Mockito.mock(GitHubService.class);
     this.messageService = Mockito.mock(MessageService.class);
-    this.messagesToPlatform = Mockito.mock(MessageConstructor.class);
+    this.messageConstructor = Mockito.mock(MessageConstructor.class);
     this.slackHandlerService = Mockito.mock(SlackHandlerService.class);
     this.machine = Mockito.mock(StateMachine.class);
     this.extendedState = Mockito.mock(ExtendedState.class);
@@ -104,7 +104,7 @@ public class AddGitNameActionTest {
     this.ghRepository = Mockito.mock(GHRepository.class);
 
     this.addGitNameAction = new AddGitNameActionTransition(null, "test_3",
-      repository, gitHubConnectService, gitHubService, messageService, messagesToPlatform);
+      repository, gitHubConnectService, gitHubService, messageService, messageConstructor);
 
   }
 
@@ -129,9 +129,9 @@ public class AddGitNameActionTest {
     when(ghRepository.getTeams()).thenReturn(mockSet);
     when(team.getName()).thenReturn("trainees");
     doNothing().when(team).add(user);
-    when(messagesToPlatform.createErrorWithAddingGitNameMessage(errorWithAddingGitName))
+    when(messageConstructor.createErrorWithAddingGitNameMessage(errorWithAddingGitName))
       .thenReturn(errorWithAddingGitName);
-    when(messagesToPlatform.createGetFirstTaskMessage(anyString(), anyString(), anyString()))
+    when(messageConstructor.createGetFirstTaskMessage(anyString(), anyString(), anyString()))
       .thenReturn(getFirstTask);
     when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
 
@@ -161,9 +161,9 @@ public class AddGitNameActionTest {
 
     final User entity = new User();
 
-    when(messagesToPlatform.createGetFirstTaskMessage(anyString(), anyString(), anyString()))
+    when(messageConstructor.createGetFirstTaskMessage(anyString(), anyString(), anyString()))
       .thenReturn(getFirstTask);
-    when(messagesToPlatform.createErrorWithAddingGitNameMessage(anyString()))
+    when(messageConstructor.createErrorWithAddingGitNameMessage(anyString()))
       .thenReturn(errorWithAddingGitName);
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);

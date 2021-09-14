@@ -1,6 +1,6 @@
 package com.community.tools.slack;
 
-import com.community.tools.dto.UserDto;
+import com.community.tools.model.ServiceUser;
 import com.community.tools.service.MessageService;
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
@@ -237,16 +237,16 @@ public class SlackService implements MessageService<String> {
    * @return Set of users.
    */
   @Override
-  public Set<UserDto> getAllUsers() {
+  public Set<ServiceUser> getAllUsers() {
     try {
       Slack slack = Slack.getInstance();
-      Set<UserDto> users =
+      Set<ServiceUser> users =
           slack
               .methods()
               .usersList(UsersListRequest.builder().token(token).build())
               .getMembers()
               .stream()
-              .map(UserDto::fromSlack)
+              .map(ServiceUser::fromSlack)
               .collect(Collectors.toSet());
 
       return users;
@@ -264,7 +264,7 @@ public class SlackService implements MessageService<String> {
   public Map<String, String> getIdWithName() {
     return getAllUsers().stream()
         .filter(u -> u.getName() != null)
-        .collect(Collectors.toMap(UserDto::getId, UserDto::getName));
+        .collect(Collectors.toMap(ServiceUser::getId, ServiceUser::getName));
   }
 
   /**

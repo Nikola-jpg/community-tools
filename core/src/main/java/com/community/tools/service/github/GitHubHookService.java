@@ -30,7 +30,7 @@ public class GitHubHookService {
   private String channel;
 
   @Autowired
-  private MessageConstructor messagesToPlatform;
+  private MessageConstructor messageConstructor;
   @Autowired
   private AddMentorService addMentorService;
   @Autowired
@@ -187,7 +187,7 @@ public class GitHubHookService {
         String userNick = json.getJSONObject("sender").getString("login");
         String userId = stateMachineService.getIdByNick(userNick);
         messageService.sendBlocksMessage(messageService.getUserById(userId),
-            messagesToPlatform.failedBuildMessage(url, task));
+            messageConstructor.failedBuildMessage(url, task));
       }
     }
   }

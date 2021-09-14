@@ -21,7 +21,7 @@ public class GetTheNewTaskActionTransition implements Transition {
   private MessageService messageService;
 
   @Autowired
-  private MessageConstructor messagesToPlatform;
+  private MessageConstructor messageConstructor;
 
   @Value("${tasksForUsers}")
   private String[] tasksForUsers;
@@ -47,6 +47,6 @@ public class GetTheNewTaskActionTransition implements Transition {
     int i = (Integer) stateContext.getExtendedState().getVariables().get("taskNumber");
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
     messageService.sendBlocksMessage(messageService.getUserById(user),
-        messagesToPlatform.nextTaskMessage(tasksList, i));
+        messageConstructor.nextTaskMessage(tasksList, i));
   }
 }

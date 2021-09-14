@@ -33,7 +33,7 @@ class PublishWeekStatsServiceTest {
 
   @Mock private MessageService messageService;
 
-  @Mock private MessageConstructor messagesToPlatform;
+  @Mock private MessageConstructor messageConstructor;
 
   @BeforeAll
   public void initMocks() {
@@ -65,7 +65,7 @@ class PublishWeekStatsServiceTest {
             new EventData(new Date(), "roman", Event.COMMENT));
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
-    Mockito.when(messagesToPlatform.statisticMessage(any())).thenReturn(message);
+    Mockito.when(messageConstructor.statisticMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(
         () -> {
@@ -108,7 +108,7 @@ class PublishWeekStatsServiceTest {
             new EventData(new Date(), "Ilona", Event.COMMENT));
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
-    Mockito.when(messagesToPlatform.statisticMessage(any())).thenReturn(message);
+    Mockito.when(messageConstructor.statisticMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(
         () -> {
@@ -156,7 +156,7 @@ class PublishWeekStatsServiceTest {
             new EventData(new Date(), "NikitaBatalskiy", Event.COMMENT));
 
     Mockito.when(ghEventService.getEvents(any(), any())).thenReturn(events);
-    Mockito.when(messagesToPlatform.statisticMessage(any())).thenReturn(message);
+    Mockito.when(messageConstructor.statisticMessage(any())).thenReturn(message);
 
     assertDoesNotThrow(
         () -> {

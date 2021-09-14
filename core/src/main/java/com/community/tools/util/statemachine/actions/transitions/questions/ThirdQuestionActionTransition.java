@@ -28,7 +28,7 @@ public class ThirdQuestionActionTransition implements Transition {
   private StateMachineRepository stateMachineRepository;
 
   @Autowired
-  private MessageConstructor messagesToPlatform;
+  private MessageConstructor messageConstructor;
 
   @Override
   public void configure(
@@ -51,6 +51,6 @@ public class ThirdQuestionActionTransition implements Transition {
     stateMachineRepository.save(stateEntity);
     messageService.sendBlocksMessage(
         messageService.getUserById(id),
-        messagesToPlatform.createThirdQuestion(Messages.THIRD_QUESTION));
+        messageConstructor.createThirdQuestion(Messages.THIRD_QUESTION));
   }
 }
