@@ -1,6 +1,7 @@
 package com.community.tools.discord;
 
-import com.community.tools.dto.EventDataDto;
+import com.community.tools.model.Event;
+import com.community.tools.model.EventData;
 import com.community.tools.service.MessageConstructor;
 
 import com.community.tools.util.MessageUtils;
@@ -134,53 +135,43 @@ public class MessagesToDiscord implements MessageConstructor<MessageEmbed> {
   }
 
   @Override
-  public MessageEmbed statisticMessage(List<EventDataDto> events) {
+  public MessageEmbed statisticMessage(List<EventData> events) {
     EmbedBuilder embedBuilder = new EmbedBuilder();
 
-    Map<String, List<EventDataDto>> sortedMapGroupByActors = new HashMap<>();
-    events.stream()
-      .filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
+    Map<String, List<EventData>> sortedMapGroupByActors = new HashMap<>();
+    events.stream().filter(ed -> !sortedMapGroupByActors.containsKey(ed.getActorLogin()))
       .forEach(ed -> sortedMapGroupByActors.put(ed.getActorLogin(), new ArrayList<>()));
+
     embedBuilder.addField("", "`Statistic:`", false);
 
-    events.stream().collect(Collectors.groupingBy(EventDataDto::getType)).entrySet().stream()
-        .sorted(
-        Comparator.comparingInt((Entry<Map<String, String>, List<EventDataDto>> entry) ->
-          entry.getValue()
-            .size())
-          .reversed())
-        .forEach(
-          entry -> {
-            entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
-            embedBuilder.addField(
-                "",
-                MessageUtils.getTypeTitleBold(
-                entry.getKey().keySet().stream().findFirst().toString())
-                + MessageUtils.emojiGen(
-                entry.getKey().keySet().stream().findFirst().toString())
-                + ": "
-                + entry.getValue().size(),
-                false);
-          });
+    events.stream()
+        .collect(Collectors.groupingBy(EventData::getType))
+        .entrySet().stream()
+        .sorted(Comparator
+          .comparingInt((Entry<Event, List<EventData>> entry)
+              -> entry.getValue().size()).reversed())
+        .forEach(entry -> {
+          entry.getValue().forEach(e -> sortedMapGroupByActors.get(e.getActorLogin()).add(e));
+
+          embedBuilder.addField("", MessageUtils.getTypeTitleBold(entry.getKey())
+              + MessageUtils.emojiGen(entry.getKey()) + ": "
+              + entry.getValue().size(), false);
+        });
     embedBuilder.addField("", "`Activity:`", false);
 
     sortedMapGroupByActors.entrySet().stream()
-        .sorted(
-        Comparator.comparingInt((Entry<String, List<EventDataDto>> entry) ->
-          entry.getValue().size())
-          .reversed())
-        .forEach(
-          name -> {
-            StringBuilder authorsActiveMessage = new StringBuilder();
-            name.getValue()
-                .forEach(
-                  eventData -> {
-                    authorsActiveMessage.append(
-                        MessageUtils.emojiGen(
-                        eventData.getType().keySet().stream().findFirst().toString()));
-                  });
-            embedBuilder.addField("", name.getKey() + ": " + authorsActiveMessage, false);
-          });
+        .sorted(Comparator
+          .comparingInt((Entry<String, List<EventData>> entry)
+              -> entry.getValue().size()).reversed())
+        .forEach(name -> {
+          StringBuilder authorsActivMessage = new StringBuilder();
+          name.getValue()
+              .forEach(eventData -> {
+                authorsActivMessage.append(MessageUtils.emojiGen(eventData.getType()));
+              });
+          embedBuilder.addField("", name.getKey() + ": "
+              + authorsActivMessage, false);
+        });
     return embedBuilder.build();
   }
 
