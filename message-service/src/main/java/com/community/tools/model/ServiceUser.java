@@ -10,10 +10,10 @@ public class ServiceUser {
 
 
   /**
-   * Convert an DiscordUser object into an UserDto object.
+   * Convert an DiscordUser object into an ServiceUser object.
    *
    * @param discordUser - DiscordUser object.
-   * @return a new UserDto object.
+   * @return a new ServiceUser object.
    */
   public static ServiceUser fromDiscord(User discordUser) {
     ServiceUser user = new ServiceUser();
@@ -25,15 +25,15 @@ public class ServiceUser {
   }
 
   /**
-   * Convert an SlackUser object into an UserDto object.
+   * Convert an SlackUser object into an ServiceUser object.
    * @param slackUser - SlackUser object.
-   * @return a new UserDto object.
+   * @return a new ServiceUser object.
    */
   public static ServiceUser fromSlack(com.github.seratch.jslack.api.model.User slackUser) {
     ServiceUser user = new ServiceUser();
 
     user.setId(slackUser.getId());
-    user.setName(slackUser.getRealName());
+    user.setName(slackUser.getProfile().getDisplayName());
 
     return user;
   }
