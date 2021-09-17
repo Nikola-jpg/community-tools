@@ -1,6 +1,6 @@
 package com.community.tools.discord;
 
-import com.community.tools.dto.Message;
+import com.community.tools.model.Message;
 import com.community.tools.service.EventListener;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.ReadyEvent;

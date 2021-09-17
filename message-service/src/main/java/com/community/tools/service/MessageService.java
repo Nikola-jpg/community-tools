@@ -1,10 +1,6 @@
 package com.community.tools.service;
 
-import com.community.tools.dto.UserDto;
-import java.util.Map;
-import java.util.Set;
-
-public interface MessageService<T> {
+public interface MessageService<T> extends UserService {
 
   void sendPrivateMessage(String username, String messageText);
 
@@ -19,15 +15,5 @@ public interface MessageService<T> {
   void sendAnnouncement(String message);
 
   String getIdByChannelName(String channelName);
-
-  String getUserById(String id);
-
-  String getIdByUser(String id);
-
-  String getIdByUsername(String username);
-
-  Set<UserDto> getAllUsers();
-
-  Map<String, String> getIdWithName();
 
 }

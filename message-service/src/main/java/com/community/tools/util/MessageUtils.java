@@ -1,5 +1,7 @@
 package com.community.tools.util;
 
+import com.community.tools.model.Event;
+
 public class MessageUtils {
 
   /**
@@ -8,22 +10,22 @@ public class MessageUtils {
    * @param type event type name.
    * @return emoji string.
    */
-  public static String emojiGen(String type) {
+  public static String emojiGen(Event type) {
     switch (type) {
-      case "COMMENT":
+      case COMMENT:
         return ":loudspeaker:";
-      case "COMMIT":
+      case COMMIT:
         return ":rolled_up_newspaper:";
-      case "PULL_REQUEST_CLOSED":
+      case PULL_REQUEST_CLOSED:
         return ":moneybag:";
-      case "PULL_REQUEST_CREATED":
+      case PULL_REQUEST_CREATED:
         return ":mailbox_with_mail:";
       default:
         return "";
     }
   }
 
-  public static String getTypeTitleBold(String typeTitle) {
-    return "*" + typeTitle + "*";
+  public static String getTypeTitleBold(Event type) {
+    return "*" + type.getTitle() + "*";
   }
 }
