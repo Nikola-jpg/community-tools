@@ -1,6 +1,6 @@
 package com.community.tools.discord;
 
-import com.community.tools.dto.UserDto;
+import com.community.tools.model.ServiceUser;
 import com.community.tools.service.MessageService;
 import java.util.Map;
 import java.util.Set;
@@ -161,9 +161,9 @@ public class DiscordService implements MessageService<MessageEmbed> {
    * @return Set of users.
    */
   @Override
-  public Set<UserDto> getAllUsers() {
-    Set<UserDto> users =
-        jda.getUsers().stream().map(UserDto::fromDiscord).collect(Collectors.toSet());
+  public Set<ServiceUser> getAllUsers() {
+    Set<ServiceUser> users =
+        jda.getUsers().stream().map(ServiceUser::from).collect(Collectors.toSet());
     return users;
   }
 

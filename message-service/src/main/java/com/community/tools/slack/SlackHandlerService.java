@@ -1,6 +1,6 @@
 package com.community.tools.slack;
 
-import com.community.tools.dto.Message;
+import com.community.tools.model.Message;
 import com.community.tools.service.EventListener;
 
 import com.github.seratch.jslack.api.model.event.MessageEvent;
