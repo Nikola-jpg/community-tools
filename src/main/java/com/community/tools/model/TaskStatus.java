@@ -1,5 +1,6 @@
 package com.community.tools.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,6 +26,7 @@ public class TaskStatus {
 
   @ManyToOne
   @JoinColumn(name = "userid")
+  @JsonIgnore
   private User user;
 
 
