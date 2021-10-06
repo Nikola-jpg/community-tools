@@ -1,0 +1,25 @@
+table {
+    margin-top: 10px;
+}
+
+.vertical {
+    width: calc(5%);
+    height: auto;
+    writing-mode: vertical-lr;
+}
+
+.ready_for_review {
+    background: #008672;
+}
+
+.changes_requested {
+    background: #d73a4a;
+}
+
+.done {
+    background: #3bbf5a;
+}
+
+.pull_request {
+    background: #9ea9b3;
+}
