@@ -13,7 +13,7 @@ public class TaskListRestController {
   private String[] tasksForUsers;
 
   @GetMapping
-  public String[] getTasksForUsers(){
+  public String[] getTasksForUsers() {
     return tasksForUsers;
   }
 }

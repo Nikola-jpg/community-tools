@@ -21,6 +21,10 @@ public class UsersRestController {
   @Value("${tasksForUsers}")
   private String[] tasksForUsers;
 
+  /**
+   * Rest controller for providing with user data.
+   * @return list of users and their data in JSON format.
+   */
   @GetMapping
   public List<User> getUsers() {
     List<UserTasksStatusDto> userTasksStatusDtoList = new ArrayList<>();
