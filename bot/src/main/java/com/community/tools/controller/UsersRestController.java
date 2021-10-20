@@ -1,14 +1,17 @@
 package com.community.tools.controller;
 
-import com.community.tools.dto.UserTasksStatusDto;
 import com.community.tools.model.User;
+import com.community.tools.service.LeaderBoardService;
 import com.community.tools.service.TaskStatusService;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,20 +24,48 @@ public class UsersRestController {
   @Value("${tasksForUsers}")
   private String[] tasksForUsers;
 
+  @Autowired
+  LeaderBoardService leaderBoardService;
+
   /**
-   * Rest controller for providing with user data.
-   * @return list of users and their data in JSON format.
+   * Request controller for handing api requests.
+   *
+   * @param userLimit query param to limit showed users
+   * @param daysFetch query param to limit users by recent activity
+   * @param sort      query param to sort by field
+   * @return returns json with users from db according to query params
    */
   @GetMapping
-  public List<User> getUsers() {
-    List<UserTasksStatusDto> userTasksStatusDtoList = new ArrayList<>();
+  public List<User> getUsers(@RequestParam(required = false) Integer userLimit,
+      @RequestParam(required = false) Integer daysFetch,
+      @RequestParam(required = false) String sort) {
 
-    List<User> users = taskStatusService.addPlatformNameToUser(1, "gitName", "asc");
-    users.forEach(user -> {
-      userTasksStatusDtoList.add(UserTasksStatusDto.fromUser(user, tasksForUsers));
-    });
+    System.out.println(userLimit + " " + daysFetch + " " + sort);
+    Comparator<User> comparator;
 
-    return users;
+    if (Objects.equals(sort, "points")) {
+      comparator = Comparator.comparing(User::getTotalPoints).reversed();
+    } else {
+      comparator = Comparator.comparing(User::getCompletedTasks).reversed();
+    }
+
+    List<User> users;
+
+    if (daysFetch != null) {
+      users = leaderBoardService.getActiveUsersFromPeriod(daysFetch);
+      users = taskStatusService.addPlatformNameToSelectedUsers(users);
+    } else {
+      users = taskStatusService.addPlatformNameToUser(1, "gitName", "asc");
+    }
+
+    List<User> newUsers = new ArrayList<>(users);
+    newUsers.sort(comparator);
+
+    if (userLimit != null) {
+      return newUsers.subList(0, userLimit);
+    } else {
+      return newUsers;
+    }
   }
 
 
