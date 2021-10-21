@@ -40,7 +40,6 @@ public class UsersRestController {
       @RequestParam(required = false) Integer daysFetch,
       @RequestParam(required = false) String sort) {
 
-    System.out.println(userLimit + " " + daysFetch + " " + sort);
     Comparator<User> comparator;
 
     if (Objects.equals(sort, "points")) {
