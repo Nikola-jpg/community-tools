@@ -3,6 +3,7 @@ package com.community.tools.controller;
 import com.community.tools.model.User;
 import com.community.tools.service.LeaderBoardService;
 import com.community.tools.service.TaskStatusService;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -62,6 +63,13 @@ public class UsersRestController {
 
     List<User> newUsers = new ArrayList<>(users);
     newUsers.sort(comparator);
+
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MM yyyy");
+    for (User u : newUsers) {
+      if (u.getDateRegistration() != null) {
+        u.setDateRegistrationFront(dtf.format(u.getDateRegistration()));
+      }
+    }
 
     if (userLimit != null) {
       return newUsers.subList(0, userLimit);
