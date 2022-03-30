@@ -69,6 +69,9 @@ public class UsersRestController {
       if (u.getDateRegistration() != null) {
         u.setDateRegistrationFront(dtf.format(u.getDateRegistration()));
       }
+      if (u.getDateLastActivity() != null) {
+        u.setDateLastActivityFront(dtf.format(u.getDateLastActivity()));
+      }
     }
 
     if (userLimit != null) {

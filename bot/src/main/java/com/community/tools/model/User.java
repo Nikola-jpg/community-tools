@@ -21,8 +21,11 @@ public class User {
   private String userID;
   private String gitName;
   private LocalDateTime dateRegistration;
+  private LocalDateTime dateLastActivity;
   @Transient
   private String dateRegistrationFront;
+  @Transient
+  private String dateLastActivityFront;
   @JsonIgnore
   private byte[] stateMachine;
   private Integer karma = 0;
