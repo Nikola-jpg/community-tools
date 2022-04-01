@@ -166,7 +166,6 @@ public class TaskStatusService {
           }
         }
       });
-      user.setDateLastActivity(LocalDateTime.now());
       user.setCompletedTasks(countCompletedTasksByUser(user));
       stateMachineRepository.save(user);
     }

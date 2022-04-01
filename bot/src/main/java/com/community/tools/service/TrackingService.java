@@ -11,6 +11,7 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import java.time.LocalDateTime;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
@@ -121,7 +122,7 @@ public class TrackingService {
 
     User stateEntity = new User();
     stateEntity.setUserID(userId);
-    stateEntity.setDateRegistration(LocalDateTime.now());
+    stateEntity.setDateRegistration(new Date());
     String userName = messageService.getUserById(userId);
     stateMachineRepository.save(stateEntity);
     stateMachineService.persistMachineForNewUser(userId);

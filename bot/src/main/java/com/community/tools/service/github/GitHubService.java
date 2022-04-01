@@ -158,4 +158,62 @@ public class GitHubService {
     return names;
   }
 
+  /**
+   * Set date of last activity.
+   * Date is taken from GitHub (latest pull request).
+   *
+   * @return map user's github login and date of last activity.
+   */
+  public Map<String, Date> getUsersLastActivity() {
+    Map<String, Date> mapLastActivity = new HashMap<>();
+    GHRepository repository = service.getGitHubRepository();
+    List<GHPullRequest> pullRequests = null;
+    try {
+      pullRequests = repository.getPullRequests(GHIssueState.ALL);
+      for (GHPullRequest pullRequest : pullRequests) {
+        String login = pullRequest.getUser().getLogin();
+        Date date = pullRequest.getCreatedAt();
+        if (mapLastActivity.containsKey(login)) {
+          if (mapLastActivity.get(login).before(date)) {
+            mapLastActivity.put(login, date);
+          }
+        } else {
+          mapLastActivity.put(login, date);
+        }
+      }
+    } catch (IOException ex) {
+      throw new RuntimeException(ex);
+    }
+    return mapLastActivity;
+  }
+
+  /**
+   * Set date of registration.
+   * Date is taken from GitHub (first pull request).
+   *
+   * @return map user's github login and date of last activity.
+   */
+  public Map<String, Date> getUsersDateRegistration() {
+    Map<String, Date> mapLastActivity = new HashMap<>();
+    GHRepository repository = service.getGitHubRepository();
+    List<GHPullRequest> pullRequests = null;
+    try {
+      pullRequests = repository.getPullRequests(GHIssueState.ALL);
+      for (GHPullRequest pullRequest : pullRequests) {
+        String login = pullRequest.getUser().getLogin();
+        Date date = pullRequest.getCreatedAt();
+        if (mapLastActivity.containsKey(login)) {
+          if (mapLastActivity.get(login).after(date)) {
+            mapLastActivity.put(login, date);
+          }
+        } else {
+          mapLastActivity.put(login, date);
+        }
+      }
+    } catch (IOException ex) {
+      throw new RuntimeException(ex);
+    }
+    return mapLastActivity;
+  }
+
 }

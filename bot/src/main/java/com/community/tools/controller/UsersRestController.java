@@ -3,9 +3,11 @@ package com.community.tools.controller;
 import com.community.tools.model.User;
 import com.community.tools.service.LeaderBoardService;
 import com.community.tools.service.TaskStatusService;
+import com.community.tools.util.UserUtil;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -30,6 +32,9 @@ public class UsersRestController {
   @Autowired
   LeaderBoardService leaderBoardService;
 
+  @Autowired
+  private UserUtil userUtil;
+
   /**
    * Request controller for handing api requests.
    *
@@ -44,21 +49,21 @@ public class UsersRestController {
       @RequestParam(defaultValue = "30") Integer daysFetch,
       @RequestParam(required = false) String sort) {
 
-    Comparator<User> comparator = Comparator.comparing(User::getDateRegistration).reversed();
-
     List<User> users = leaderBoardService.getActiveUsersFromPeriod(daysFetch);
     users = taskStatusService.addPlatformNameToSelectedUsers(users);
 
-    List<User> newUsers = new ArrayList<>(users);
-    newUsers.sort(comparator);
+    userUtil.setDateLastActivity(users);
+    userUtil.setDateRegistration(users);
 
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MM yyyy");
+    List<User> newUsers = new ArrayList<>(users);
+    newUsers.sort(Comparator.comparing(User::getDateRegistration).reversed());
+
     for (User u : newUsers) {
       if (u.getDateRegistration() != null) {
-        u.setDateRegistrationFront(dtf.format(u.getDateRegistration()));
+        u.setDateRegistrationFront(userUtil.convertDateToString(u.getDateRegistration()));
       }
       if (u.getDateLastActivity() != null) {
-        u.setDateLastActivityFront(dtf.format(u.getDateLastActivity()));
+        u.setDateLastActivityFront(userUtil.convertDateToString(u.getDateLastActivity()));
       }
     }
 
