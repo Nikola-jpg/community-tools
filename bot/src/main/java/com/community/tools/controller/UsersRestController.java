@@ -41,25 +41,13 @@ public class UsersRestController {
   @GetMapping
   @Transactional
   public List<User> getUsers(@RequestParam(required = false) Integer userLimit,
-      @RequestParam(required = false) Integer daysFetch,
+      @RequestParam(defaultValue = "30") Integer daysFetch,
       @RequestParam(required = false) String sort) {
 
-    Comparator<User> comparator;
+    Comparator<User> comparator = Comparator.comparing(User::getDateRegistration).reversed();
 
-    if (Objects.equals(sort, "points")) {
-      comparator = Comparator.comparing(User::getTotalPoints).reversed();
-    } else {
-      comparator = Comparator.comparing(User::getCompletedTasks).reversed();
-    }
-
-    List<User> users;
-
-    if (daysFetch != null) {
-      users = leaderBoardService.getActiveUsersFromPeriod(daysFetch);
-      users = taskStatusService.addPlatformNameToSelectedUsers(users);
-    } else {
-      users = taskStatusService.addPlatformNameToUser(1, "gitName", "asc");
-    }
+    List<User> users = leaderBoardService.getActiveUsersFromPeriod(daysFetch);
+    users = taskStatusService.addPlatformNameToSelectedUsers(users);
 
     List<User> newUsers = new ArrayList<>(users);
     newUsers.sort(comparator);
