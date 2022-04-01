@@ -64,9 +64,12 @@ public class LeaderBoardService {
     Date date = Date.from(tempDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     List<User> list = addNameToUser();
     Set<String> userNames = gitHubService.getActiveUsersFromGit(date);
-    return list.stream()
+    List<User> users = list.stream()
         .filter(user -> userNames
             .contains(user.getGitName())).collect(Collectors.toList());
+    gitHubService.setDateRegistration(users);
+    gitHubService.setDateLastActivity(users);
+    return users;
   }
 
 }
