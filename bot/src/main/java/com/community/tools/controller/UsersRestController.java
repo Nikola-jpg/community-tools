@@ -45,8 +45,20 @@ public class UsersRestController {
     List<User> users = leaderBoardService.getActiveUsersFromPeriod(daysFetch);
     users = taskStatusService.addPlatformNameToSelectedUsers(users);
 
+    Comparator<User> comparator = (o1, o2) -> {
+      if (o1.getDateRegistration() == null && o2.getDateRegistration() == null) {
+        return 0;
+      } else if (o1.getDateRegistration() == null) {
+        return 1;
+      } else if (o2.getDateRegistration() == null) {
+        return -1;
+      } else {
+        return o2.getDateRegistration().compareTo(o1.getDateRegistration());
+      }
+    };
+
     List<User> newUsers = new ArrayList<>(users);
-    newUsers.sort(Comparator.comparing(User::getDateRegistration).reversed());
+    newUsers.sort(comparator);
 
     for (User u : newUsers) {
       if (u.getDateRegistration() != null) {

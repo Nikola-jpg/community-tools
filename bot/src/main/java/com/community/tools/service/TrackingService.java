@@ -123,6 +123,7 @@ public class TrackingService {
     User stateEntity = new User();
     stateEntity.setUserID(userId);
     stateEntity.setDateRegistration(new Date());
+    stateEntity.setDateRegistration(new Date());
     String userName = messageService.getUserById(userId);
     stateMachineRepository.save(stateEntity);
     stateMachineService.persistMachineForNewUser(userId);

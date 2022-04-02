@@ -67,7 +67,6 @@ public class LeaderBoardService {
     List<User> users = list.stream()
         .filter(user -> userNames
             .contains(user.getGitName())).collect(Collectors.toList());
-    gitHubService.setDateRegistration(users);
     gitHubService.setDateLastActivity(users);
     return users;
   }
