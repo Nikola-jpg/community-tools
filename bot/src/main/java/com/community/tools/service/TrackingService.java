@@ -10,6 +10,8 @@ import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import java.time.LocalDateTime;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
@@ -91,10 +93,10 @@ public class TrackingService {
         }
         break;
       case GOT_THE_TASK:
-        if (messageFromUser.equals("yes")) {
+        if (messageFromUser.equalsIgnoreCase("yes")) {
           estimateTaskService.estimate(userId);
           return;
-        } else if (messageFromUser.equals("no")) {
+        } else if (messageFromUser.equalsIgnoreCase("no")) {
           event = Event.RESENDING_ESTIMATE_TASK;
           payload = new SimplePayload(userId);
         }
@@ -120,6 +122,8 @@ public class TrackingService {
 
     User stateEntity = new User();
     stateEntity.setUserID(userId);
+    stateEntity.setDateRegistration(new Date());
+    stateEntity.setDateRegistration(new Date());
     String userName = messageService.getUserById(userId);
     stateMachineRepository.save(stateEntity);
     stateMachineService.persistMachineForNewUser(userId);

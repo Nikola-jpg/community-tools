@@ -5,9 +5,8 @@ import com.community.tools.service.LeaderBoardService;
 import com.community.tools.service.TaskStatusService;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,28 +39,35 @@ public class UsersRestController {
   @GetMapping
   @Transactional
   public List<User> getUsers(@RequestParam(required = false) Integer userLimit,
-      @RequestParam(required = false) Integer daysFetch,
+      @RequestParam(defaultValue = "30") Integer daysFetch,
       @RequestParam(required = false) String sort) {
 
-    Comparator<User> comparator;
+    List<User> users = leaderBoardService.getActiveUsersFromPeriod(daysFetch);
+    users = taskStatusService.addPlatformNameToSelectedUsers(users);
 
-    if (Objects.equals(sort, "points")) {
-      comparator = Comparator.comparing(User::getTotalPoints).reversed();
-    } else {
-      comparator = Comparator.comparing(User::getCompletedTasks).reversed();
-    }
-
-    List<User> users;
-
-    if (daysFetch != null) {
-      users = leaderBoardService.getActiveUsersFromPeriod(daysFetch);
-      users = taskStatusService.addPlatformNameToSelectedUsers(users);
-    } else {
-      users = taskStatusService.addPlatformNameToUser(1, "gitName", "asc");
-    }
+    Comparator<User> comparator = (o1, o2) -> {
+      if (o1.getDateRegistration() == null && o2.getDateRegistration() == null) {
+        return 0;
+      } else if (o1.getDateRegistration() == null) {
+        return 1;
+      } else if (o2.getDateRegistration() == null) {
+        return -1;
+      } else {
+        return o2.getDateRegistration().compareTo(o1.getDateRegistration());
+      }
+    };
 
     List<User> newUsers = new ArrayList<>(users);
     newUsers.sort(comparator);
+
+    for (User u : newUsers) {
+      if (u.getDateRegistration() != null) {
+        u.setDateRegistrationFront(convertDateToString(u.getDateRegistration()));
+      }
+      if (u.getDateLastActivity() != null) {
+        u.setDateLastActivityFront(convertDateToString(u.getDateLastActivity()));
+      }
+    }
 
     if (userLimit != null) {
       return newUsers.subList(0, userLimit);
@@ -70,5 +76,8 @@ public class UsersRestController {
     }
   }
 
+  public String convertDateToString(Date date) {
+    return date.toInstant().toString().substring(0, 10);
+  }
 
 }

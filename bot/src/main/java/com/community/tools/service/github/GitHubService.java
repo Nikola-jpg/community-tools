@@ -8,6 +8,7 @@ import static java.util.Comparator.comparing;
 import static org.kohsuke.github.GHIssueState.CLOSED;
 
 import com.community.tools.model.EventData;
+import com.community.tools.model.User;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -156,6 +157,51 @@ public class GitHubService {
       throw new RuntimeException(ex);
     }
     return names;
+  }
+
+  /**
+   * Set date of last activity.
+   * Date is taken from GitHub (latest pull request).
+   * @param users list of users
+   */
+  public void setDateLastActivity(List<User> users) {
+    Map<String, Date> mapLastActivity = getUsersLastActivity();
+    for (String login : mapLastActivity.keySet()) {
+      for (User u : users) {
+        if (u.getGitName().equals(login)) {
+          u.setDateLastActivity(mapLastActivity.get(login));
+        }
+      }
+    }
+  }
+
+  /**
+   * Set date of last activity.
+   * Date is taken from GitHub (latest pull request).
+   *
+   * @return map user's github login and date of last activity.
+   */
+  public Map<String, Date> getUsersLastActivity() {
+    Map<String, Date> mapLastActivity = new HashMap<>();
+    GHRepository repository = service.getGitHubRepository();
+    List<GHPullRequest> pullRequests = null;
+    try {
+      pullRequests = repository.getPullRequests(GHIssueState.ALL);
+      for (GHPullRequest pullRequest : pullRequests) {
+        String login = pullRequest.getUser().getLogin();
+        Date date = pullRequest.getCreatedAt();
+        if (mapLastActivity.containsKey(login)) {
+          if (mapLastActivity.get(login).before(date)) {
+            mapLastActivity.put(login, date);
+          }
+        } else {
+          mapLastActivity.put(login, date);
+        }
+      }
+    } catch (IOException ex) {
+      throw new RuntimeException(ex);
+    }
+    return mapLastActivity;
   }
 
 }
