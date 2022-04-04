@@ -36,6 +36,8 @@ public class GitHubService {
   @Autowired
   private final GitHubConnectService service;
 
+  private List<GHPullRequest> pullRequests;
+
   /**
    * Get GitHub pull requests according to state.
    *
@@ -146,7 +148,7 @@ public class GitHubService {
     Set<String> names = new HashSet<>();
     try {
       GHRepository repository = service.getGitHubRepository();
-      List<GHPullRequest> pullRequests = repository.getPullRequests(GHIssueState.ALL);
+      pullRequests = repository.getPullRequests(GHIssueState.ALL);
 
       for (GHPullRequest pr : pullRequests) {
         if (pr.getCreatedAt().after(date)) {
@@ -183,10 +185,7 @@ public class GitHubService {
    */
   public Map<String, Date> getUsersLastActivity() {
     Map<String, Date> mapLastActivity = new HashMap<>();
-    GHRepository repository = service.getGitHubRepository();
-    List<GHPullRequest> pullRequests = null;
     try {
-      pullRequests = repository.getPullRequests(GHIssueState.ALL);
       for (GHPullRequest pullRequest : pullRequests) {
         String login = pullRequest.getUser().getLogin();
         Date date = pullRequest.getCreatedAt();
