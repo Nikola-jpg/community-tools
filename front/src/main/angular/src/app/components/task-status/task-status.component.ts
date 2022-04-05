@@ -26,11 +26,9 @@ export class TaskStatusComponent implements OnInit {
     this.activatedRoute.queryParams
     .subscribe(params => {
       this.userLimit = params.userLimit;
-      this.daysFetch = params.daysFetch;
-      this.sort = params.sort;
     });
     this.getTasks();
-    this.getUsers(this.userLimit, this.daysFetch, this.sort);
+    this.getUsers(this.userLimit);
   }
 
   getTasks(): void {
@@ -40,13 +38,25 @@ export class TaskStatusComponent implements OnInit {
       });
   }
 
-  getUsers(userLimit: number, daysFetch: number, sort: string): void {
-    this.usersService.getRestUsers(userLimit, daysFetch, sort).subscribe(
+  getUsers(userLimit: number): void {
+    this.usersService.getRestUsers(userLimit).subscribe(
       data => {
-        this.users = data;
+        this.getSortedUsers(data);
       });
 
   }
+
+  getSortedUsers(users : User[]): void {
+      this.users = users.sort((u1,u2) => {
+        if (u1.dateLastActivity > u2.dateLastActivity) {
+          return -1;
+        }
+        if (u1.dateLastActivity < u2.dateLastActivity) {
+          return 1;
+        }
+        return 0;
+      });
+    }
 
   isTaskStatusEquals(element: UserTaskStatus, task: string): boolean {
     return element.taskName === task ||

@@ -22,21 +22,29 @@ export class LeaderboardComponent implements OnInit {
     .subscribe(params => {
       // @ts-ignore
       this.userLimit = +params.get('userLimit')||null;
-      // @ts-ignore
-      this.daysFetch = +params.get('daysFetch')||null;
-      // @ts-ignore
-      this.sort = +params.get('sort')||null;
     });
 
-    this.getUsers(this.userLimit, this.daysFetch, this.sort);
+    this.getUsers(this.userLimit);
   }
 
-  getUsers(userLimit: number, daysFetch: number, sort: string): void {
-    this.usersService.getRestUsers(userLimit, daysFetch, sort).subscribe(
+  getUsers(userLimit: number): void {
+    this.usersService.getRestUsers(userLimit).subscribe(
       data => {
-        this.users = data;
+        this.getSortedUsers(data);
       });
 
+  }
+
+  getSortedUsers(users : User[]): void {
+    this.users = users.sort((u1,u2) => {
+      if (u1.dateLastActivity > u2.dateLastActivity) {
+        return -1;
+      }
+      if (u1.dateLastActivity < u2.dateLastActivity) {
+        return 1;
+      }
+      return 0;
+    });
   }
 
 }

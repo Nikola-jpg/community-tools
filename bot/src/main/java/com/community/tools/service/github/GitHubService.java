@@ -151,7 +151,7 @@ public class GitHubService {
       pullRequests = repository.getPullRequests(GHIssueState.ALL);
 
       for (GHPullRequest pr : pullRequests) {
-        if (pr.getCreatedAt().after(date)) {
+        if (pr.getUpdatedAt().after(date)) {
           names.add(pr.getUser().getLogin());
         }
       }
@@ -183,7 +183,7 @@ public class GitHubService {
    *
    * @return map user's github login and date of last activity.
    */
-  public Map<String, Date> getUsersLastActivity() {
+  private Map<String, Date> getUsersLastActivity() {
     Map<String, Date> mapLastActivity = new HashMap<>();
     try {
       for (GHPullRequest pullRequest : pullRequests) {

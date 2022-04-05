@@ -32,52 +32,21 @@ public class UsersRestController {
    * Request controller for handing api requests.
    *
    * @param userLimit query param to limit showed users
-   * @param daysFetch query param to limit users by recent activity
-   * @param sort      query param to sort by field
    * @return returns json with users from db according to query params
    */
   @GetMapping
   @Transactional
-  public List<User> getUsers(@RequestParam(required = false) Integer userLimit,
-      @RequestParam(defaultValue = "30") Integer daysFetch,
-      @RequestParam(required = false) String sort) {
-
-    List<User> users = leaderBoardService.getActiveUsersFromPeriod(daysFetch);
+  public List<User> getUsers(@RequestParam(required = false) Integer userLimit) {
+    List<User> users = leaderBoardService.getActiveUsersFromPeriod(30);
     users = taskStatusService.addPlatformNameToSelectedUsers(users);
 
-    Comparator<User> comparator = (o1, o2) -> {
-      if (o1.getDateRegistration() == null && o2.getDateRegistration() == null) {
-        return 0;
-      } else if (o1.getDateRegistration() == null) {
-        return 1;
-      } else if (o2.getDateRegistration() == null) {
-        return -1;
-      } else {
-        return o2.getDateRegistration().compareTo(o1.getDateRegistration());
-      }
-    };
-
     List<User> newUsers = new ArrayList<>(users);
-    newUsers.sort(comparator);
-
-    for (User u : newUsers) {
-      if (u.getDateRegistration() != null) {
-        u.setDateRegistrationFront(convertDateToString(u.getDateRegistration()));
-      }
-      if (u.getDateLastActivity() != null) {
-        u.setDateLastActivityFront(convertDateToString(u.getDateLastActivity()));
-      }
-    }
 
     if (userLimit != null) {
       return newUsers.subList(0, userLimit);
     } else {
       return newUsers;
     }
-  }
-
-  public String convertDateToString(Date date) {
-    return date.toInstant().toString().substring(0, 10);
   }
 
 }

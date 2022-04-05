@@ -2,8 +2,8 @@ import { UserTaskStatus } from "./user-task-status.model";
 
 export class User {
   gitName: string;
-  dateRegistrationFront: string;
-  dateLastActivityFront: string;
+  dateRegistration : Date;
+  dateLastActivity: Date;
   karma: number;
   pointByTask: number;
   platformName: string;
@@ -11,10 +11,10 @@ export class User {
   taskStatuses: UserTaskStatus[];
   totalPoints: number;
 
-  constructor(gitName: string, dateRegistrationFront: string, dateLastActivityFront: string, karma: number, pointByTask:number, platformName: string, completedTasks: number, taskStatuses: UserTaskStatus[], totalPoints: number) {
+  constructor(gitName: string, dateRegistration: Date, dateLastActivity: Date, karma: number, pointByTask:number, platformName: string, completedTasks: number, taskStatuses: UserTaskStatus[], totalPoints: number) {
     this.gitName = gitName;
-    this.dateRegistrationFront = dateRegistrationFront;
-    this.dateLastActivityFront = dateLastActivityFront;
+    this.dateRegistration = dateRegistration;
+    this.dateLastActivity = dateLastActivity;
     this.platformName = platformName;
     this.taskStatuses = taskStatuses;
     this.completedTasks = completedTasks;

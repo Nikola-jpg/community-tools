@@ -15,8 +15,8 @@
         <tr *ngFor="let user of users;">
             <td>{{user.platformName}}</td>
             <td>{{user.gitName}}</td>
-            <td>{{user.dateRegistrationFront}}</td>
-            <td>{{user.dateLastActivityFront}}</td>
+            <td>{{user.dateRegistration | date: 'dd/MM/yyyy'}}</td>
+            <td>{{user.dateLastActivity | date: 'dd/MM/yyyy'}}</td>
             <td>{{user.completedTasks}}</td>
             <td>{{user.pointByTask}}</td>
             <td>{{user.karma}}</td>

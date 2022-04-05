@@ -16,11 +16,9 @@ export class UsersService {
   constructor(private http: HttpClient) {
   }
 
-  getRestUsers(userLimit: number, daysFetch: number, sort: string): Observable<User[]> {
+  getRestUsers(userLimit: number): Observable<User[]> {
     this.paramFormedString = "?" +
-      (userLimit != undefined ? "userLimit=" + userLimit + "&" : "") +
-      (daysFetch != undefined ? "daysFetch=" + daysFetch + "&" : "") +
-      (sort != undefined ? "sort=" + sort : "");
+      (userLimit != undefined ? "userLimit=" + userLimit : "");
     return this.http.get<User[]>(this.defaultApi + this.paramFormedString);
   }
 
