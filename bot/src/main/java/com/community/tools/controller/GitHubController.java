@@ -52,7 +52,7 @@ public class GitHubController {
           required = true, value = "'true' returns opened pull requests, 'false' - closed")
   @GetMapping(value = "/pull_request/{state}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<Map<String, String>>> getPullRequests(@PathVariable boolean state) {
-    Map<String, String> userPullRequest = gitHubService.getPullRequests(state);
+    Map<String, String> userPullRequest = gitHubService.getPullRequestsActiveUser(state);
     List<Map<String, String>> list = new ArrayList<>();
     list.add(userPullRequest);
     return ok().body(list);

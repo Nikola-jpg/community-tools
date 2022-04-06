@@ -4,8 +4,6 @@ import com.community.tools.model.User;
 import com.community.tools.service.LeaderBoardService;
 import com.community.tools.service.TaskStatusService;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -21,6 +21,7 @@ public class User {
   private String userID;
   private String gitName;
   private Date dateRegistration;
+  @Transient
   private Date dateLastActivity;
   @JsonIgnore
   private byte[] stateMachine;

@@ -36,7 +36,7 @@ public class GitHubService {
   @Autowired
   private final GitHubConnectService service;
 
-  private List<GHPullRequest> pullRequests;
+  private final List<GHPullRequest> pullRequestsActiveUser = new ArrayList<>();
 
   /**
    * Get GitHub pull requests according to state.
@@ -44,7 +44,7 @@ public class GitHubService {
    * @param statePullRequest state of pull. T - open, F - closed
    * @return Map of GH login trainee as a key, title of pull as value
    */
-  public Map<String, String> getPullRequests(boolean statePullRequest) {
+  public Map<String, String> getPullRequestsActiveUser(boolean statePullRequest) {
     Map<String, String> listUsers = new HashMap<>();
     try {
       GHRepository repository = service.getGitHubRepository();
@@ -148,11 +148,10 @@ public class GitHubService {
     Set<String> names = new HashSet<>();
     try {
       GHRepository repository = service.getGitHubRepository();
-      pullRequests = repository.getPullRequests(GHIssueState.ALL);
-
-      for (GHPullRequest pr : pullRequests) {
+      for (GHPullRequest pr : repository.getPullRequests(GHIssueState.ALL)) {
         if (pr.getUpdatedAt().after(date)) {
           names.add(pr.getUser().getLogin());
+          pullRequestsActiveUser.add(pr);
         }
       }
     } catch (IOException ex) {
@@ -164,43 +163,23 @@ public class GitHubService {
   /**
    * Set date of last activity.
    * Date is taken from GitHub (latest pull request).
+   *
    * @param users list of users
    */
   public void setDateLastActivity(List<User> users) {
-    Map<String, Date> mapLastActivity = getUsersLastActivity();
-    for (String login : mapLastActivity.keySet()) {
-      for (User u : users) {
-        if (u.getGitName().equals(login)) {
-          u.setDateLastActivity(mapLastActivity.get(login));
-        }
-      }
-    }
-  }
-
-  /**
-   * Set date of last activity.
-   * Date is taken from GitHub (latest pull request).
-   *
-   * @return map user's github login and date of last activity.
-   */
-  private Map<String, Date> getUsersLastActivity() {
-    Map<String, Date> mapLastActivity = new HashMap<>();
     try {
-      for (GHPullRequest pullRequest : pullRequests) {
-        String login = pullRequest.getUser().getLogin();
-        Date date = pullRequest.getCreatedAt();
-        if (mapLastActivity.containsKey(login)) {
-          if (mapLastActivity.get(login).before(date)) {
-            mapLastActivity.put(login, date);
+      for (User u : users) {
+        Date lastActivity = new Date(Long.MIN_VALUE);
+        for (GHPullRequest pr : pullRequestsActiveUser) {
+          if (pr.getUser().getLogin().equals(u.getGitName())
+              && pr.getUpdatedAt().after(lastActivity)) {
+            lastActivity = pr.getUpdatedAt();
           }
-        } else {
-          mapLastActivity.put(login, date);
         }
+        u.setDateLastActivity(lastActivity);
       }
-    } catch (IOException ex) {
-      throw new RuntimeException(ex);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
-    return mapLastActivity;
   }
-
 }
