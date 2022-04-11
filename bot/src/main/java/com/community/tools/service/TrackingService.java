@@ -91,10 +91,10 @@ public class TrackingService {
         }
         break;
       case GOT_THE_TASK:
-        if (messageFromUser.equals("yes")) {
+        if (messageFromUser.equalsIgnoreCase("yes")) {
           estimateTaskService.estimate(userId);
           return;
-        } else if (messageFromUser.equals("no")) {
+        } else if (messageFromUser.equalsIgnoreCase("no")) {
           event = Event.RESENDING_ESTIMATE_TASK;
           payload = new SimplePayload(userId);
         }
