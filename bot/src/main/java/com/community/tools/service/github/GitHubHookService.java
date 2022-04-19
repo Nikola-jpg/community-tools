@@ -1,5 +1,6 @@
 package com.community.tools.service.github;
 
+import com.community.tools.model.User;
 import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.PointsTaskService;
@@ -7,12 +8,15 @@ import com.community.tools.service.StateMachineService;
 import com.community.tools.service.TaskStatusService;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.util.statemachine.Event;
+import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +33,8 @@ public class GitHubHookService {
   @Value("${generalInformationChannel}")
   private String channel;
 
+  @Autowired
+  StateMachineRepository stateMachineRepository;
   @Autowired
   private MessageConstructor messageConstructor;
   @Autowired
@@ -64,6 +70,7 @@ public class GitHubHookService {
     if (json.get("action").toString().equals(opened) || checkForLabeled(json)) {
       JSONObject pull = json.getJSONObject("pull_request");
       String user = pull.getJSONObject("user").getString("login");
+      setDateLastActivity(user);
       String url = pull.getJSONObject("_links").getJSONObject("html").getString("href");
       if (addMentorService.doesMentorExist(user)) {
         try {
@@ -185,10 +192,17 @@ public class GitHubHookService {
         String url = checkRun.getString("html_url");
         String task = checkRun.getJSONObject("check_suite").getString("head_branch");
         String userNick = json.getJSONObject("sender").getString("login");
+        setDateLastActivity(userNick);
         String userId = stateMachineService.getIdByNick(userNick);
         messageService.sendBlocksMessage(messageService.getUserById(userId),
             messageConstructor.createFailedBuildMessage(url, task));
       }
     }
+  }
+
+  private void setDateLastActivity(String gitName) {
+    User user = stateMachineRepository.findByGitName(gitName)
+        .orElseThrow(EntityNotFoundException::new);
+    user.setDateLastActivity(LocalDate.now());
   }
 }
