@@ -56,6 +56,9 @@ public class GitHubHookService {
    * @param json JSON with data from Github webhook
    */
   public void doActionsAfterReceiveHook(JSONObject json) {
+    setDateLastActivity(json.getJSONObject("pull_request")
+        .getJSONObject("user").getString("login"));
+
     sendNotificationMessageAboutPR(json);
     sendMessageAboutFailedBuild(json);
     giveNewTaskIfPrOpened(json);
@@ -70,7 +73,6 @@ public class GitHubHookService {
     if (json.get("action").toString().equals(opened) || checkForLabeled(json)) {
       JSONObject pull = json.getJSONObject("pull_request");
       String user = pull.getJSONObject("user").getString("login");
-      setDateLastActivity(user);
       String url = pull.getJSONObject("_links").getJSONObject("html").getString("href");
       if (addMentorService.doesMentorExist(user)) {
         try {
@@ -192,7 +194,6 @@ public class GitHubHookService {
         String url = checkRun.getString("html_url");
         String task = checkRun.getJSONObject("check_suite").getString("head_branch");
         String userNick = json.getJSONObject("sender").getString("login");
-        setDateLastActivity(userNick);
         String userId = stateMachineService.getIdByNick(userNick);
         messageService.sendBlocksMessage(messageService.getUserById(userId),
             messageConstructor.createFailedBuildMessage(url, task));
