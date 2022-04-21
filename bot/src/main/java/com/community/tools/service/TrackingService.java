@@ -11,6 +11,7 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import java.time.LocalDate;
+import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
@@ -30,6 +31,9 @@ public class TrackingService {
 
   @Autowired private MessageConstructor messageConstructor;
 
+  @Autowired
+  private StateMachineRepository repository;
+
   /**
    * Method to start the event by state.
    *
@@ -38,6 +42,9 @@ public class TrackingService {
    * @throws Exception Exception
    */
   public void doAction(String messageFromUser, String userId) throws Exception {
+
+    User user = repository.findByUserID(userId).orElseThrow(EntityNotFoundException::new);
+    user.setDateLastActivity(LocalDate.now());
 
     StateMachine<State, Event> machine = stateMachineService.restoreMachine(userId);
     String userForQuestion = machine.getExtendedState().getVariables().get("id").toString();

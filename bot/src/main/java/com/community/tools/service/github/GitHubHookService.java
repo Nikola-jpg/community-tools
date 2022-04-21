@@ -1,6 +1,5 @@
 package com.community.tools.service.github;
 
-import com.community.tools.model.User;
 import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.PointsTaskService;
@@ -12,11 +11,9 @@ import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +53,6 @@ public class GitHubHookService {
    * @param json JSON with data from Github webhook
    */
   public void doActionsAfterReceiveHook(JSONObject json) {
-    setDateLastActivity(json.getJSONObject("pull_request")
-        .getJSONObject("user").getString("login"));
-
     sendNotificationMessageAboutPR(json);
     sendMessageAboutFailedBuild(json);
     giveNewTaskIfPrOpened(json);
@@ -199,11 +193,5 @@ public class GitHubHookService {
             messageConstructor.createFailedBuildMessage(url, task));
       }
     }
-  }
-
-  private void setDateLastActivity(String gitName) {
-    User user = stateMachineRepository.findByGitName(gitName)
-        .orElseThrow(EntityNotFoundException::new);
-    user.setDateLastActivity(LocalDate.now());
   }
 }
