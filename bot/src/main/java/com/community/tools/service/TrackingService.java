@@ -43,15 +43,19 @@ public class TrackingService {
    */
   public void doAction(String messageFromUser, String userId) throws Exception {
 
-    User user = repository.findByUserID(userId).orElseThrow(EntityNotFoundException::new);
-    user.setDateLastActivity(LocalDate.now());
-
     StateMachine<State, Event> machine = stateMachineService.restoreMachine(userId);
     String userForQuestion = machine.getExtendedState().getVariables().get("id").toString();
 
     String message = Messages.DEFAULT_MESSAGE;
     Event event = null;
     Payload payload = null;
+
+    if (machine.getState().getId() != State.NEW_USER) {
+      User user = stateMachineRepository.findByUserID(userId)
+          .orElseThrow(EntityNotFoundException::new);
+      user.setDateLastActivity(LocalDate.now());
+      stateMachineRepository.save(user);
+    }
 
     switch (machine.getState().getId()) {
       case NEW_USER:
