@@ -31,9 +31,6 @@ public class TrackingService {
 
   @Autowired private MessageConstructor messageConstructor;
 
-  @Autowired
-  private StateMachineRepository repository;
-
   /**
    * Method to start the event by state.
    *
@@ -49,13 +46,6 @@ public class TrackingService {
     String message = Messages.DEFAULT_MESSAGE;
     Event event = null;
     Payload payload = null;
-
-    if (machine.getState().getId() != State.NEW_USER) {
-      User user = stateMachineRepository.findByUserID(userId)
-          .orElseThrow(EntityNotFoundException::new);
-      user.setDateLastActivity(LocalDate.now());
-      stateMachineRepository.save(user);
-    }
 
     switch (machine.getState().getId()) {
       case NEW_USER:
