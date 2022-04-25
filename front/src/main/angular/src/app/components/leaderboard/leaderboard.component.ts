@@ -47,7 +47,7 @@ export class LeaderboardComponent implements OnInit {
       return;
     }
 
-    function compare(a: number | string, b: number | string, isAsc: boolean) {
+    function compare(a: number | string | Date, b: number | string | Date, isAsc: boolean) {
       return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
 
@@ -58,6 +58,10 @@ export class LeaderboardComponent implements OnInit {
           return compare(a.platformName, b.platformName, isAsc);
         case 'GitName':
           return compare(a.gitName, b.gitName, isAsc);
+        case 'Date registration':
+          return compare(a.dateRegistration, b.dateRegistration, isAsc);
+        case 'Date last activity':
+          return compare(a.dateLastActivity, b.dateLastActivity, isAsc);
         case 'Tasks':
           return compare(a.completedTasks, b.completedTasks, isAsc);
         case 'Points':

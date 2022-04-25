@@ -4,6 +4,7 @@ import {UsersService} from 'src/app/services/users.service';
 import {TasksService} from 'src/app/services/tasks.service';
 import {ActivatedRoute} from "@angular/router";
 import {UserTaskStatus} from "../../models/user-task-status.model";
+import {MatSortModule, Sort} from '@angular/material/sort';
 
 @Component({
   selector: 'app-task-status',
@@ -47,6 +48,36 @@ export class TaskStatusComponent implements OnInit {
       });
 
   }
+
+  sortData(sort: Sort) {
+      const data = this.users.slice();
+      if (!sort.active || sort.direction === '') {
+        this.users = data;
+        return;
+      }
+
+      function compare(a: number | string | Date, b: number | string | Date, isAsc: boolean) {
+        return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+      }
+
+      this.users = data.sort((a, b) => {
+        const isAsc = sort.direction === 'asc';
+        switch (sort.active) {
+          case 'platformName':
+            return compare(a.platformName, b.platformName, isAsc);
+          case 'GitName':
+            return compare(a.gitName, b.gitName, isAsc);
+          case 'Date registration':
+            return compare(a.dateRegistration, b.dateRegistration, isAsc);
+          case 'Date last activity':
+            return compare(a.dateLastActivity, b.dateLastActivity, isAsc);
+          case 'Tasks':
+            return compare(a.completedTasks, b.completedTasks, isAsc);
+          default:
+            return 0;
+        }
+      });
+    }
 
   isTaskStatusEquals(element: UserTaskStatus, task: string): boolean {
     return element.taskName === task ||
