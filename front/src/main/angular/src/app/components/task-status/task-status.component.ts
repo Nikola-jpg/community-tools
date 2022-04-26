@@ -15,7 +15,6 @@ export class TaskStatusComponent implements OnInit {
   tasks: string[];
   users: User[];
   userLimit: number;
-  daysFetch: number;
   sort: string;
 
 
@@ -26,11 +25,10 @@ export class TaskStatusComponent implements OnInit {
     this.activatedRoute.queryParams
     .subscribe(params => {
       this.userLimit = params.userLimit;
-      this.daysFetch = params.daysFetch;
       this.sort = params.sort;
     });
     this.getTasks();
-    this.getUsers(this.userLimit, this.daysFetch, this.sort);
+    this.getUsers(this.userLimit, this.sort);
   }
 
   getTasks(): void {
@@ -40,8 +38,8 @@ export class TaskStatusComponent implements OnInit {
       });
   }
 
-  getUsers(userLimit: number, daysFetch: number, sort: string): void {
-    this.usersService.getRestUsers(userLimit, daysFetch, sort).subscribe(
+  getUsers(userLimit: number, sort: string): void {
+    this.usersService.getRestUsers(userLimit, sort).subscribe(
       data => {
         this.users = data;
       });
